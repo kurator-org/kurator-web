@@ -35,6 +35,21 @@
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-java_2.11</artifactId>
             <version>${play2.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-beans</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-context</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-core</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
+
         </dependency>
 
         <!-- required for: "run", "start" and "dist" -->

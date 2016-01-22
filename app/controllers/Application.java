@@ -9,6 +9,9 @@ import static play.data.Form.*;
 import play.data.validation.Constraints.*;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import views.html.*;
 
 public class Application extends Controller {
@@ -42,7 +45,10 @@ public class Application extends Controller {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintStream outStream = new PrintStream(new ByteArrayOutputStream());
             WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);
-            runner.apply(null)
+
+            Map<String, Object> settings = new HashMap<String,Object>();
+
+            runner.apply(settings)
                     .outputStream(outStream)
                     .errorStream(System.out)
                     .run();
