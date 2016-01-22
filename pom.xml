@@ -44,6 +44,12 @@
             <version>${play2.version}</version>
             <scope>runtime</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.kurator</groupId>
+            <artifactId>kurator-akka</artifactId>
+            <version>0.3-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 

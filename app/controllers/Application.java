@@ -1,13 +1,14 @@
 package controllers;
 
+import org.kurator.akka.WorkflowRunner;
+import org.kurator.akka.YamlStreamWorkflowRunner;
 import play.*;
 import play.mvc.*;
 import play.data.*;
 import static play.data.Form.*;
 import play.data.validation.Constraints.*;
 
-import java.util.*;
-
+import java.io.*;
 import views.html.*;
 
 public class Application extends Controller {
@@ -30,6 +31,27 @@ public class Application extends Controller {
         return ok(
             index.render(form(Hello.class))
         );
+    }
+
+    /**
+     * Run workflow
+     */
+    public static Result workflow() {
+        InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_file.yaml");
+        try {
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            PrintStream outStream = new PrintStream(new ByteArrayOutputStream());
+            WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);
+            runner.apply(null)
+                    .outputStream(outStream)
+                    .errorStream(System.out)
+                    .run();
+            return ok(
+                    workflow.render(new String(buffer.toByteArray()))
+            );
+        } catch (Exception e) {
+            return internalServerError(e.getMessage());
+        }
     }
   
     /**
