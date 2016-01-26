@@ -8,8 +8,17 @@ GET     /                           controllers.Application.index()
 # Hello action
 GET     /hello                      controllers.Application.sayHello()
 
-# Run workflow action
+# Workflow page
 GET     /workflow                   controllers.Application.workflow()
+
+# Workflow run
+GET     /run                   controllers.Application.run()
+
+# Workflow result
+GET     /result                   controllers.Application.result()
+
+# Javascript routes
+GET   /jsRoutes                controllers.Application.jsRoutes()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

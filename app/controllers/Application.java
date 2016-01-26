@@ -15,7 +15,18 @@ import java.util.Map;
 import views.html.*;
 
 public class Application extends Controller {
-    
+
+    /**
+     * Javascript routes for jQuery ajax
+     */
+    public static Result jsRoutes() {
+        response().setContentType("text/javascript");
+        return ok(Routes.javascriptRouter("jsRoutes",
+                        controllers.routes.javascript.Application.run()
+                )
+        );
+    }
+
     /**
      * Describes the hello form.
      */
@@ -37,10 +48,19 @@ public class Application extends Controller {
     }
 
     /**
-     * Run workflow
+     * Workflow page
      */
     public static Result workflow() {
-        InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_file.yaml");
+        return ok(
+            workflow.render()
+        );
+    }
+
+    /**
+     * Run workflow
+     */
+    public static Result run() {
+       InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_file.yaml");
         try {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintStream outStream = new PrintStream(buffer);
@@ -52,14 +72,17 @@ public class Application extends Controller {
                     .outputStream(outStream)
                     .errorStream(System.out)
                     .run();
-            return ok(
-                    workflow.render(new String(buffer.toByteArray()))
-            );
+            return ok(new String(buffer.toByteArray()));
         } catch (Exception e) {
             return internalServerError(e.getMessage());
         }
     }
-  
+
+    public static Result result() {
+        File file = Play.application().getFile("public/hello_out.csv");
+        return ok(file);
+    }
+
     /**
      * Handles the form submission.
      */
