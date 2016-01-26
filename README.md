@@ -23,7 +23,16 @@ Other prerequisites include maven and git. If you do not currently have them ins
 
 #### Build and run
 
-Start by cloning the repository on your local machine:
+Start by cloning the kurator-akka repository on your local machine:
+
+    $ git clone https://github.com/kurator-org/kurator-akka.git
+
+Use maven to build kurator-akka, which is a dependency of kurator-web.
+
+    $ cd kurator-akka
+    $ mvn install
+
+Once you have successfully built kurator-akka, clone the kurator-web repository on your local machine:
 
     $ git clone https://github.com/kurator-org/kurator-web.git
 
