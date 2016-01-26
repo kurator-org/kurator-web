@@ -43,7 +43,7 @@ public class Application extends Controller {
         InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_file.yaml");
         try {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            PrintStream outStream = new PrintStream(new ByteArrayOutputStream());
+            PrintStream outStream = new PrintStream(buffer);
             WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);
 
             Map<String, Object> settings = new HashMap<String,Object>();

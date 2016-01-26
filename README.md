@@ -32,4 +32,8 @@ In the project directory, build the project using the package goal. You may also
     $ cd kurator-web
     $ mvn package play2:run
 
-By default the Play server will listen on port 9000. Open http://localhost:9000/hello in your browser after starting the server to test the web application.
+By default the Play server will listen on port 9000. Open http://localhost:9000/ in your browser after starting the server to test the web application.
+
+#### Stopping the Play server
+
+Use the play2:stop maven goal to shutdown the Play server.

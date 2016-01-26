@@ -3,7 +3,10 @@
 @import helper._
 
 @main(title = "The 'helloworld' application") {
-    
+    <h1>Hello World workflow</h1>
+
+    <a href="@routes.Application.workflow">Run workflow</a>
+
     <h1>Configure your 'Hello world':</h1>
     
     @form(action = routes.Application.sayHello, args = 'id -> "helloform") {
