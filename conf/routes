@@ -15,7 +15,10 @@ GET     /workflow                   controllers.Application.workflow()
 GET     /run                   controllers.Application.run()
 
 # Workflow result
-GET     /result                   controllers.Application.result()
+GET     /result/*file                 controllers.Application.result(file)
+
+# Workflow upload input
+POST     /upload                   controllers.Application.upload()
 
 # Javascript routes
 GET   /jsRoutes                controllers.Application.jsRoutes()

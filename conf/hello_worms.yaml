@@ -53,7 +53,10 @@ components:
       - !ref DoneSource
       - !ref GreetingPrinter
     parameters:
-      greeting:
+      in:
         actor: !ref RecordSource
+        parameter: filePath
+      out:
+        actor: !ref FileWriter
         parameter: filePath
  
