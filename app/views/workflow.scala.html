@@ -12,10 +12,6 @@
 <body>
     <h1>Run Workflow</h1>
 
-    <form enctype="multipart/form-data">
-    <input type="file" id="input" name="input">
-    </form>
-
      <script type="text/javascript">
         $(function() {
             $("#complete").hide();
@@ -33,25 +29,6 @@
                     }
                 });
             });
-
-            // grab your file object from a file input
-            $('#input').change(function () {
-                var file = this.files[0];
-                $.ajax({
-                    type: 'post',
-                    url: '/upload',
-                    data: file,
-                    success: function (data) {
-                        $("#result").html(data.output);
-                        $("#download").attr("href", "/result/" + data.filename);
-                        console.log(data)
-                        $("#complete").show("drop");
-                    },
-                    processData: false,
-                    contentType: file.type
-                });
-            });
-
         });
      </script>
 

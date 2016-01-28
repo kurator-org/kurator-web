@@ -15,6 +15,24 @@
         $(function() {
             $("#complete").hide();
 
+            // grab your file object from a file input
+            $('#input').change(function () {
+                var file = this.files[0];
+                $.ajax({
+                    type: 'post',
+                    url: '/runworms',
+                    data: file,
+                    success: function (data) {
+                        $("#result").html(data.output);
+                        $("#download").attr("href", "/result/" + data.filename);
+                        console.log(data)
+                        $("#complete").show("drop");
+                    },
+                    processData: false,
+                    contentType: file.type
+                });
+            });
+
             $("#run").click(function() {
                 jsRoutes.controllers.Application.runworms().ajax({
                     success: function (data) {
@@ -29,10 +47,10 @@
         });
      </script>
 
-    <button id="run">Run workflow</button>
+    Upload file and run: <input type="file" id="input" name="input">
     <div id="complete">
         Result: <span id="result"></span>
-        <a href="/resultworms">Download csv...</a>
+        <a id="download">Download csv...</a>
     </div>
     <div id="error"></div>
 </body>

@@ -10,21 +10,14 @@ GET     /hello                      controllers.Application.sayHello()
 
 # Workflow page
 GET     /workflow                   controllers.Application.workflow()
-
 GET     /wormsworkflow                   controllers.Application.wormsworkflow()
 
 # Workflow run
 GET     /run                   controllers.Application.run()
-
-GET     /runworms                   controllers.Application.runworms()
+POST     /runworms                   controllers.Application.runworms()
 
 # Workflow result
 GET     /result/*file                 controllers.Application.result(file)
-
-# Workflow upload input
-POST     /upload                   controllers.Application.upload()
-
-GET     /resultworms                   controllers.Application.resultworms()
 
 # Javascript routes
 GET   /jsRoutes                controllers.Application.jsRoutes()

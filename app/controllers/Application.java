@@ -25,7 +25,6 @@ public class Application extends Controller {
         response().setContentType("text/javascript");
         return ok(Routes.javascriptRouter("jsRoutes",
                         controllers.routes.javascript.Application.run(),
-                        controllers.routes.javascript.Application.upload(),
                         controllers.routes.javascript.Application.runworms()
                 )
         );
@@ -70,40 +69,6 @@ public class Application extends Controller {
     }
 
     /**
-     * Upload input data
-     */
-    public static Result upload() {
-        InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_worms.yaml");
-        File inFile = request().body().asRaw().asFile();
-
-        try {
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            PrintStream outStream = new PrintStream(buffer);
-            WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);
-
-            File outFile = File.createTempFile("result-", ".csv");
-
-            Map<String, Object> settings = new HashMap<String,Object>();
-            settings.put("in", inFile.getAbsolutePath());
-            settings.put("out", outFile.getAbsolutePath());
-
-            runner.apply(settings)
-                    .outputStream(outStream)
-                    .errorStream(System.out)
-                    .run();
-
-            ObjectNode result = Json.newObject();
-
-            result.put("output", new String(buffer.toByteArray()));
-            result.put("filename", outFile.getName());
-
-            return ok(result);
-        } catch (Exception e) {
-            return internalServerError(e.getMessage());
-        }
-    }
-
-    /**
      * Run workflow
      */
     public static Result run() {
@@ -144,19 +109,31 @@ public class Application extends Controller {
      * Run worms workflow.
      */
     public static Result runworms() {
-       InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_worms.yaml");
+        InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_worms.yaml");
+        File inFile = request().body().asRaw().asFile();
+
         try {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintStream outStream = new PrintStream(buffer);
             WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);
 
+            File outFile = File.createTempFile("worms_result-", ".csv");
+
             Map<String, Object> settings = new HashMap<String,Object>();
+            settings.put("in", inFile.getAbsolutePath());
+            settings.put("out", outFile.getAbsolutePath());
 
             runner.apply(settings)
                     .outputStream(outStream)
                     .errorStream(System.out)
                     .run();
-            return ok(new String(buffer.toByteArray()));
+
+            ObjectNode result = Json.newObject();
+
+            result.put("output", new String(buffer.toByteArray()));
+            result.put("filename", outFile.getName());
+
+            return ok(result);
         } catch (Exception e) {
             return internalServerError(e.getMessage());
         }
