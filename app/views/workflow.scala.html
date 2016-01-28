@@ -27,6 +27,9 @@
                         $("#download").attr("href", "/result/" + data.filename);
                         console.log(data)
                         $("#complete").show("drop");
+                    },
+                    error: function (data) { 
+                        $("#error").html(data);
                     }
                 });
             });
@@ -57,5 +60,6 @@
         Result: <span id="result"></span>
         <a id="download">Download csv...</a>
     </div>
+    <div id="error"></div>
 </body>
 </html>

@@ -25,7 +25,8 @@ public class Application extends Controller {
         response().setContentType("text/javascript");
         return ok(Routes.javascriptRouter("jsRoutes",
                         controllers.routes.javascript.Application.run(),
-                        controllers.routes.javascript.Application.upload()
+                        controllers.routes.javascript.Application.upload(),
+                        controllers.routes.javascript.Application.runworms()
                 )
         );
     }
@@ -56,6 +57,15 @@ public class Application extends Controller {
     public static Result workflow() {
         return ok(
             workflow.render()
+        );
+    }
+
+    /**
+     * Worms workflow page
+     */
+    public static Result wormsworkflow() {
+        return ok(
+            wormsworkflow.render()
         );
     }
 
@@ -128,6 +138,28 @@ public class Application extends Controller {
     public static Result result(String fileName) {
         File file = new File(System.getProperty("java.io.tmpdir") + File.separator + fileName);
         return ok(file);
+    }
+
+    /** 
+     * Run worms workflow.
+     */
+    public static Result runworms() {
+       InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_worms.yaml");
+        try {
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            PrintStream outStream = new PrintStream(buffer);
+            WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);
+
+            Map<String, Object> settings = new HashMap<String,Object>();
+
+            runner.apply(settings)
+                    .outputStream(outStream)
+                    .errorStream(System.out)
+                    .run();
+            return ok(new String(buffer.toByteArray()));
+        } catch (Exception e) {
+            return internalServerError(e.getMessage());
+        }
     }
 
     /**
