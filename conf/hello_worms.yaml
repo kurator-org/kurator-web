@@ -1,6 +1,7 @@
 imports:
 
 - classpath:/org/kurator/akka/actors.yaml
+- classpath:/org/kurator/validation/actors/actors.yaml
 
 components:
 
@@ -10,10 +11,9 @@ components:
     parameters:
       filePath: public/worms_in.csv
 
-- id: WoRMSNameCurator
-  type: PythonClassActor
+- id: WoRMSNaCurator
+  type: WoRMSNameCurator
   properties:
-    pythonClass: org.kurator.validation.actors.WoRMSCurator.WoRMSCurator
     onData: curate_taxon_name_and_author
     listensTo:
       - !ref RecordSource
@@ -22,7 +22,7 @@ components:
   type: CsvFileWriter
   properties:
     listensTo:
-      - !ref WoRMSNameCurator
+      - !ref WoRMSNaCurator
     parameters:
       filePath: public/worms_out.csv
 
@@ -48,7 +48,7 @@ components:
   properties:
     actors:
       - !ref RecordSource
-      - !ref WoRMSNameCurator
+      - !ref WoRMSNaCurator
       - !ref FileWriter
       - !ref DoneSource
       - !ref GreetingPrinter
