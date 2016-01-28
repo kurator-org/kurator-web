@@ -2,12 +2,14 @@
 
 @import helper._
 
-@main(title = "The 'helloworld' application") {
-    <h1>Hello World workflow</h1>
+@main(title = "The Kurator 'helloworld' application") {
+    <h1>Kurator Hello World workflows</h1>
 
-    <a href="@routes.Application.workflow">Run workflow</a>
+    <a href="@routes.Application.workflow">Run "Hello World" workflow</a>
 
-    <h1>Configure your 'Hello world':</h1>
+    <a href="@routes.Application.wormsworkflow">Run WoRMS demo workflow</a>
+
+    <h1>Test 'Hello world':</h1>
     
     @form(action = routes.Application.sayHello, args = 'id -> "helloform") {
         

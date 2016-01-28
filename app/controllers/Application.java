@@ -22,7 +22,8 @@ public class Application extends Controller {
     public static Result jsRoutes() {
         response().setContentType("text/javascript");
         return ok(Routes.javascriptRouter("jsRoutes",
-                        controllers.routes.javascript.Application.run()
+                        controllers.routes.javascript.Application.run(),
+                        controllers.routes.javascript.Application.runworms()
                 )
         );
     }
@@ -57,6 +58,15 @@ public class Application extends Controller {
     }
 
     /**
+     * Worms workflow page
+     */
+    public static Result wormsworkflow() {
+        return ok(
+            wormsworkflow.render()
+        );
+    }
+
+    /**
      * Run workflow
      */
     public static Result run() {
@@ -80,6 +90,32 @@ public class Application extends Controller {
 
     public static Result result() {
         File file = Play.application().getFile("hello_out.csv");
+        return ok(file);
+    }
+
+    /** 
+     * Run worms workflow.
+     */
+    public static Result runworms() {
+       InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_worms.yaml");
+        try {
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            PrintStream outStream = new PrintStream(buffer);
+            WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);
+
+            Map<String, Object> settings = new HashMap<String,Object>();
+
+            runner.apply(settings)
+                    .outputStream(outStream)
+                    .errorStream(System.out)
+                    .run();
+            return ok(new String(buffer.toByteArray()));
+        } catch (Exception e) {
+            return internalServerError(e.getMessage());
+        }
+    }
+    public static Result resultworms() {
+        File file = Play.application().getFile("worms_out.csv");
         return ok(file);
     }
 
