@@ -79,7 +79,7 @@ public class Application extends Controller {
     }
 
     public static Result result() {
-        File file = Play.application().getFile("public/hello_out.csv");
+        File file = Play.application().getFile("hello_out.csv");
         return ok(file);
     }
 

@@ -16,7 +16,7 @@ components:
     listensTo:
       - !ref GreetingSource
     parameters:
-      filePath: public/hello_out.csv
+      filePath: hello_out.csv
 
 - id: DoneSource
   type: ConstantSourceActor
@@ -47,4 +47,7 @@ components:
       greeting:
         actor: !ref GreetingSource
         parameter: value
+      out:
+        actor: !ref FileWriter
+        parameter: filePath
  

@@ -64,6 +64,16 @@
             <groupId>org.kurator</groupId>
             <artifactId>kurator-akka</artifactId>
             <version>0.3-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>akka-actor_2.10</artifactId>
+                    <groupId>com.typesafe.akka</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>akka-slf4j_2.10</artifactId>
+                    <groupId>com.typesafe.akka</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.kurator</groupId>
