@@ -52,6 +52,13 @@
 
         </dependency>
 
+        <!-- for building war file" -->
+        <dependency>
+            <groupId>com.github.play2war</groupId>
+            <artifactId>play2-war-core-servlet31_2.11</artifactId>
+            <version>1.4-beta1</version>
+        </dependency>
+
         <!-- required for: "run", "start" and "dist" -->
         <dependency>
             <groupId>com.typesafe.play</groupId>
@@ -132,6 +139,26 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <primaryArtifact>false</primaryArtifact>
+                    <warSourceDirectory>${project.basedir}/war</warSourceDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-war</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
