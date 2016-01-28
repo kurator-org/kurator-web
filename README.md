@@ -43,6 +43,12 @@ In the project directory, build the project using the package goal. You may also
 
 By default the Play server will listen on port 9000. Open http://localhost:9000/ in your browser after starting the server to test the web application.
 
+To invoke actors implemented in python, you will need to (currently) set some environment variables:
+
+export KURATOR_LOCAL_PYTHON=~/somepath/jython2.7.0/Lib/
+export KURATOR_LOCAL_PACKAGES=~/somepath/kurator-validation/src/main/python/
+export PYTHONPATH="/home/somepath/kurator-validation/src/main/python/:$PYTHONPATH"
+
 #### Stopping the Play server
 
 Use the play2:stop maven goal to shutdown the Play server.
