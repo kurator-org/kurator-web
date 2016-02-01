@@ -15,6 +15,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <play2.version>2.4.6</play2.version>
+        <play2-ebean.version>1.0.0</play2-ebean.version>
         <scala.version>2.11.7</scala.version>
     </properties>
 
@@ -50,6 +51,18 @@
                 </exclusion>
             </exclusions>
 
+        </dependency>
+
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-ebean_2.11</artifactId>
+            <version>${play2-ebean.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-jdbc-evolutions_2.11</artifactId>
+            <version>${play2.version}</version>
         </dependency>
 
         <!-- for building war file" -->
@@ -118,12 +131,14 @@
                 <extensions>true</extensions>
                 <configuration>
                     <mainLang>java</mainLang>
+                    <serverJvmArgs>-Dplay.evolutions.db.default.autoApply=true</serverJvmArgs>
                 </configuration>
                 <executions>
                     <execution>
                         <id>default-play2-enhance</id>
                         <goals>
                             <goal>enhance</goal>
+                            <goal>ebean-enhance</goal>
                         </goals>
                     </execution>
                 </executions>
