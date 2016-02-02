@@ -12,6 +12,7 @@ public class Task extends Model {
 
     @Id
     @Constraints.Min(10)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     @Constraints.Required
