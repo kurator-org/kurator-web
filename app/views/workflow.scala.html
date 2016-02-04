@@ -17,7 +17,7 @@
             $("#complete").hide();
 
             $("#run").click(function() {
-                jsRoutes.controllers.Application.run().ajax({
+                jsRoutes.controllers.Workflow.run().ajax({
                     success: function (data) {
                         $("#result").html(data.output);
                         $("#download").attr("href", "/result/" + data.filename);

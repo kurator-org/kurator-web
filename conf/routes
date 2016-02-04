@@ -5,19 +5,22 @@
 # Home page
 GET     /                           controllers.Application.index()
 
+GET     /login                  controllers.Application.login()
+GET     /authenticate                  controllers.Application.authenticate()
+
 # Hello action
 GET     /hello                      controllers.Application.sayHello()
 
 # Workflow page
-GET     /workflow                   controllers.Application.workflow()
-GET     /wormsworkflow                   controllers.Application.wormsworkflow()
+GET     /workflow                   controllers.Workflow.workflow()
+GET     /wormsworkflow                   controllers.Workflow.wormsworkflow()
 
 # Workflow run
-GET     /run                   controllers.Application.run()
-POST     /runworms                   controllers.Application.runworms()
+GET     /run                   controllers.Workflow.run()
+POST     /runworms                   controllers.Workflow.runworms()
 
 # Workflow result
-GET     /result/*file                 controllers.Application.result(file)
+GET     /result/*file                 controllers.Workflow.result(file)
 
 # Javascript routes
 GET   /jsRoutes                controllers.Application.jsRoutes()

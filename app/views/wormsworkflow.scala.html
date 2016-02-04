@@ -34,7 +34,7 @@
             });
 
             $("#run").click(function() {
-                jsRoutes.controllers.Application.runworms().ajax({
+                jsRoutes.controllers.Workflow.runworms().ajax({
                     success: function (data) {
                         $("#result").html(data);
                         $("#complete").show("drop");

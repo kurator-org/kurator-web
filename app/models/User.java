@@ -21,5 +21,13 @@ public class User extends Model {
 
     public String username;
 
+    public static User authenticate(String username, String password) {
+        User user = new User();
+        user.firstname = "David";
+        user.lastname = "Lowery";
+        user.username = username;
+        return user;
+    }
+
     public static Finder<Long, User> find = new Finder<Long,User>(User.class);
 }
