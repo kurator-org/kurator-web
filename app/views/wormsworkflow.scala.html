@@ -36,6 +36,10 @@
                         $("#progressbar").hide("fade");
                         $("#complete").show("drop");
                     },
+                    error: function (request, status, error) {
+                        $("#progressbar").hide("fade");
+                        $("#error").html(error);
+                    },
                     processData: false,
                     contentType: file.type
                 });

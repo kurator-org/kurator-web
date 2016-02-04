@@ -33,7 +33,7 @@
                         $("#progressbar").hide("fade");
                         $("#complete").show("drop");
                     },
-                    error: function (data) {
+                    error: function (request, status, error) {
                         $("#progressbar").hide("fade");
                         $("#error").html(data);
                     }
