@@ -4,8 +4,10 @@
 <head>
     <title>WoRMS demo Workflow</title>
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery-ui.min.css")">
     <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
     <script src="@routes.Assets.at("javascripts/jquery-1.6.4.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("javascripts/jquery-ui.min.js")" type="text/javascript"></script>
     <script type="text/javascript" src="@routes.Application.jsRoutes"></script>
 </head>
 <body>
@@ -15,8 +17,13 @@
         $(function() {
             $("#complete").hide();
 
+            $("#progressbar").progressbar({
+                value: false
+            }).hide();
+
             // grab your file object from a file input
             $('#input').change(function () {
+                $("#progressbar").show("fade");
                 var file = this.files[0];
                 $.ajax({
                     type: 'post',
@@ -26,28 +33,18 @@
                         $("#result").html(data.output);
                         $("#download").attr("href", "/result/" + data.filename);
                         console.log(data)
+                        $("#progressbar").hide("fade");
                         $("#complete").show("drop");
                     },
                     processData: false,
                     contentType: file.type
                 });
             });
-
-            $("#run").click(function() {
-                jsRoutes.controllers.Workflow.runworms().ajax({
-                    success: function (data) {
-                        $("#result").html(data);
-                        $("#complete").show("drop");
-                    },
-                    error: function (data) { 
-                        $("#error").html(data);
-                    }
-                });
-            });
         });
      </script>
 
     Upload file and run: <input type="file" id="input" name="input">
+    <div id="progressbar" class="ui-progressbar-indeterminate"></div>
     <div id="complete">
         Result: <span id="result"></span>
         <a id="download">Download csv...</a>
