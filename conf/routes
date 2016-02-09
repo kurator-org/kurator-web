@@ -8,6 +8,9 @@ GET     /                           controllers.Application.index()
 GET     /login                  controllers.Application.login()
 GET     /authenticate                  controllers.Application.authenticate()
 
+GET     /createaccount              controllers.Application.createaccount()
+GET     /register                   controllers.Application.register()
+
 # Hello action
 GET     /hello                      controllers.Application.sayHello()
 

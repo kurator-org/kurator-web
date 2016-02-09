@@ -20,13 +20,26 @@ public class User extends Model {
     public String lastname;
 
     public String username;
+    public String password;
 
     public static User authenticate(String username, String password) {
-        User user = new User();
-        user.firstname = "David";
-        user.lastname = "Lowery";
-        user.username = username;
-        return user;
+        User user = User.find.where().eq("username", username).findUnique();
+        if (user.password.equals(password)) {
+            return user;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 
     public static Finder<Long, User> find = new Finder<Long,User>(User.class);

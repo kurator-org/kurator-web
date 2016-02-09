@@ -1,0 +1,32 @@
+@(form: Form[Application.Register])
+
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+@helper.form(routes.Application.register) {
+<h1>Create Account</h1>
+
+<p>
+    <input type="email" name="email" placeholder="Email" value="@form("email").value">
+</p>
+<p>
+    <input type="text" name="firstName" placeholder="First Name" value="@form("firstName").value">
+</p>
+<p>
+    <input type="text" name="lastName" placeholder="Last Name" value="@form("lastName").value">
+</p>
+<p>
+    <input type="password" placeholder="Password" name="password" required>
+</p>
+<p>
+    <input type="password" placeholder="Confirm Password" name="confirmPassword" required>
+</p>
+<p>
+    <button type="submit">Register</button>
+</p>
+}
+</body>
+</html>

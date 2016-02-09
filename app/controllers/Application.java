@@ -39,6 +39,31 @@ public class Application extends Controller {
         );
     }
 
+    public static Result createaccount() {
+        return ok(
+                createaccount.render(form(Register.class))
+        );
+    }
+
+    public static Result register() {
+        Form<Register> registerForm = form(Register.class).bindFromRequest();
+
+        if(registerForm.hasErrors()) {
+            return badRequest(createaccount.render(registerForm));
+        }
+
+        User user = new User();
+        user.username = registerForm.get().email;
+        user.firstname = registerForm.get().firstName;
+        user.lastname = registerForm.get().lastName;
+        user.password = registerForm.get().password;
+        user.save();
+
+        return redirect(
+                routes.Application.index()
+        );
+    }
+
     public static Result authenticate() {
         Form<Login> loginForm = form(Login.class).bindFromRequest();
         if (loginForm.hasErrors()) {
@@ -99,5 +124,20 @@ public class Application extends Controller {
             return null;
         }
     }
-  
+
+    public static class Register {
+
+        public String email;
+        public String firstName;
+        public String lastName;
+        public String password;
+        public String confirmPassword;
+
+        public String validate() {
+            if (!password.equals(confirmPassword)) {
+                return "Passwords do not match";
+            }
+            return null;
+        }
+    }
 }
