@@ -53,10 +53,12 @@ public class Application extends Controller {
         }
 
         User user = new User();
-        user.username = registerForm.get().email;
+        user.username = registerForm.get().username;
         user.firstname = registerForm.get().firstName;
         user.lastname = registerForm.get().lastName;
+        user.email = registerForm.get().email;
         user.password = registerForm.get().password;
+        user.affiliation = registerForm.get().affiliation;
         user.save();
 
         return redirect(
@@ -70,7 +72,7 @@ public class Application extends Controller {
             return badRequest(login.render(loginForm));
         } else {
             session().clear();
-            session("email", loginForm.get().email);
+            session("username", loginForm.get().username);
             return redirect(
                     routes.Application.index()
             );
@@ -114,11 +116,11 @@ public class Application extends Controller {
 
     public static class Login {
 
-        public String email;
+        public String username;
         public String password;
 
         public String validate() {
-            if (User.authenticate(email, password) == null) {
+            if (User.authenticate(username, password) == null) {
                 return "Invalid user or password";
             }
             return null;
@@ -130,8 +132,10 @@ public class Application extends Controller {
         public String email;
         public String firstName;
         public String lastName;
+        public String username;
         public String password;
         public String confirmPassword;
+        public String affiliation;
 
         public String validate() {
             if (!password.equals(confirmPassword)) {

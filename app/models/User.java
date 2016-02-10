@@ -19,8 +19,12 @@ public class User extends Model {
     public String firstname;
     public String lastname;
 
+    public String email;
+
     public String username;
     public String password;
+
+    public String affiliation;
 
     public static User authenticate(String username, String password) {
         User user = User.find.where().eq("username", username).findUnique();
@@ -29,17 +33,6 @@ public class User extends Model {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
     }
 
     public static Finder<Long, User> find = new Finder<Long,User>(User.class);
