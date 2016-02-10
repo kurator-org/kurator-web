@@ -6,10 +6,12 @@
 GET     /                           controllers.Application.index()
 
 GET     /login                  controllers.Application.login()
-GET     /authenticate                  controllers.Application.authenticate()
+POST     /authenticate                  controllers.Application.authenticate()
 
 GET     /createaccount              controllers.Application.createaccount()
-GET     /register                   controllers.Application.register()
+POST     /register                   controllers.Application.register()
+
+POST    /upload                     controllers.Workflow.upload()
 
 # Hello action
 GET     /hello                      controllers.Application.sayHello()
@@ -20,7 +22,7 @@ GET     /wormsworkflow                   controllers.Workflow.wormsworkflow()
 
 # Workflow run
 GET     /run                   controllers.Workflow.run()
-POST     /runworms                   controllers.Workflow.runworms()
+GET     /runworms                   controllers.Workflow.runworms()
 
 # Workflow result
 GET     /result/*file                 controllers.Workflow.result(file)

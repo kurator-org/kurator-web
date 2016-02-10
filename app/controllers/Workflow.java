@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.io.FileUtils;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
 import play.Play;
@@ -9,10 +10,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,15 +79,31 @@ public class Workflow extends Controller {
         return ok(file);
     }
 
+    public static Result upload() {
+        try {
+            File source = request().body().asRaw().asFile();
+            File target = File.createTempFile("upload-", ".csv");
+
+            FileUtils.copyFile(source, target);
+
+            session("input", target.getAbsolutePath());
+
+            return ok();
+        } catch (IOException e) {
+            return internalServerError(e.getMessage());
+        }
+    }
+
     /**
      * Run worms workflow.
      */
     @Security.Authenticated(Secured.class)
     public static Result runworms() {
         InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_worms.yaml");
-        File inFile = request().body().asRaw().asFile();
 
         try {
+            File inFile = new File(session().get("input"));
+
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintStream outStream = new PrintStream(buffer);
             WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);

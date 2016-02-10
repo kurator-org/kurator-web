@@ -81,6 +81,12 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.kurator</groupId>
             <artifactId>kurator-akka</artifactId>
             <version>0.3-SNAPSHOT</version>

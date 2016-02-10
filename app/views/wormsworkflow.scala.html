@@ -16,6 +16,7 @@
      <script type="text/javascript">
         $(function() {
             $("#complete").hide();
+            $("#run").prop("disabled", true);
 
             $("#progressbar").progressbar({
                 value: false
@@ -27,14 +28,12 @@
                 var file = this.files[0];
                 $.ajax({
                     type: 'post',
-                    url: '/runworms',
+                    url: '/upload',
                     data: file,
                     success: function (data) {
-                        $("#result").html(data.output);
-                        $("#download").attr("href", "/result/" + data.filename);
                         console.log(data)
                         $("#progressbar").hide("fade");
-                        $("#complete").show("drop");
+                        $("#run").prop("disabled", false);
                     },
                     error: function (request, status, error) {
                         $("#progressbar").hide("fade");
@@ -44,10 +43,28 @@
                     contentType: file.type
                 });
             });
+
+            $("#run").click(function() {
+                $("#progressbar").show("fade");
+                jsRoutes.controllers.Workflow.runworms().ajax({
+                    success: function (data) {
+                        $("#result").html(data.output);
+                        $("#download").attr("href", "/result/" + data.filename);
+                        console.log(data)
+                        $("#progressbar").hide("fade");
+                        $("#complete").show("drop");
+                    },
+                    error: function (request, status, error) {
+                        $("#progressbar").hide("fade");
+                        $("#error").html(data);
+                    }
+                });
+            });
         });
      </script>
 
     Upload file and run: <input type="file" id="input" name="input">
+    <button id="run">Run workflow</button>
     <div id="progressbar" class="ui-progressbar-indeterminate"></div>
     <div id="complete">
         Result: <span id="result"></span>
