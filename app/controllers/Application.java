@@ -79,6 +79,14 @@ public class Application extends Controller {
         }
     }
 
+    public static Result logout() {
+        session().clear();
+
+        return redirect(
+                routes.Application.index()
+        );
+    }
+
     /**
      * Describes the hello form.
      */
