@@ -24,9 +24,9 @@ public class Workflow extends Controller {
      * Workflow page
      */
     @Security.Authenticated(Secured.class)
-    public static Result workflow() {
+    public static Result helloworkflow() {
         return ok(
-                workflow.render()
+                helloworkflow.render()
         );
     }
 
@@ -44,34 +44,41 @@ public class Workflow extends Controller {
      * Run workflow
      */
     @Security.Authenticated(Secured.class)
-    public static Result run() {
-        InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_file.yaml");
+    public static Result runhello() {
+        Map<String, Object> settings = new HashMap<String, Object>();
+
         try {
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            PrintStream outStream = new PrintStream(buffer);
-            WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);
-
             File file = File.createTempFile("result-", ".csv");
-
-            Map<String, Object> settings = new HashMap<String,Object>();
             settings.put("out", file.getAbsolutePath());
 
-            runner.apply(settings)
-                    .outputStream(outStream)
-                    .errorStream(System.out)
-                    .run();
+            String output = runYamlWorkflow("hello_file.yaml", settings);
 
             ObjectNode result = Json.newObject();
 
-            result.put("output", new String(buffer.toByteArray()));
+            result.put("output", output);
             result.put("filename", file.getName());
 
             return ok(result);
-
         } catch (Exception e) {
             return internalServerError(e.getMessage());
         }
     }
+
+    private static String runYamlWorkflow(String yamlFile, Map<String, Object> settings) throws Exception {
+        InputStream yamlStream = Play.application().classloader().getResourceAsStream(yamlFile);
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            PrintStream outStream = new PrintStream(buffer);
+            WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);
+
+            runner.apply(settings)
+                    .outputStream(outStream)
+                    .errorStream(System.err)
+                    .run();
+
+            return new String(buffer.toByteArray());
+    }
+
+
 
     @Security.Authenticated(Secured.class)
     public static Result result(String fileName) {
@@ -79,6 +86,7 @@ public class Workflow extends Controller {
         return ok(file);
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result upload() {
         try {
             File source = request().body().asRaw().asFile();
@@ -99,29 +107,20 @@ public class Workflow extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result runworms() {
-        InputStream yamlStream = Play.application().classloader().getResourceAsStream("hello_worms.yaml");
+        Map<String, Object> settings = new HashMap<String, Object>();
 
         try {
             File inFile = new File(session().get("input"));
-
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            PrintStream outStream = new PrintStream(buffer);
-            WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);
-
             File outFile = File.createTempFile("worms_result-", ".csv");
 
-            Map<String, Object> settings = new HashMap<String,Object>();
             settings.put("in", inFile.getAbsolutePath());
             settings.put("out", outFile.getAbsolutePath());
 
-            runner.apply(settings)
-                    .outputStream(outStream)
-                    .errorStream(System.out)
-                    .run();
+            String output = runYamlWorkflow("hello_worms.yaml", settings);
 
             ObjectNode result = Json.newObject();
 
-            result.put("output", new String(buffer.toByteArray()));
+            result.put("output", output);
             result.put("filename", outFile.getName());
 
             return ok(result);

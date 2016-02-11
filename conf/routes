@@ -14,15 +14,12 @@ POST     /register                   controllers.Application.register()
 
 POST    /upload                     controllers.Workflow.upload()
 
-# Hello action
-GET     /hello                      controllers.Application.sayHello()
-
 # Workflow page
-GET     /workflow                   controllers.Workflow.workflow()
+GET     /helloworkflow                   controllers.Workflow.helloworkflow()
 GET     /wormsworkflow                   controllers.Workflow.wormsworkflow()
 
 # Workflow run
-GET     /run                   controllers.Workflow.run()
+GET     /runhello                   controllers.Workflow.runhello()
 GET     /runworms                   controllers.Workflow.runworms()
 
 # Workflow result

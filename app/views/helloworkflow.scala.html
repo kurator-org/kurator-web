@@ -3,7 +3,7 @@
 
 <html>
 <head>
-    <title>Workflow</title>
+    <title>Hello Workflow</title>
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery-ui.min.css")">
     <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
@@ -25,7 +25,7 @@
 
             $("#run").click(function() {
                 $("#progressbar").show("fade");
-                jsRoutes.controllers.Workflow.run().ajax({
+                jsRoutes.controllers.Workflow.runhello().ajax({
                     success: function (data) {
                         $("#result").html(data.output);
                         $("#download").attr("href", "/result/" + data.filename);
