@@ -11,9 +11,13 @@
                 value: false
             }).hide();
 
+            $("#overlay").hide();
+            $("#modal").hide();
+
             // grab your file object from a file input
             $('#input').change(function () {
-                $("#progressbar").show("fade");
+                $("#overlay").show("fade");
+
                 var file = this.files[0];
                 $.ajax({
                     type: 'post',
@@ -23,6 +27,12 @@
                         console.log(data)
                         $("#progressbar").hide("fade");
                         $("#run").prop("disabled", false);
+
+                        $("#modal").show("fade");
+                        setTimeout(function() {
+                            $("#modal").hide("fade");
+                            $("#overlay").hide("fade");
+                        }, 3000);
                     },
                     error: function (request, status, error) {
                         $("#progressbar").hide("fade");
@@ -61,4 +71,9 @@
     </div>
     <div id="error"></div>
 
+    <br />
+    <div id='overlay'></div>
+    <div id='modal'>
+        <div id='content'>File upload complete!</div>
+    </div>
 }
