@@ -21,6 +21,16 @@ CREATE TABLE user (
   PRIMARY KEY (id)
 );
 
+CREATE TABLE workflow_run (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  start_time TIMESTAMP,
+  end_time TIMESTAMP,
+  user_id bigint(20),
+  output_text LONGTEXT,
+  result_file VARCHAR(255),
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES user(id)
+);
 -- username: admin, password: admin
 
 INSERT INTO user (username, password) VALUES('admin', '$2a$10$8YF40nAp.y2iknDPi8.G1uqfv8u26ARgBvVncdr89BmXOim1nD6Qy');

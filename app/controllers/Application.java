@@ -3,6 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.Task;
 import models.User;
+import models.WorkflowRun;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
 import org.mindrot.jbcrypt.BCrypt;
@@ -16,6 +17,7 @@ import play.data.validation.Constraints.*;
 import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import views.html.*;
@@ -74,8 +76,6 @@ public class Application extends Controller {
         if (loginForm.hasErrors()) {
             return badRequest(login.render(loginForm));
         } else {
-            session().clear();
-            session("username", loginForm.get().username);
             return redirect(
                     routes.Application.index()
             );
@@ -96,6 +96,9 @@ public class Application extends Controller {
      * Home page
      */
     public static Result index() {
+        List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", session().get("uid")).findList();
+
+        System.out.println(workflowRuns);
         return ok(
             index.render()
         );
@@ -107,9 +110,15 @@ public class Application extends Controller {
         public String password;
 
         public String validate() {
-            if (User.authenticate(username, password) == null) {
+            User user = User.authenticate(username, password);
+            if (user == null) {
                 return "Invalid user or password";
             }
+
+            session().clear();
+            session("uid", String.valueOf(user.id));
+            session("username", user.username);
+
             return null;
         }
     }

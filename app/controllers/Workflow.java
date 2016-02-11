@@ -1,6 +1,8 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import models.User;
+import models.WorkflowRun;
 import org.apache.commons.io.FileUtils;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
@@ -11,6 +13,7 @@ import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.*;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +48,11 @@ public class Workflow extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result runhello() {
+        WorkflowRun run = new WorkflowRun();
+        run.user = User.find.byId(Long.parseLong(session().get("uid")));
+        run.startTime = new Date();
+        run.save();
+
         Map<String, Object> settings = new HashMap<String, Object>();
 
         try {
@@ -57,6 +65,11 @@ public class Workflow extends Controller {
 
             result.put("output", output);
             result.put("filename", file.getName());
+
+            run.endTime = new Date();
+            run.outputText = output;
+            run.resultFile = file.getAbsolutePath();
+            run.update();
 
             return ok(result);
         } catch (Exception e) {
