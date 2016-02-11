@@ -1,11 +1,7 @@
 @(form: Form[Application.Register])
 
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+@main(title = "The Kurator 'helloworld' application") {
+
 @helper.form(routes.Application.register) {
 <h1>Create Account</h1>
 
@@ -34,5 +30,5 @@
     <button type="submit">Register</button>
 </p>
 }
-</body>
-</html>
+
+}

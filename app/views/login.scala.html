@@ -1,12 +1,7 @@
 @(form: Form[Application.Login])
 
-<html>
-<head>
-    <title>Login</title>
-    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-    <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-</head>
-<body>
+@main(title = "The Kurator 'helloworld' application") {
+
 @if(form.hasGlobalErrors) {
 <p class="error">
     @form.globalError.message
@@ -27,5 +22,4 @@
 </p>
 }
 
-</body>
-</html>
+}
