@@ -1,6 +1,7 @@
 package models;
 
 import com.avaje.ebean.Model;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,7 +29,8 @@ public class User extends Model {
 
     public static User authenticate(String username, String password) {
         User user = User.find.where().eq("username", username).findUnique();
-        if (user.password.equals(password)) {
+
+        if (BCrypt.checkpw(password, user.password)) {
             return user;
         } else {
             return null;

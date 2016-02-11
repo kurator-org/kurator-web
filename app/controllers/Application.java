@@ -5,6 +5,7 @@ import models.Task;
 import models.User;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
+import org.mindrot.jbcrypt.BCrypt;
 import play.*;
 import play.libs.Json;
 import play.mvc.*;
@@ -57,9 +58,11 @@ public class Application extends Controller {
         user.firstname = registerForm.get().firstName;
         user.lastname = registerForm.get().lastName;
         user.email = registerForm.get().email;
-        user.password = registerForm.get().password;
+        user.password = BCrypt.hashpw(registerForm.get().password, BCrypt.gensalt());
         user.affiliation = registerForm.get().affiliation;
         user.save();
+
+        System.out.println(user.password);
 
         return redirect(
                 routes.Application.index()

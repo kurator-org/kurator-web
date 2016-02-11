@@ -21,7 +21,9 @@ CREATE TABLE user (
   PRIMARY KEY (id)
 );
 
-INSERT INTO user (username, password) VALUES('admin', 'admin');
+-- username: admin, password: admin
+
+INSERT INTO user (username, password) VALUES('admin', '$2a$10$8YF40nAp.y2iknDPi8.G1uqfv8u26ARgBvVncdr89BmXOim1nD6Qy');
 
 # --- !Downs
 
