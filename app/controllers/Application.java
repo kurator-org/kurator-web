@@ -31,7 +31,8 @@ public class Application extends Controller {
         response().setContentType("text/javascript");
         return ok(Routes.javascriptRouter("jsRoutes",
                         controllers.routes.javascript.Workflow.runhello(),
-                        controllers.routes.javascript.Workflow.runworms()
+                        controllers.routes.javascript.Workflow.runworms(),
+                        controllers.routes.javascript.Workflow.rungeo()
                 )
         );
     }

@@ -44,6 +44,16 @@ public class Workflow extends Controller {
     }
 
     /**
+     * Geo validator workflow page
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result geoworkflow() {
+        return ok(
+                geovalidatorworkflow.render()
+        );
+    }
+
+    /**
      * Run workflow
      */
     @Security.Authenticated(Secured.class)
@@ -130,6 +140,33 @@ public class Workflow extends Controller {
             settings.put("out", outFile.getAbsolutePath());
 
             String output = runYamlWorkflow("hello_worms.yaml", settings);
+
+            ObjectNode result = Json.newObject();
+
+            result.put("output", output);
+            result.put("filename", outFile.getName());
+
+            return ok(result);
+        } catch (Exception e) {
+            return internalServerError(e.getMessage());
+        }
+    }
+
+    /**
+     * Run geo validator workflow.
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result rungeo() {
+        Map<String, Object> settings = new HashMap<String, Object>();
+
+        try {
+            File inFile = new File(session().get("input"));
+            File outFile = File.createTempFile("geo_result-", ".csv");
+
+            settings.put("in", inFile.getAbsolutePath());
+            settings.put("out", outFile.getAbsolutePath());
+
+            String output = runYamlWorkflow("geo_validator.yaml", settings);
 
             ObjectNode result = Json.newObject();
 

@@ -1,0 +1,79 @@
+@main(title = "The Kurator 'helloworld' application") {
+
+    <h1>Run Geovalidator Workflow</h1>
+
+     <script type="text/javascript">
+        $(function() {
+            $("#complete").hide();
+            $("#run").prop("disabled", true);
+
+            $("#progressbar").progressbar({
+                value: false
+            }).hide();
+
+            $("#overlay").hide();
+            $("#modal").hide();
+
+            // grab your file object from a file input
+            $('#input').change(function () {
+                $("#overlay").show("fade");
+
+                var file = this.files[0];
+                $.ajax({
+                    type: 'post',
+                    url: '/upload',
+                    data: file,
+                    success: function (data) {
+                        console.log(data)
+                        $("#progressbar").hide("fade");
+                        $("#run").prop("disabled", false);
+
+                        $("#modal").show("fade");
+                        setTimeout(function() {
+                            $("#modal").hide("fade");
+                            $("#overlay").hide("fade");
+                        }, 3000);
+                    },
+                    error: function (request, status, error) {
+                        $("#progressbar").hide("fade");
+                        $("#error").html(error);
+                    },
+                    processData: false,
+                    contentType: file.type
+                });
+            });
+
+            $("#run").click(function() {
+                $("#progressbar").show("fade");
+                jsRoutes.controllers.Workflow.rungeo().ajax({
+                    success: function (data) {
+                        $("#result").html(data.output);
+                        $("#download").attr("href", "/result/" + data.filename);
+                        console.log(data)
+                        $("#progressbar").hide("fade");
+                        $("#complete").show("drop");
+                    },
+                    error: function (request, status, error) {
+                        $("#progressbar").hide("fade");
+                        $("#error").html(data);
+                    }
+                });
+            });
+        });
+     </script>
+
+    Upload file and run: <input type="file" id="input" name="input">
+    <button id="run">Run workflow</button>
+    <div id="progressbar" class="ui-progressbar-indeterminate"></div>
+    <div id="complete">
+        Result: <span id="result"></span>
+        <a id="download">Download csv...</a>
+    </div>
+    <div id="error"></div>
+
+    <br />
+    <div id='overlay'></div>
+    <div id='modal'>
+        <div id='content'>File upload complete!</div>
+    </div>
+}

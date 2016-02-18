@@ -17,10 +17,12 @@ POST    /upload                     controllers.Workflow.upload()
 # Workflow page
 GET     /helloworkflow                   controllers.Workflow.helloworkflow()
 GET     /wormsworkflow                   controllers.Workflow.wormsworkflow()
+GET     /geoworkflow                   controllers.Workflow.geoworkflow()
 
 # Workflow run
 GET     /runhello                   controllers.Workflow.runhello()
 GET     /runworms                   controllers.Workflow.runworms()
+GET     /rungeo                     controllers.Workflow.rungeo()
 
 # Workflow result
 GET     /result/*file                 controllers.Workflow.result(file)
