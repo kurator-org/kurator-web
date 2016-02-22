@@ -7,17 +7,15 @@
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery-ui.min.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/demo.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <script src="@routes.Assets.at("javascripts/jquery-1.6.4.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/jquery-ui.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/jsPlumb-2.0.7-min.js")" type="text/javascript"></script>
         <script type="text/javascript" src="@routes.Application.jsRoutes"></script>
     </head>
     <body>
-        
-        <header>
-            <a href="@routes.Application.index">Home</a> - <a href="@routes.Application.builder" target="_blank">Workflow Builder</a> - <a href="@routes.Application.login">Login</a> - <a href="@routes.Application.createaccount">Create Account</a> - <a href="@routes.Application.logout">Logout</a>
-        </header>
-        
+
         <section>
             @content
         </section>

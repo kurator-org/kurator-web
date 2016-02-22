@@ -1,5 +1,13 @@
 @(form: Form[Application.Login])
 
+<ul id="navbar">
+    <li><a href="@routes.Application.index">Home</a></li>
+    <li><a href="@routes.Application.builder">Workflow Builder</a></li>
+    <li><a href="@routes.Application.createaccount">Register</a></li>
+    <li><a class="active" href="@routes.Application.login">Login</a></li>
+    <li><a href="@routes.Application.logout">Logout</a></li>
+</ul>
+
 @main(title = "The Kurator 'helloworld' application") {
 
 @if(form.hasGlobalErrors) {

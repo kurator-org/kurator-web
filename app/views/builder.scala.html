@@ -1,97 +1,100 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Title</title>
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/demo.css")">
-    <script src="@routes.Assets.at("javascripts/jsPlumb-2.0.7-min.js")" type="text/javascript"></script>
-    <script src="@routes.Assets.at("javascripts/jquery-1.6.4.min.js")" type="text/javascript"></script>
-</head>
-<body>
-    <script type="text/javascript">
-        jsPlumb.ready(function() {
-            jsPlumb.setContainer($("#canvas"));
 
-            function addInput(name) {
-                var input = $("<div class='input'>" + name + "</div>").dblclick(function() {
-                    jsPlumb.remove(this);
-                });
-                $("#canvas").append(input);
-                jsPlumb.draggable(input);
+<ul id="navbar">
+    <li><a href="@routes.Application.index">Home</a></li>
+    <li><a class="active" href="@routes.Application.builder">Workflow Builder</a></li>
+    <li><a href="@routes.Application.createaccount">Register</a></li>
+    <li><a href="@routes.Application.login">Login</a></li>
+    <li><a href="@routes.Application.logout">Logout</a></li>
+</ul>
 
-                var endpoint = jsPlumb.addEndpoint(input, { anchor:"Right", isSource:true });
-            }
+@main(title = "The Kurator 'helloworld' application") {
 
-            function addOutput(name) {
-                var output = $("<div class='output'>" + name + "</div>").dblclick(function() {
-                    jsPlumb.remove(this);
-                });
+<h1>Workflow Builder</h1>
 
-                $("#canvas").append(output);
-                jsPlumb.draggable(output);
-                var endpoint = jsPlumb.addEndpoint(output, { anchor:"Left", isTarget:true });
-            }
+<script type="text/javascript">
+    jsPlumb.ready(function() {
+        jsPlumb.setContainer($("#canvas"));
 
-            function addActor(name) {
-                var actor = $("<div class='actor'>" + name + "</div>").dblclick(function() {
-                    jsPlumb.remove(this);
-                });
+        function addInput(name) {
+            var input = $("<div class='input'>" + name + "</div>").dblclick(function() {
+                jsPlumb.remove(this);
+            });
+            $("#canvas").append(input);
+            jsPlumb.draggable(input);
 
-                $("#canvas").append(actor);
-                jsPlumb.draggable(actor);
+            var endpoint = jsPlumb.addEndpoint(input, { anchor:"Right", isSource:true });
+        }
 
-                var inEnpoint = jsPlumb.addEndpoint(actor, { anchor:"Left", isTarget:true });
-                var outEnpoint = jsPlumb.addEndpoint(actor, { anchor:"Right", isSource:true });
-            }
-
-            var actorConfig = [
-                {
-                    name: "ReadInput",
-                    type: "input"
-                },
-                {
-                    name: "WriteDQReport",
-                    type: "output"
-                },
-                {
-                    name: "RunGeoValidation",
-                    type: "actor"
-                },
-                {
-                    name: "MapToFramework",
-                    type: "actor"
-                }
-            ];
-
-            $.each(actorConfig, function(i, obj) {
-                $("#actorSelect").append("<option value='" + i + "'>" + obj.name + " </option>");
+        function addOutput(name) {
+            var output = $("<div class='output'>" + name + "</div>").dblclick(function() {
+                jsPlumb.remove(this);
             });
 
-            $("#addActorButton").click(function() {
-                var value = $("#actorSelect").val();
-                var actor = actorConfig[value];
+            $("#canvas").append(output);
+            jsPlumb.draggable(output);
+            var endpoint = jsPlumb.addEndpoint(output, { anchor:"Left", isTarget:true });
+        }
 
-                if (actor.type === "input") {
-                    addInput(actor.name);
-                } else if (actor.type === "actor") {
-                    addActor(actor.name);
-                } else if (actor.type === "output") {
-                    addOutput(actor.name);
-                }
+        function addActor(name) {
+            var actor = $("<div class='actor'>" + name + "</div>").dblclick(function() {
+                jsPlumb.remove(this);
             });
+
+            $("#canvas").append(actor);
+            jsPlumb.draggable(actor);
+
+            var inEnpoint = jsPlumb.addEndpoint(actor, { anchor:"Left", isTarget:true });
+            var outEnpoint = jsPlumb.addEndpoint(actor, { anchor:"Right", isSource:true });
+        }
+
+        var actorConfig = [
+            {
+                name: "ReadInput",
+                type: "input"
+            },
+            {
+                name: "WriteDQReport",
+                type: "output"
+            },
+            {
+                name: "RunGeoValidation",
+                type: "actor"
+            },
+            {
+                name: "MapToFramework",
+                type: "actor"
+            }
+        ];
+
+        $.each(actorConfig, function(i, obj) {
+            $("#actorSelect").append("<option value='" + i + "'>" + obj.name + " </option>");
         });
-    </script>
 
-    <div id="toolbox">
-        <button id="addActorButton">Add Actor</button>
+        $("#addActorButton").click(function() {
+            var value = $("#actorSelect").val();
+            var actor = actorConfig[value];
 
-        <span>Actor: </span>
-        <select id="actorSelect">
+            if (actor.type === "input") {
+                addInput(actor.name);
+            } else if (actor.type === "actor") {
+                addActor(actor.name);
+            } else if (actor.type === "output") {
+                addOutput(actor.name);
+            }
+        });
+    });
+</script>
 
-        </select>
-    </div>
+<div id="toolbox">
+    <button id="addActorButton">Add Actor</button>
 
-    <div id="canvas" style="height: 100%; width: 100%">
+    <span>Actor: </span>
+    <select id="actorSelect">
 
-    </div>
-</body>
-</html>
+    </select>
+</div>
+
+<div id="canvas" style="height: 100%; width: 100%">
+
+</div>
+}

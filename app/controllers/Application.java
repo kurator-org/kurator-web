@@ -83,14 +83,16 @@ public class Application extends Controller {
         }
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result logout() {
         session().clear();
 
-        return redirect(
-                routes.Application.index()
+        return ok(
+                logout.render()
         );
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result builder() {
         return ok(
                 builder.render()
