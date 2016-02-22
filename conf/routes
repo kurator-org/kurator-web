@@ -25,10 +25,11 @@ GET     /runworms                   controllers.Workflow.runworms()
 GET     /rungeo                     controllers.Workflow.rungeo()
 
 # Workflow result
-GET     /result/*file                 controllers.Workflow.result(file)
+GET     /result/*id                 controllers.Workflow.result(id : Long)
 
 # Javascript routes
 GET   /jsRoutes                controllers.Application.jsRoutes()
 
+GET     /builder                controllers.Application.builder()
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -60,6 +60,7 @@ public class Workflow extends Controller {
     public static Result runhello() {
         WorkflowRun run = new WorkflowRun();
         run.user = User.find.byId(Long.parseLong(session().get("uid")));
+        run.workflow = "Hello File";
         run.startTime = new Date();
         run.save();
 
@@ -75,6 +76,7 @@ public class Workflow extends Controller {
 
             result.put("output", output);
             result.put("filename", file.getName());
+            result.put("runId", run.id);
 
             run.endTime = new Date();
             run.outputText = output;
@@ -101,11 +103,10 @@ public class Workflow extends Controller {
             return new String(buffer.toByteArray());
     }
 
-
-
     @Security.Authenticated(Secured.class)
-    public static Result result(String fileName) {
-        File file = new File(System.getProperty("java.io.tmpdir") + File.separator + fileName);
+    public static Result result(long workflowRunId) {
+        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
+        File file = new File(run.resultFile);
         return ok(file);
     }
 
@@ -130,6 +131,12 @@ public class Workflow extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result runworms() {
+        WorkflowRun run = new WorkflowRun();
+        run.user = User.find.byId(Long.parseLong(session().get("uid")));
+        run.workflow = "Hello Worms";
+        run.startTime = new Date();
+        run.save();
+
         Map<String, Object> settings = new HashMap<String, Object>();
 
         try {
@@ -145,6 +152,12 @@ public class Workflow extends Controller {
 
             result.put("output", output);
             result.put("filename", outFile.getName());
+            result.put("runId", run.id);
+
+            run.endTime = new Date();
+            run.outputText = output;
+            run.resultFile = outFile.getAbsolutePath();
+            run.update();
 
             return ok(result);
         } catch (Exception e) {
@@ -157,11 +170,17 @@ public class Workflow extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result rungeo() {
+        WorkflowRun run = new WorkflowRun();
+        run.user = User.find.byId(Long.parseLong(session().get("uid")));
+        run.workflow = "Geo Validator";
+        run.startTime = new Date();
+        run.save();
+
         Map<String, Object> settings = new HashMap<String, Object>();
 
         try {
             File inFile = new File(session().get("input"));
-            File outFile = File.createTempFile("geo_result-", ".csv");
+            File outFile = File.createTempFile("geo_result-", ".json");
 
             settings.put("in", inFile.getAbsolutePath());
             settings.put("out", outFile.getAbsolutePath());
@@ -172,6 +191,12 @@ public class Workflow extends Controller {
 
             result.put("output", output);
             result.put("filename", outFile.getName());
+            result.put("runId", run.id);
+
+            run.endTime = new Date();
+            run.outputText = output;
+            run.resultFile = outFile.getAbsolutePath();
+            run.update();
 
             return ok(result);
         } catch (Exception e) {

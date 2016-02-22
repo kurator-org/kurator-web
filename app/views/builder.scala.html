@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Title</title>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/demo.css")">
+    <script src="@routes.Assets.at("javascripts/jsPlumb-2.0.7-min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("javascripts/jquery-1.6.4.min.js")" type="text/javascript"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        jsPlumb.ready(function() {
+            jsPlumb.setContainer($("#canvas"));
+
+            function addInput(name) {
+                var input = $("<div class='input'>" + name + "</div>").dblclick(function() {
+                    jsPlumb.remove(this);
+                });
+                $("#canvas").append(input);
+                jsPlumb.draggable(input);
+
+                var endpoint = jsPlumb.addEndpoint(input, { anchor:"Right", isSource:true });
+            }
+
+            function addOutput(name) {
+                var output = $("<div class='output'>" + name + "</div>").dblclick(function() {
+                    jsPlumb.remove(this);
+                });
+
+                $("#canvas").append(output);
+                jsPlumb.draggable(output);
+                var endpoint = jsPlumb.addEndpoint(output, { anchor:"Left", isTarget:true });
+            }
+
+            function addActor(name) {
+                var actor = $("<div class='actor'>" + name + "</div>").dblclick(function() {
+                    jsPlumb.remove(this);
+                });
+
+                $("#canvas").append(actor);
+                jsPlumb.draggable(actor);
+
+                var inEnpoint = jsPlumb.addEndpoint(actor, { anchor:"Left", isTarget:true });
+                var outEnpoint = jsPlumb.addEndpoint(actor, { anchor:"Right", isSource:true });
+            }
+
+            var actorConfig = [
+                {
+                    name: "ReadInput",
+                    type: "input"
+                },
+                {
+                    name: "WriteDQReport",
+                    type: "output"
+                },
+                {
+                    name: "RunGeoValidation",
+                    type: "actor"
+                },
+                {
+                    name: "MapToFramework",
+                    type: "actor"
+                }
+            ];
+
+            $.each(actorConfig, function(i, obj) {
+                $("#actorSelect").append("<option value='" + i + "'>" + obj.name + " </option>");
+            });
+
+            $("#addActorButton").click(function() {
+                var value = $("#actorSelect").val();
+                var actor = actorConfig[value];
+
+                if (actor.type === "input") {
+                    addInput(actor.name);
+                } else if (actor.type === "actor") {
+                    addActor(actor.name);
+                } else if (actor.type === "output") {
+                    addOutput(actor.name);
+                }
+            });
+        });
+    </script>
+
+    <div id="toolbox">
+        <button id="addActorButton">Add Actor</button>
+
+        <span>Actor: </span>
+        <select id="actorSelect">
+
+        </select>
+    </div>
+
+    <div id="canvas" style="height: 100%; width: 100%">
+
+    </div>
+</body>
+</html>

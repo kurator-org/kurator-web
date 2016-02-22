@@ -4,6 +4,7 @@ import com.avaje.ebean.Model;
 import play.data.format.Formats;
 
 import javax.persistence.*;
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -15,11 +16,17 @@ public class WorkflowRun extends Model {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
+    public String workflow;
     public Date startTime;
     public Date endTime;
 
     public String outputText;
     public String resultFile;
+
+    public String getResultFileName() {
+        File file = new File(resultFile);
+        return file.getName();
+    }
 
     @ManyToOne
     public User user;

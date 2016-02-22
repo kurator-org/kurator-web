@@ -91,17 +91,24 @@ public class Application extends Controller {
         );
     }
 
+    public static Result builder() {
+        return ok(
+                builder.render()
+        );
+    }
+
     // -- Actions
   
     /**
      * Home page
      */
+    @Security.Authenticated(Secured.class)
     public static Result index() {
         List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", session().get("uid")).findList();
 
         System.out.println(workflowRuns);
         return ok(
-            index.render()
+            index.render(workflowRuns)
         );
     }
 

@@ -16,7 +16,7 @@
                 jsRoutes.controllers.Workflow.runhello().ajax({
                     success: function (data) {
                         $("#result").html(data.output);
-                        $("#download").attr("href", "/result/" + data.filename);
+                        $("#download").attr("href", "/result/" + data.runId);
                         console.log(data)
                         $("#progressbar").hide("fade");
                         $("#complete").show("drop");

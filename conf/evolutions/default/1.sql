@@ -23,6 +23,7 @@ CREATE TABLE user (
 
 CREATE TABLE workflow_run (
   id bigint(20) NOT NULL AUTO_INCREMENT,
+  workflow VARCHAR (255),
   start_time TIMESTAMP,
   end_time TIMESTAMP,
   user_id bigint(20),

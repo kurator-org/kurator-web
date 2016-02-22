@@ -1,11 +1,36 @@
+@(workflowRuns : List[WorkflowRun])
+
 @main(title = "The Kurator 'helloworld' application") {
 
-    <h1>Kurator Hello World workflows</h1>
+    <h1>Kurator workflows</h1>
 
-    <p><a href="@routes.Workflow.helloworkflow">Run "Hello World" workflow</a></p>
+    <ul>
+        <li><a href="@routes.Workflow.helloworkflow">Run "Hello World" workflow</a></li>
+        <li><a href="@routes.Workflow.wormsworkflow">Run WoRMS demo workflow</a></li>
+        <li><a href="@routes.Workflow.geoworkflow">Run Geo Validator demo workflow</a></li>
+    </ul>
 
-    <p><a href="@routes.Workflow.wormsworkflow">Run WoRMS demo workflow</a></p>
-
-    <p><a href="@routes.Workflow.geoworkflow">Run Geo Validator demo workflow</a></p>
+    <h1>Workflow runs</h1>
+    <p>
+        @if(workflowRuns.isEmpty) {
+            <i>No workflow runs</i>
+        } else {
+            <table>
+                <tr><td>Workflow</td><td>Start Time</td><td>End Time</td><td>Result</td></tr>
+                @workflowRuns.map { workflowRun =>
+                    <tr>
+                        <td>@workflowRun.workflow</td>
+                        <td>@workflowRun.startTime</td>
+                        <td>@workflowRun.endTime</td>
+                        <td>@if(workflowRun.endTime == null) {
+                                Unavailable
+                            } else {
+                                <a href="/result/@workflowRun.id">@workflowRun.getResultFileName</a></td>
+                            }
+                    </tr>
+                }
+            </table>
+        }
+    </p>
     
 }

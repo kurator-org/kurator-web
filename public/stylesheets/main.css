@@ -105,3 +105,11 @@ ul {
     background:#fff;
     padding:20px;
 }
+
+table, th, td {
+    border: 1px solid black;
+}
+
+td {
+    padding: 5px;
+}
