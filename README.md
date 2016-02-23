@@ -45,13 +45,26 @@ By default the Play server will listen on port 9000. Open http://localhost:9000/
 
 To invoke actors implemented in python, you will need to (currently) set an environment variables:
 
-export KURATOR_LOCAL_PACKAGES=~/somepath/kurator-validation/src/main/python/
+    export KURATOR_LOCAL_PACKAGES=~/somepath/kurator-validation/src/main/python/
 
 These two might also need to be set:
 
-export KURATOR_LOCAL_PYTHON=~/somepath/jython2.7.0/Lib/
-export PYTHONPATH="/home/somepath/kurator-validation/src/main/python/:$PYTHONPATH"
+    export KURATOR_LOCAL_PYTHON=~/somepath/jython2.7.0/Lib/
+    export PYTHONPATH="/home/somepath/kurator-validation/src/main/python/:$PYTHONPATH"
 
 #### Stopping the Play server
 
 Use the play2:stop maven goal to shutdown the Play server.
+
+#### Deploying to Tomcat ####
+
+The maven package goal will create a war file by default that can be deployed to Tomcat 8. JAVA_HOME must be set to point to an installation of Java 8 prior to deployment.
+
+If you plan on using MySQL as the production database comment out the two lines in conf/application.conf that configure the h2 database and enable the commented lines for mysql configuration instead.
+
+Before deployment you must create the kurator user and database with privileges in MySQL:
+
+    CREATE DATABASE kurator;
+    GRANT ALL PRIVILEGES ON kurator.* TO 'kurator'@'localhost' IDENTIFIED BY 'password';
+
+Once you have configured the database and JAVA_HOME variable deploy the war file to your tomcat webapps directory.

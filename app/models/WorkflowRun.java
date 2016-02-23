@@ -24,8 +24,12 @@ public class WorkflowRun extends Model {
     public String resultFile;
 
     public String getResultFileName() {
-        File file = new File(resultFile);
-        return file.getName();
+        if (resultFile != null) {
+            File file = new File(resultFile);
+            return file.getName();
+        }
+
+        return null;
     }
 
     @ManyToOne
