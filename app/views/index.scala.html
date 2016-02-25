@@ -1,4 +1,4 @@
-@(workflowRuns : List[WorkflowRun])
+@(workflowRuns : List[WorkflowRun])(userUploads : List[UserUpload])
 
 <ul id="navbar">
     <li><a class="active" href="@routes.Application.index">Home</a></li>
@@ -33,14 +33,31 @@
                         <td>@workflowRun.workflow</td>
                         <td>@workflowRun.startTime</td>
                         <td>@workflowRun.endTime</td>
-                        <td>@if(workflowRun.endTime == null) {
+                        <td>@if(workflowRun.result == null) {
                                 Unavailable
                             } else {
-                                <a href="result/@workflowRun.id">@workflowRun.getResultFileName</a></td>
+                                @if(!workflowRun.result.errorText.equals("")) {
+                                    Error <a href="error/@workflowRun.id">(view stack trace)</a>
+                                } else {
+                                    <a href="result/@workflowRun.id">@workflowRun.result.getResultFileName</a></td>
+                                }
                             }
                     </tr>
                 }
             </table>
+        }
+    </p>
+
+    <h1>Uploads</h1>
+    <p>
+        @if(userUploads.isEmpty) {
+            <i>No user uploads</i>
+        } else {
+            <ul>
+                @userUploads.map { userUpload =>
+                    <li><a href="file/@userUpload.id">@userUpload.getFileName</a></li>
+                }
+            </ul>
         }
     </p>
     

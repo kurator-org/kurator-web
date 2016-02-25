@@ -13,6 +13,7 @@ GET     /createaccount              controllers.Application.createaccount()
 POST     /register                   controllers.Application.register()
 
 POST    /upload                     controllers.Workflow.upload()
+GET     /file/*id                   controllers.Workflow.file(id : Long)
 
 # Workflow page
 GET     /helloworkflow                   controllers.Workflow.helloworkflow()
@@ -26,6 +27,7 @@ GET     /rungeo                     controllers.Workflow.rungeo()
 
 # Workflow result
 GET     /result/*id                 controllers.Workflow.result(id : Long)
+GET     /error/*id                 controllers.Workflow.error(id : Long)
 
 # Javascript routes
 GET   /jsRoutes                controllers.Application.jsRoutes()

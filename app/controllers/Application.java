@@ -3,6 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.Task;
 import models.User;
+import models.UserUpload;
 import models.WorkflowRun;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
@@ -106,11 +107,12 @@ public class Application extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result index() {
-        List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", session().get("uid")).findList();
+        String uid = session().get("uid");
+        List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", uid).findList();
+        List<UserUpload> userUploads = UserUpload.find.where().eq("user.id", uid).findList();
 
-        System.out.println(workflowRuns);
         return ok(
-            index.render(workflowRuns)
+            index.render(workflowRuns, userUploads)
         );
     }
 
