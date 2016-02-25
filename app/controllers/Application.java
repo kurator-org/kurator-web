@@ -87,9 +87,8 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result logout() {
         session().clear();
-
-        return ok(
-                logout.render()
+        return redirect(
+                routes.Application.index()
         );
     }
 
