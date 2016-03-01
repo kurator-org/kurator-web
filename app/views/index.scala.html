@@ -1,4 +1,5 @@
-@(workflowRuns : List[WorkflowRun])(userUploads : List[UserUpload])
+@import forms._
+@(workflows : List[FormDefinition])(workflowRuns : List[WorkflowRun])(userUploads : List[UserUpload])
 
 <ul id="navbar">
     <li><a class="active" href="@routes.Application.index">Home</a></li>
@@ -15,6 +16,12 @@
 
     <h1>Kurator workflows</h1>
 
+    <!-- <ul>
+        @workflows.map { workflow =>
+            <li><a href="workflow/@workflow.name">Run "@workflow.title"</a></li>
+        }
+    </ul> -->
+
     <ul>
         <li><a href="@routes.Workflow.helloworkflow">Run "Hello World" workflow</a></li>
         <li><a href="@routes.Workflow.wormsworkflow">Run WoRMS demo workflow</a></li>
@@ -27,21 +34,30 @@
             <i>No workflow runs</i>
         } else {
             <table>
-                <tr><td>Workflow</td><td>Start Time</td><td>End Time</td><td>Result</td></tr>
+                <tr><td>Workflow</td><td>Start Time</td><td>End Time</td><td>Result</td><td>Output Log</td><td>Error Log</td></tr>
                 @workflowRuns.map { workflowRun =>
-                    <tr>
+                    <tr @if(!workflowRun.result.errorText.equals("")) { class="error" }>
                         <td>@workflowRun.workflow</td>
                         <td>@workflowRun.startTime</td>
                         <td>@workflowRun.endTime</td>
-                        <td>@if(workflowRun.result == null) {
+                        <td>@if(workflowRun.result == null || workflowRun.result.getResultFileName == null) {
                                 Unavailable
                             } else {
-                                @if(!workflowRun.result.errorText.equals("")) {
-                                    Error <a href="error/@workflowRun.id">(view stack trace)</a>
-                                } else {
-                                    <a href="result/@workflowRun.id">@workflowRun.result.getResultFileName</a></td>
-                                }
+                                <a href="result/@workflowRun.id">@workflowRun.result.getResultFileName</a>
                             }
+                        </td>
+                        <td>@if(!workflowRun.result.errorText.equals("")) {
+                                Error <a href="error/@workflowRun.id">(view stack trace)</a>
+                            } else {
+                                No Errors
+                            }
+                        </td>
+                        <td>@if(!workflowRun.result.outputText.equals("")) {
+                                Output <a href="output/@workflowRun.id">(view log)</a>
+                            } else {
+                                No Output
+                            }
+                        </td>
                     </tr>
                 }
             </table>
@@ -55,7 +71,7 @@
         } else {
             <ul>
                 @userUploads.map { userUpload =>
-                    <li><a href="file/@userUpload.id">@userUpload.getFileName</a></li>
+                    <li><a href="file/@userUpload.id">@userUpload.fileName</a></li>
                 }
             </ul>
         }

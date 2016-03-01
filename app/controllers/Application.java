@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import forms.FormDefinition;
 import models.Task;
 import models.User;
 import models.UserUpload;
@@ -100,18 +101,20 @@ public class Application extends Controller {
     }
 
     // -- Actions
-  
+
     /**
      * Home page
      */
     @Security.Authenticated(Secured.class)
     public static Result index() {
+        List<FormDefinition> workflows = Workflow.loadWorkflowFormDefinitions();
+
         String uid = session().get("uid");
         List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", uid).findList();
         List<UserUpload> userUploads = UserUpload.find.where().eq("user.id", uid).findList();
 
         return ok(
-            index.render(workflowRuns, userUploads)
+            index.render(workflows, workflowRuns, userUploads)
         );
     }
 

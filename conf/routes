@@ -20,14 +20,18 @@ GET     /helloworkflow                   controllers.Workflow.helloworkflow()
 GET     /wormsworkflow                   controllers.Workflow.wormsworkflow()
 GET     /geoworkflow                   controllers.Workflow.geoworkflow()
 
+GET     /workflow/*name             controllers.Workflow.workflow(name: String)
 # Workflow run
 GET     /runhello                   controllers.Workflow.runhello()
-GET     /runworms                   controllers.Workflow.runworms()
-GET     /rungeo                     controllers.Workflow.rungeo()
+GET     /runworms/*id                   controllers.Workflow.runworms(id : Long)
+GET     /rungeo/*id                     controllers.Workflow.rungeo(id : Long)
+
+POST     /test/*name                     controllers.Workflow.test(name: String)
 
 # Workflow result
 GET     /result/*id                 controllers.Workflow.result(id : Long)
 GET     /error/*id                 controllers.Workflow.error(id : Long)
+GET     /output/*id                 controllers.Workflow.output(id : Long)
 
 # Javascript routes
 GET   /jsRoutes                controllers.Application.jsRoutes()

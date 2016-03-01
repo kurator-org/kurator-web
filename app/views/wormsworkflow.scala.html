@@ -1,3 +1,4 @@
+@(userUploads : List[UserUpload])
 <ul id="navbar">
     <li><a href="@routes.Application.index">Home</a></li>
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
@@ -15,8 +16,23 @@
 
      <script type="text/javascript">
         $(function() {
+            var uploadId;
+
+            @if(!userUploads.isEmpty()) {
+                $("#upload").hide();
+                $("#run").prop("disabled", false);
+
+                uploadId = $("#uploadFile option:selected").val();
+
+                $("#newUploadBtn").click(function() {
+                    $("#userUploads").hide();
+                    $("#upload").show();
+                });
+            } else {
+                $("#run").prop("disabled", true);
+            }
+
             $("#complete").hide();
-            $("#run").prop("disabled", true);
 
             $("#progressbar").progressbar({
                 value: false
@@ -25,17 +41,23 @@
             $("#overlay").hide();
             $("#modal").hide();
 
-            // grab your file object from a file input
-            $('#input').change(function () {
+            $("#upload").submit(function (event) {
+                event.preventDefault();
                 $("#overlay").show("fade");
 
-                var file = this.files[0];
+                var formData = new FormData($(this)[0]);
+
                 $.ajax({
-                    type: 'post',
-                    url: 'upload',
-                    data: file,
+                    url: "upload",
+                    type: "POST",
+                    data: formData,
+                    async: false,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
                     success: function (data) {
                         console.log(data)
+                        uploadId = data.uploadId;
                         $("#progressbar").hide("fade");
                         $("#run").prop("disabled", false);
 
@@ -48,15 +70,21 @@
                     error: function (request, status, error) {
                         $("#progressbar").hide("fade");
                         $("#error").html(error);
-                    },
-                    processData: false,
-                    contentType: file.type
+                    }
                 });
+
+                return false;
+            });
+
+            $("#uploadFile").change(function() {
+                uploadId = $("#uploadFile option:selected").val();
             });
 
             $("#run").click(function() {
                 $("#progressbar").show("fade");
-                jsRoutes.controllers.Workflow.runworms().ajax({
+                $.ajax({
+                    url: "runworms/" + uploadId,
+                    type: "GET",
                     success: function (data) {
                         $("#result").html(data.output);
                         $("#download").attr("href", "result/" + data.runId);
@@ -72,8 +100,19 @@
             });
         });
      </script>
-
-    Upload file and run: <input type="file" id="input" name="input">
+    @if(!userUploads.isEmpty()) {
+        <div id="userUploads">
+            Input file:
+            <select id="uploadFile">
+                @for(userUpload <- userUploads) {
+                    <option value="@userUpload.id">@userUpload.fileName</option>
+                }
+            </select>
+            <button id="newUploadBtn">Upload New File</button>
+        </div>
+        <br />
+    }
+    <form id="upload" enctype="multipart/form-data">Upload file: <input type="file" id="input" name="input"><input type="submit" value="Upload"></form>
     <button id="run">Run workflow</button>
     <div id="progressbar" class="ui-progressbar-indeterminate"></div>
     <div id="complete">

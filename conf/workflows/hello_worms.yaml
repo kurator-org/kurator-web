@@ -1,0 +1,68 @@
+imports:
+
+- classpath:/org/kurator/akka/actors.yaml
+- classpath:/org/kurator/validation/actors/actors.yaml
+
+components:
+
+- id: RecordSource
+  type: CsvFileReader
+  properties:
+    parameters:
+      filePath: public/worms_in.csv
+
+- id: WoRMSNaCurator
+  type: WoRMSNameCurator
+  properties:
+    onData: curate_taxon_name_and_author
+    listensTo:
+      - !ref RecordSource
+
+- id: FileWriter
+  type: CsvFileWriter
+  properties:
+    listensTo:
+      - !ref WoRMSNaCurator
+    parameters:
+      filePath: public/worms_out.csv
+
+- id: DoneSource
+  type: ConstantSourceActor
+  properties:
+    listensTo:
+      - !ref FileWriter
+    parameters:
+      value: Done
+ 
+- id: GreetingPrinter
+  type: PrinterActor
+  properties:
+    listensTo:
+      - !ref DoneSource
+    parameters:
+      endWithSeparator: true
+ 
+
+- id: HelloWormsWorkflow
+  type: Workflow
+  properties:
+    actors:
+      - !ref RecordSource
+      - !ref WoRMSNaCurator
+      - !ref FileWriter
+      - !ref DoneSource
+      - !ref GreetingPrinter
+    parameters:
+      in:
+        actor: !ref RecordSource
+        parameter: filePath
+      out:
+        actor: !ref FileWriter
+        parameter: filePath
+ 
+view:
+  title: Hello Worms Workflow
+  fields:
+    in:
+      type: file
+      label: Upload file

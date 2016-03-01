@@ -44,6 +44,7 @@ CREATE TABLE workflow_run (
 CREATE TABLE user_upload (
     id bigint(20) NOT NULL AUTO_INCREMENT,
     absolute_path VARCHAR(255),
+    file_name VARCHAR(255),
     user_id BIGINT(20),
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES user(id),

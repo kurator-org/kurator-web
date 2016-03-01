@@ -3,7 +3,7 @@ package models;
 import com.avaje.ebean.Model;
 
 import javax.persistence.*;
-import java.io.File;
+import java.util.List;
 
 /**
  * Created by lowery on 2/25/16.
@@ -15,13 +15,14 @@ public class UserUpload extends Model {
     public Long id;
 
     public String absolutePath;
+    public String fileName;
 
     @ManyToOne
     public User user;
 
-    public String getFileName() {
-        return new File(absolutePath).getName();
-    }
-
     public static Finder<Long, UserUpload> find = new Finder<Long,UserUpload>(UserUpload.class);
+
+    public static List<UserUpload> findUploadsByUser(User user) {
+        return find.where().eq("user.id", user.id).findList();
+    }
 }
