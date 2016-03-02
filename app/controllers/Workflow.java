@@ -7,6 +7,7 @@ import models.User;
 import models.UserUpload;
 import models.WorkflowResult;
 import models.WorkflowRun;
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
@@ -289,8 +290,17 @@ public class Workflow extends Controller {
         Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart filePart = body.getFile("input");
 
+        File src = filePart.getFile();
+        File file = null;
+        try {
+            file = File.createTempFile(filePart.getFilename() + "-", ".csv");
+            FileUtils.copyFile(src, file);
+        } catch (IOException e) {
+            return internalServerError("Could not create upload file");
+        }
+
         UserUpload uploadFile = new UserUpload();
-        uploadFile.absolutePath = filePart.getFile().getAbsolutePath();
+        uploadFile.absolutePath = file.getAbsolutePath();
         uploadFile.fileName = filePart.getFilename();
         uploadFile.user = getCurrentUser();
         uploadFile.save();

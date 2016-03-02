@@ -34,9 +34,16 @@
             <i>No workflow runs</i>
         } else {
             <table>
-                <tr><td>Workflow</td><td>Start Time</td><td>End Time</td><td>Result</td><td>Output Log</td><td>Error Log</td></tr>
+                <tr>
+                    <th>Workflow</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Result</th>
+                    <th>Output Log</th>
+                    <th>Error Log</th>
+                </tr>
                 @workflowRuns.map { workflowRun =>
-                    <tr @if(!workflowRun.result.errorText.equals("")) { class="error" }>
+                    <tr @if(workflowRun.result != null && !workflowRun.result.errorText.equals("")) { class="error" }>
                         <td>@workflowRun.workflow</td>
                         <td>@workflowRun.startTime</td>
                         <td>@workflowRun.endTime</td>
@@ -46,16 +53,16 @@
                                 <a href="result/@workflowRun.id">@workflowRun.result.getResultFileName</a>
                             }
                         </td>
-                        <td>@if(!workflowRun.result.errorText.equals("")) {
-                                Error <a href="error/@workflowRun.id">(view stack trace)</a>
+                        <td>@if(workflowRun.result != null && !workflowRun.result.outputText.equals("")) {
+                            Output <a href="output/@workflowRun.id">(view log)</a>
                             } else {
-                                No Errors
+                            No Output
                             }
                         </td>
-                        <td>@if(!workflowRun.result.outputText.equals("")) {
-                                Output <a href="output/@workflowRun.id">(view log)</a>
+                        <td>@if(workflowRun.result != null && !workflowRun.result.errorText.equals("")) {
+                            Error <a href="error/@workflowRun.id">(view stack trace)</a>
                             } else {
-                                No Output
+                            No Errors
                             }
                         </td>
                     </tr>
