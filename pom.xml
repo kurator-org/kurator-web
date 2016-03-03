@@ -65,6 +65,12 @@
             <version>${play2.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-mailer_2.11</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+
         <!-- for building war file" -->
         <dependency>
             <groupId>com.github.play2war</groupId>

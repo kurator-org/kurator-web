@@ -8,10 +8,9 @@ import models.UserUpload;
 import models.WorkflowResult;
 import models.WorkflowRun;
 import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONObject;
+import org.apache.commons.mail.EmailException;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
-import org.yaml.snakeyaml.Yaml;
 import play.Play;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -24,10 +23,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
+import util.ResultNotificationMailer;
 import util.YamlFormDefinitionParser;
 import views.html.*;
-
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Created by lowery on 2/4/16.
@@ -204,6 +202,14 @@ public class Workflow extends Controller {
         run.result = result;
         run.endTime = new Date();
         run.save();
+
+        try {
+            ResultNotificationMailer mailer = new ResultNotificationMailer();
+            mailer.sendNotification(run.user, run);
+        } catch (Exception e) {
+            // TODO: Handle exceptions related to sending the email
+            e.printStackTrace();
+        }
 
         ObjectNode response = Json.newObject();
 
