@@ -25,4 +25,8 @@ public class UserUpload extends Model {
     public static List<UserUpload> findUploadsByUser(User user) {
         return find.where().eq("user.id", user.id).findList();
     }
+
+    public static List<UserUpload> findUploadsByUserId(Long uid) {
+        return find.where().eq("user.id", uid).findList();
+    }
 }

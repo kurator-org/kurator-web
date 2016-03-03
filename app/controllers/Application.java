@@ -118,6 +118,15 @@ public class Application extends Controller {
         );
     }
 
+    public static User getCurrentUser() {
+        String uid = session().get("uid");
+        return User.find.byId(Long.parseLong(uid));
+    }
+
+    public static Long getCurrentUserId() {
+        return Long.valueOf(session().get("uid"));
+    }
+
     public static class Login {
 
         public String username;

@@ -23,19 +23,18 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
+import scala.App;
 import util.ResultNotificationMailer;
 import util.YamlFormDefinitionParser;
 import views.html.*;
 
 /**
  * Created by lowery on 2/4/16.
- */
-public class Workflow extends Controller {
-    List<FormDefinition> workflows = new ArrayList<>();
-
     /**
-     * Workflow page
      */
+    public class Workflow extends Controller {
+        List<FormDefinition> workflows = new ArrayList<>();
+
     @Security.Authenticated(Secured.class)
     public static Result helloworkflow() {
         return ok(
@@ -48,7 +47,7 @@ public class Workflow extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result wormsworkflow() {
-        List<UserUpload> uploads = UserUpload.findUploadsByUser(getCurrentUser());
+        List<UserUpload> uploads = UserUpload.findUploadsByUserId(Application.getCurrentUserId());
 
         return ok(
                 wormsworkflow.render(uploads)
@@ -94,7 +93,7 @@ public class Workflow extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result geoworkflow() {
-        List<UserUpload> uploads = UserUpload.findUploadsByUser(getCurrentUser());
+        List<UserUpload> uploads = UserUpload.findUploadsByUserId(Application.getCurrentUserId());
 
         return ok(
                 geovalidatorworkflow.render(uploads)
@@ -192,7 +191,7 @@ public class Workflow extends Controller {
         }
 
         WorkflowRun run = new WorkflowRun();
-        run.user = getCurrentUser();
+        run.user = Application.getCurrentUser();
         run.workflow = workflowName;
         run.startTime = new Date();
         run.save();
@@ -308,7 +307,7 @@ public class Workflow extends Controller {
         UserUpload uploadFile = new UserUpload();
         uploadFile.absolutePath = file.getAbsolutePath();
         uploadFile.fileName = filePart.getFilename();
-        uploadFile.user = getCurrentUser();
+        uploadFile.user = Application.getCurrentUser();
         uploadFile.save();
 
         session("uploadFileId", Long.toString(uploadFile.id));
@@ -325,7 +324,7 @@ public class Workflow extends Controller {
             return notFound("No file found for id " + uploadFileId);
         }
 
-        if (uploadFile.user.equals(getCurrentUser())) {
+        if (uploadFile.user.equals(Application.getCurrentUser())) {
             File file = new File(uploadFile.absolutePath);
 
             if (!file.exists()) {
@@ -338,11 +337,6 @@ public class Workflow extends Controller {
         } else {
             return unauthorized("The current user is not authorized to access this file!");
         }
-    }
-
-    private static User getCurrentUser() {
-        String uid = session().get("uid");
-        return User.find.byId(Long.parseLong(uid));
     }
 
     private static File getCurrentUpload() throws FileNotFoundException {
