@@ -10,29 +10,16 @@ import java.util.Map;
  */
 public class SelectField extends BasicField {
     public boolean multiple;
-    public List<Option> options;
-    public Map<String, Option> optionsMap = new HashMap<>();
+    public Map<String, String> options;
 
-    public List<Option> value = new ArrayList<>();
-
-    public SelectField(String name, String label, List<Option> options, boolean multiple) {
-        this.name = name;
-        this.label = label;
-        this.options = options;
-
-        for (Option option : options) {
-            this.optionsMap.put(option.name, option);
-        }
-
-        this.multiple = multiple;
-    }
+    public List<String> value;
 
     @Override
     public void setValue(Object obj) {
         String[] values = ((String[]) obj);
 
         for(String val : values) {
-            value.add(optionsMap.get(val));
+           this.value.add(val);
         }
     }
 

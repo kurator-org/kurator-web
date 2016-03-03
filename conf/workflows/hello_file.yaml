@@ -1,6 +1,7 @@
 imports:
 
 - classpath:/org/kurator/akka/actors.yaml
+- classpath:/fields.yaml
 
 components:
 
@@ -50,10 +51,17 @@ components:
       out:
         actor: !ref FileWriter
         parameter: filePath
- 
-view:
-  title: Hello File Workflow
-  fields:
-    greeting:
-      type: text
-      label: Greeting
+
+- id: WorkflowView
+  type: FormDefinition
+  properties:
+    fields:
+      - !ref GreetingField
+    name: hello_file
+    title: Hello File
+
+- id: GreetingField
+  type: TextField
+  properties:
+    name: greeting
+    label: Greeting

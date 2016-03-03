@@ -1,0 +1,23 @@
+
+types:
+
+- id: FormDefinition
+  className: forms.FormDefinition
+
+- id: FileInput
+  className: forms.input.FileInput
+
+- id: TextField
+  className: forms.input.TextField
+
+- id: RadioGroup
+  className: forms.input.RadioGroup
+
+- id: CheckBox
+  className: forms.input.CheckBox
+
+- id: SelectField
+  className: forms.input.SelectField
+
+- id: Option
+  className: forms.input.Option

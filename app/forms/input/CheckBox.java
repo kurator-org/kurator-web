@@ -6,11 +6,6 @@ package forms.input;
 public class CheckBox extends BasicField {
     public boolean checked;
 
-    public CheckBox(String name, String label) {
-        this.name = name;
-        this.label = label;
-    }
-
     @Override
     public void setValue(Object obj) {
         checked = true;

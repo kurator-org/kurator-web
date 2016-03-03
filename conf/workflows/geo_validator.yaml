@@ -1,6 +1,7 @@
 imports:
 
 - classpath:/org/kurator/akka/actors.yaml
+- classpath:/fields.yaml
 
 components:
 
@@ -48,9 +49,16 @@ components:
         actor: !ref WriteDQReport
         parameter: filePath
 
-view:
-  title: Geo Validator Workflow
-  fields:
-    in:
-      type: file
-      label: Upload file
+- id: WorkflowView
+  type: FormDefinition
+  properties:
+    fields:
+      - !ref FileUpload
+    name: geo_validator
+    title: Geo Validator
+
+- id: FileUpload
+  type: FileInput
+  properties:
+    name: in
+    label: Upload File

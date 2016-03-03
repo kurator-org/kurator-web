@@ -19,7 +19,6 @@
      <script type="text/javascript">
         $(function() {
             $("#complete").hide();
-            $("#run").prop("disabled", true);
 
             $("#progressbar").progressbar({
                 value: false
@@ -28,36 +27,9 @@
             $("#overlay").hide();
             $("#modal").hide();
 
-            // grab your file object from a file input
-            $('#input').change(function () {
-                $("#overlay").show("fade");
-
-                var file = this.files[0];
-                $.ajax({
-                    type: 'post',
-                    url: 'upload',
-                    data: file,
-                    success: function (data) {
-                        console.log(data)
-                        $("#progressbar").hide("fade");
-                        $("#run").prop("disabled", false);
-
-                        $("#modal").show("fade");
-                        setTimeout(function() {
-                            $("#modal").hide("fade");
-                            $("#overlay").hide("fade");
-                        }, 1000);
-                    },
-                    error: function (request, status, error) {
-                        $("#progressbar").hide("fade");
-                        $("#error").html(error);
-                    },
-                    processData: false,
-                    contentType: file.type
-                });
-            });
-
             $("#runWorkflow").submit(function (event) {
+                $("#progressbar").show("fade");
+
                 event.preventDefault();
                 var formData = new FormData($(this)[0]);
 
@@ -69,20 +41,6 @@
                     cache: false,
                     contentType: false,
                     processData: false,
-                    success: function (returndata) {
-                        alert(formData);
-                    },
-                    error: function () {
-                        alert("error in ajax form submission");
-                    }
-                });
-
-                return false;
-            });
-
-            $("#run").click(function() {
-                $("#progressbar").show("fade");
-                jsRoutes.controllers.Workflow.rungeo().ajax({
                     success: function (data) {
                         $("#result").html(data.output);
                         $("#download").attr("href", "result/" + data.runId);
@@ -95,13 +53,15 @@
                         $("#error").html(data);
                     }
                 });
+
+                return false;
             });
         });
      </script>
 
 <form id="runWorkflow" enctype="multipart/form-data">
     <table>
-        @for((name, field) <- form.fields) {
+        @for(field <- form.fields) {
         <tr>
             @field match {
             case fileInput: input.FileInput => {
@@ -110,7 +70,7 @@
             case textField: input.TextField => {
             <td>@textField.label</td>
 
-            @if(textField.isTextArea) {
+            @if(textField.textArea) {
             <td><textarea name="@textField.name"></textarea></td>
             } else {
             <td><input type="text" name="@textField.name"></td>
@@ -120,8 +80,8 @@
             <td>@radioGroup.label</td>
 
             <td>
-                @for(option <- radioGroup.options) {
-                <input type="radio" name="@radioGroup.name" value="@option.value" @if(radioGroup.value == option) { checked="checked" }>@option.label</input>
+                @for((value, label)  <- radioGroup.options) {
+                <input type="radio" name="@radioGroup.name" value="@value" @if(radioGroup.value == value) { checked="checked" }>@label</input>
                 }
             </td>
             }
@@ -133,8 +93,8 @@
 
             <td>
                 <select name="@selectField.name">
-                    @for(option <- selectField.options) {
-                    <option value="@option.value">@option.label</option>
+                    @for((value, label) <- selectField.options) {
+                        <option value="@value">@label</option>
                     }
                 </select>
             </td>
@@ -142,7 +102,7 @@
             }
         </tr>
         }
-        <tr><td colspan="2"><input type="submit" value="Run Workflow"/><input type="reset" /></td></tr>
+        <tr><td colspan="2"><input id="runButton" type="submit" value="Run Workflow"/><input type="reset" /></td></tr>
     </table>
     </form>
 

@@ -8,25 +8,14 @@ import java.util.Map;
  * Created by lowery on 2/29/2016.
  */
 public class RadioGroup extends BasicField {
-    public List<Option> options;
-    public Map<String, Option> optionsMap = new HashMap<>();
+    public Map<String, String> options;
 
-    public Option value;
-
-    public RadioGroup(String name, String label, List<Option> options) {
-        this.name = name;
-        this.label = label;
-        this.options = options;
-
-        for (Option option : options) {
-            this.optionsMap.put(option.name, option);
-        }
-    }
+    public String value;
 
     @Override
     public void setValue(Object obj) {
         String val = ((String[]) obj)[0];
-        this.value = optionsMap.get(val);
+        this.value = val;
     }
 
     @Override

@@ -1,6 +1,7 @@
 imports:
 
 - classpath:/org/kurator/akka/actors.yaml
+- classpath:/fields.yaml
 
 components:
 
@@ -50,4 +51,46 @@ components:
       out:
         actor: !ref FileWriter
         parameter: filePath
- 
+
+- id: WorkflowView
+  type: FormDefinition
+  properties:
+    fields:
+      - !ref FileFormatField
+      - !ref YesNoField
+      - !ref DescriptionField
+      - !ref CheckMeField
+    name: hello_test
+    title: Hello Test
+
+- id: FileFormatField
+  type: SelectField
+  properties:
+    name: format
+    label: File format
+    options:
+      csv: CSV
+      json: JSON
+      text: Text
+
+- id: YesNoField
+  type: RadioGroup
+  properties:
+    name: choose
+    label: Choose
+    options:
+      yes: Yes
+      no: No
+
+- id: DescriptionField
+  type: TextField
+  properties:
+    name: description
+    textArea: true
+    label: Description
+
+- id: CheckMeField
+  type: CheckBox
+  properties:
+    name: checkme
+    label: Check Me

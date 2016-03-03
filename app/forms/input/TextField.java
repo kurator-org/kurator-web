@@ -4,16 +4,9 @@ package forms.input;
  * Created by lowery on 2/29/2016.
  */
 public class TextField extends BasicField {
-    public boolean isTextArea;
+    public boolean textArea;
 
     public String value;
-
-    public TextField(String name, String label, String defaultValue, boolean isTextArea) {
-        this.name = name;
-        this.label = label;
-        this.value = defaultValue;
-        this.isTextArea = isTextArea;
-    }
 
     @Override
     public void setValue(Object obj) {

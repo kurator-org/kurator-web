@@ -2,6 +2,7 @@ imports:
 
 - classpath:/org/kurator/akka/actors.yaml
 - classpath:/org/kurator/validation/actors/actors.yaml
+- classpath:/fields.yaml
 
 components:
 
@@ -60,9 +61,16 @@ components:
         actor: !ref FileWriter
         parameter: filePath
  
-view:
-  title: Hello Worms Workflow
-  fields:
-    in:
-      type: file
-      label: Upload file
+- id: WorkflowView
+  type: FormDefinition
+  properties:
+    fields:
+      - !ref FileUpload
+    name: hello_worms
+    title: Hello Worms
+
+- id: FileUpload
+  type: FileInput
+  properties:
+    name: in
+    label: Upload File

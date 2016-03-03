@@ -3,14 +3,14 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import forms.FormDefinition;
 import forms.input.*;
-import models.User;
 import models.UserUpload;
 import models.WorkflowResult;
 import models.WorkflowRun;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.mail.EmailException;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
+import org.restflow.yaml.spring.YamlBeanDefinitionReader;
+import org.springframework.context.support.GenericApplicationContext;
 import play.Play;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -23,9 +23,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
-import scala.App;
 import util.ResultNotificationMailer;
-import util.YamlFormDefinitionParser;
 import views.html.*;
 
 /**
@@ -79,12 +77,12 @@ import views.html.*;
         }
 
         Map<String, Object> settings = new HashMap<>();
-        for (BasicField field : form.fields.values()) {
+        for (BasicField field : form.fields) {
             settings.put(field.name, field.getValue());
         }
 
         return ok(
-                run("workflows/geo_validator.yaml", "Geo Validator", settings)
+                run(form.yamlFile, form.title, settings)
         );
     }
 
@@ -123,7 +121,7 @@ import views.html.*;
      */
     @Security.Authenticated(Secured.class)
     public static Result runhello() {
-            return ok(run("hello_file.yaml", "Hello File", new HashMap<>()));
+            return ok(run("workflows/hello_file.yaml", "Hello File", new HashMap<>()));
     }
 
     /**
@@ -142,7 +140,7 @@ import views.html.*;
             return internalServerError(e.getMessage());
         }
 
-        return ok(run("hello_worms.yaml", "Hello Worms", settings));
+        return ok(run("workflows/hello_worms.yaml", "Hello Worms", settings));
     }
 
     private static File getUploadFileById(Long uploadId) throws FileNotFoundException {
@@ -170,14 +168,14 @@ import views.html.*;
             return internalServerError(e.getMessage());
         }
 
-        return ok(run("geo_validator.yaml", "Geo Validator", settings));
+        return ok(run("workflows/geo_validator.yaml", "Geo Validator", settings));
     }
 
     private static ObjectNode run(String yamlFile, String workflowName, Map<String, Object> settings) {
         InputStream yamlStream = null;
 
         try {
-            yamlStream = Play.application().classloader().getResourceAsStream(yamlFile);
+            yamlStream = new FileInputStream(new File(yamlFile));
         } catch (Exception e) {
             throw new RuntimeException("Could not load workflow from yaml file.", e);
         }
@@ -351,64 +349,8 @@ import views.html.*;
         return file;
     }
 
-    public static FormDefinition getWormsFormDefinition() {
-        FormDefinition form = new FormDefinition();
-
-        FileInput fileParam = new FileInput("in", "Upload file", false);
-
-        form.addField(fileParam);
-
-        return form;
-    }
-
-    public static FormDefinition getGeoValidatorFormDefinition() {
-        FormDefinition form = new FormDefinition();
-
-        FileInput fileParam = new FileInput("in", "Upload file", false);
-
-        form.addField(fileParam);
-
-        return form;
-    }
-
-    public static FormDefinition getTestFormDefinition() {
-        FormDefinition form = new FormDefinition();
-
-        FileInput fileParam = new FileInput("in", "Upload file", false);
-        TextField textParam = new TextField("name", "Name", "", false);
-        TextField textAreaParam = new TextField("description", "Description", "", true);
-
-        List<Option> radioOptions = new ArrayList<>();
-        Option defaultOption = new Option("csv", "csv", "CSV");
-        radioOptions.add(defaultOption);
-        radioOptions.add(new Option("json", "json", "JSON"));
-
-        RadioGroup radioParam = new RadioGroup("type", "Type", radioOptions);
-        radioParam.value = defaultOption;
-
-        CheckBox checkBoxParam1 = new CheckBox("hasTaxonFields", "Taxon fields");
-        CheckBox checkBoxParam2 = new CheckBox("hasGeoreferenceFields", "Georeference Fields");
-
-        List<Option> selectOptions = new ArrayList<>();
-        selectOptions.add(new Option("csvOutput", "csvOutput", "CSV"));
-        selectOptions.add(new Option("jsonOutput", "jsonOutput", "JSON"));
-
-        SelectField selectParam = new SelectField("output", "Output", selectOptions, false);
-
-        form.addField(fileParam);
-        form.addField(textParam);
-        form.addField(textAreaParam);
-        form.addField(radioParam);
-        form.addField(checkBoxParam1);
-        form.addField(checkBoxParam2);
-        form.addField(selectParam);
-
-        return form;
-    }
-
     public static List<FormDefinition> loadWorkflowFormDefinitions() {
         List<FormDefinition> formDefs = new ArrayList<>();
-        YamlFormDefinitionParser parser = new YamlFormDefinitionParser();
 
         URL path = Play.application().classloader().getResource("workflows");
         try {
@@ -421,18 +363,28 @@ import views.html.*;
             });
 
             for (File file : workflows) {
-                InputStream yamlStream = new FileInputStream(file);
-                FormDefinition formDef = parser.parse(yamlStream);
-
-                formDef.name = file.getName().split("\\.")[0];
-                formDefs.add(formDef);
+                formDefs.add(loadFormDefinition(file.getAbsolutePath()));
             }
         } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
         return formDefs;
+    }
+
+    private static FormDefinition loadFormDefinition(String yamlFile) {
+        try {
+            GenericApplicationContext springContext = new GenericApplicationContext();
+            YamlBeanDefinitionReader yamlBeanReader = new YamlBeanDefinitionReader(springContext);
+            yamlBeanReader.loadBeanDefinitions(new FileInputStream(yamlFile), "-");
+            springContext.refresh();
+
+            FormDefinition formDefinition = springContext.getBean(FormDefinition.class);
+            formDefinition.yamlFile = yamlFile;
+
+            return formDefinition;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

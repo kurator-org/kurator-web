@@ -16,12 +16,6 @@ public class FileInput extends BasicField {
 
     public Map<String, File> fileList = new HashMap<>();
 
-    public FileInput(String name, String label, boolean multiple) {
-        this.name = name;
-        this.label = label;
-        this.multiple = multiple;
-    }
-
     @Override
     public void setValue(Object obj) {
         Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
