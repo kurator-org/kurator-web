@@ -21,25 +21,49 @@ Other prerequisites include maven and git. If you do not currently have them ins
 
     $ sudo apt-get install maven git
 
-#### Build and run
+#### Obtaining source code
 
-Start by cloning the kurator-akka repository on your local machine:
+Start by cloning the kurator-akka, kurator-validation and kurator-jython repositories on your local machine. These are dependencies of kurator-web:
 
     $ git clone https://github.com/kurator-org/kurator-akka.git
+    $ git clone https://github.com/kurator-org/kurator-validation.git
+    $ git clone https://opensource.ncsa.illinois.edu/bitbucket/scm/kurator/kurator-jython.git
 
-Use maven to build kurator-akka, which is a dependency of kurator-web.
+The kurator-jython project contains jython code used by kurator-akka and the only requirement is that it be cloned into a directory at the same level as the other projects.
+
+Use maven to build kurator-akka and kurator-validation:
 
     $ cd kurator-akka
     $ mvn install
 
-Once you have successfully built kurator-akka, clone the kurator-web repository on your local machine:
+    $ cd kurator-validation
+    $ mvn install
+
+Once you have successfully built the dependecies clone the kurator-web repository on your local machine:
 
     $ git clone https://github.com/kurator-org/kurator-web.git
+
+#### Configuration
+
+The web application configuration file can be found at conf/application.conf. Edit this file to set the database and smpt server connection information.
+
+By default the play application is configured to use the embedded in memory H2 database.
+
+If you plan on using MySQL as the production database comment out the two lines in conf/application.conf that configure the h2 database and uncomment the lines for mysql configuration instead.
+
+You must also create the kurator user and database with privileges in MySQL:
+
+    CREATE DATABASE kurator;
+    GRANT ALL PRIVILEGES ON kurator.* TO 'kurator'@'localhost' IDENTIFIED BY 'password';
+
+The play mailer is used to send notifications to users when results are available for their workflow runs. Configure the smtp server connection settings in the "play.mailer" block in application.conf.
+
+#### Build and run
 
 In the project directory, build the project using the package goal. You may also specify the play2:run goal after package if you would like to start the embedded server.
 
     $ cd kurator-web
-    $ mvn package play2:run
+    $ mvn package play2:ebean-enhance play2:run
 
 By default the Play server will listen on port 9000. Open http://localhost:9000/ in your browser after starting the server to test the web application.
 
@@ -59,12 +83,5 @@ Use the play2:stop maven goal to shutdown the Play server.
 #### Deploying to Tomcat ####
 
 The maven package goal will create a war file by default that can be deployed to Tomcat 8. JAVA_HOME must be set to point to an installation of Java 8 prior to deployment.
-
-If you plan on using MySQL as the production database comment out the two lines in conf/application.conf that configure the h2 database and enable the commented lines for mysql configuration instead.
-
-Before deployment you must create the kurator user and database with privileges in MySQL:
-
-    CREATE DATABASE kurator;
-    GRANT ALL PRIVILEGES ON kurator.* TO 'kurator'@'localhost' IDENTIFIED BY 'password';
 
 Once you have configured the database and JAVA_HOME variable deploy the war file to your tomcat webapps directory.
