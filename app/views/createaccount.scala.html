@@ -13,6 +13,12 @@
 
 @main(title = "The Kurator 'helloworld' application") {
 
+@if(form.hasGlobalErrors) {
+<p class="error">
+    @form.globalError.message
+</p>
+}
+
 @helper.form(routes.Application.register) {
 <h1>Create Account</h1>
 
@@ -26,7 +32,7 @@
     <input type="text" name="lastName" placeholder="Last Name" value="@form("lastName").value">
 </p>
 <p>
-    <input type="text" placeholder="Username" name="username" required>
+    <input type="text" placeholder="Username" name="username" value="@form("username").value" required >
 </p>
 <p>
     <input type="password" placeholder="Password" name="password" required>
@@ -35,7 +41,7 @@
     <input type="password" placeholder="Confirm Password" name="confirmPassword" required>
 </p>
 <p>
-    <input type="text" placeholder="Affiliation" name="affiliation" required>
+    <input type="text" placeholder="Affiliation" name="affiliation" value="@form("affiliation").value" required>
 </p>
 <p>
     <button type="submit">Register</button>
