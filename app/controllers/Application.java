@@ -67,8 +67,6 @@ public class Application extends Controller {
         user.affiliation = registerForm.get().affiliation;
         user.save();
 
-        System.out.println(user.password);
-
         return redirect(
                 routes.Application.index()
         );
