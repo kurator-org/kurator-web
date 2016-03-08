@@ -6,116 +6,164 @@
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
     <li><a href="@routes.Application.createaccount">Register</a></li>
     @if(session.get("uid") == null) {
-        <li><a href="@routes.Application.login">Login</a></li>
+    <li><a href="@routes.Application.login">Login</a></li>
     } else {
-        <li><a href="@routes.Application.logout">Logout</a></li>
+    <li><a href="@routes.Application.logout">Logout</a></li>
     }
 </ul>
 
 @main(title = "The Kurator 'helloworld' application") {
 
-    <h1>@form.title</h1>
+<h1>@form.title</h1>
 
-     <script type="text/javascript">
-        $(function() {
-            $("#complete").hide();
+<form id="workflowForm" action="javascript:alert( 'success!' );" enctype="multipart/form-data">
+    @for(field <- form.fields) {
+    @field match {
+    case fileInput: input.FileInput => {
+    <div>@fileInput.label</div>
+    <div>
+        <div id="fileSelect" style="display: none">
+            Input file:
+            <select id="@(fileInput.name)Select" name="@fileInput.name"></select>
+            <button id="newUploadBtn">Upload New File</button>
+        </div>
 
-            $("#progressbar").progressbar({
-                value: false
-            }).hide();
+        <div id="fileUpload" style="display: none">
+            <input type="file" id="@(fileInput.name)Upload" name="@fileInput.name">
+        </div>
+    </div>
+    }
+    case textField: input.TextField => {
+    <div>@textField.label
 
-            $("#overlay").hide();
-            $("#modal").hide();
-
-            $("#runWorkflow").submit(function (event) {
-                $("#progressbar").show("fade");
-
-                event.preventDefault();
-                var formData = new FormData($(this)[0]);
-
-                $.ajax({
-                    url: "@routes.Workflow.test(form.name)",
-                    type: "POST",
-                    data: formData,
-                    async: false,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        $("#result").html(data.output);
-                        $("#download").attr("href", "result/" + data.runId);
-                        console.log(data)
-                        $("#progressbar").hide("fade");
-                        $("#complete").show("drop");
-                    },
-                    error: function (request, status, error) {
-                        $("#progressbar").hide("fade");
-                        $("#error").html(data);
-                    }
-                });
-
-                return false;
-            });
-        });
-     </script>
-
-<form id="runWorkflow" enctype="multipart/form-data">
-    <table>
-        @for(field <- form.fields) {
-        <tr>
-            @field match {
-            case fileInput: input.FileInput => {
-            <td>@fileInput.label</td><td><input type="file" id="@fileInput.name" name="@fileInput.name"></td>
-            }
-            case textField: input.TextField => {
-            <td>@textField.label</td>
-
-            @if(textField.textArea) {
-            <td><textarea name="@textField.name"></textarea></td>
-            } else {
-            <td><input type="text" name="@textField.name"></td>
-            }
-            }
-            case radioGroup: input.RadioGroup => {
-            <td>@radioGroup.label</td>
-
-            <td>
-                @for((value, label)  <- radioGroup.options) {
-                <input type="radio" name="@radioGroup.name" value="@value" @if(radioGroup.value == value) { checked="checked" }>@label</input>
-                }
-            </td>
-            }
-            case checkBox: input.CheckBox => {
-            <td colspan="2"><input type="checkbox" name="@checkBox.name">@checkBox.label</input></td>
-            }
-            case selectField: input.SelectField => {
-            <td>@selectField.label</td>
-
-            <td>
-                <select name="@selectField.name">
-                    @for((value, label) <- selectField.options) {
-                        <option value="@value">@label</option>
-                    }
-                </select>
-            </td>
-            }
-            }
-        </tr>
+    @if(textField.textArea) {
+    <textarea name="@textField.name"></textarea>
+    } else {
+    <input type="text" name="@textField.name">
+    }
+    </div>
+    }
+    case radioGroup: input.RadioGroup => {
+    <div>@radioGroup.label
+        @for((value, label)  <- radioGroup.options) {
+        <input type="radio" name="@radioGroup.name" value="@value" @if(radioGroup.value == value) { checked="checked" }>@label</input>
         }
-        <tr><td colspan="2"><input id="runButton" type="submit" value="Run Workflow"/><input type="reset" /></td></tr>
-    </table>
-    </form>
-
-    <div id="progressbar" class="ui-progressbar-indeterminate"></div>
-    <div id="complete">
-        Result: <span id="result"></span>
-        <a id="download">Download csv...</a>
     </div>
-    <div id="error"></div>
-
-    <br />
-    <div id='overlay'></div>
-    <div id='modal'>
-        <div id='content'>File upload complete!</div>
+    }
+    case checkBox: input.CheckBox => {
+    <div><input type="checkbox" name="@checkBox.name">@checkBox.label</input></div>
+    }
+    case selectField: input.SelectField => {
+    <div>@selectField.label
+        <select name="@selectField.name">
+            @for((value, label) <- selectField.options) {
+            <option value="@value">@label</option>
+            }
+        </select>
     </div>
+    }
+    }
+    }
+    <div><input type="submit" value="Run workflow"></div>
+</form>
+
+<div id="progressbar" class="ui-progressbar-indeterminate" style="display: none"></div>
+<div id="output"></div>
+<div id="result"></div>
+<div id="errors"></div>
+
+<script>
+    $(function() {
+        function processData(data) {
+            if (data.length > 0) {
+                $.each(data, addUpload);
+                toggleFileSelect();
+            } else {
+                toggleFileUpload();
+            }
+        };
+
+        function addUpload(index, upload) {
+            $("#fileSelect select").append($('<option>', { value : upload.id })
+                    .text(upload.filename));
+        };
+
+        function toggleFileSelect() {
+            $("#fileSelect").show();
+            $("#fileUpload").hide();
+        };
+
+        function toggleFileUpload() {
+            $("#fileUpload").show();
+            $("#fileSelect").hide();
+        };
+
+         function initModule() {
+            $.getJSON("@routes.Data.uploads", processData);
+        };
+
+        $("#newUploadBtn").click(function(event) {
+            event.preventDefault();
+            toggleFileUpload();
+        });
+
+        $("#progressbar").progressbar({
+            value: false
+        });
+
+        initModule();
+
+        $( "#workflowForm" ).submit(function( event ) {
+            var formData = new FormData($(this)[0]);
+            console.log(formData);
+
+            $("#progressbar").show("fade");
+
+            $.ajax({
+                url: "@routes.Workflow.test(form.name)",
+                type: "POST",
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    console.log(data);
+                    pollResult(data.runId);
+                },
+                error: function (request, status, error) {
+                    console.error(error);
+                }
+            });
+            event.preventDefault();
+        });
+
+
+        function pollResult(runId){
+            var url = '../data/status/'+runId;
+            $.ajax({
+                url: url,
+                type: "GET",
+                cache: false,
+                success: function(data) {
+                    console.log(data);
+
+                    if (data.status === "running") {
+                        setTimeout(function() {pollResult(runId)}, 1000);
+                    } else if (data.status === "terminated") {
+                        $("#progressbar").hide("fade");
+                        $("#output").html("Output: " + data.output);
+                        if (data.errors !== "") {
+                            $("#errors").html("Errors: " + data.errors);
+                        } else {
+                            $("#result").html("Result: <a href=\"../result/" + runId + "\">Download result...</a>");
+                        }
+                    }
+                },
+                timeout: 2000
+            });
+        }
+    });
+</script>
+
 }

@@ -10,7 +10,7 @@ import java.util.Map;
 public class RadioGroup extends BasicField {
     public Map<String, String> options;
 
-    public String value;
+    public String value = "";
 
     @Override
     public void setValue(Object obj) {

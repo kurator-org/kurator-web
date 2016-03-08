@@ -1,5 +1,6 @@
 package forms.input;
 
+import models.UserUpload;
 import play.mvc.Http;
 
 import java.io.File;
@@ -18,8 +19,16 @@ public class FileInput extends BasicField {
 
     @Override
     public void setValue(Object obj) {
-        Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
-        fileList.put(filePart.getFilename(), filePart.getFile());
+        UserUpload userUpload = null;
+
+        if (obj instanceof UserUpload) {
+            userUpload = (UserUpload) obj;
+        } else if (obj instanceof String[]){
+            // Uploaded file id
+            userUpload = UserUpload.find.byId(Long.parseLong(((String[])obj)[0]));
+        }
+
+        fileList.put(userUpload.fileName, new File(userUpload.absolutePath));
     }
 
     @Override

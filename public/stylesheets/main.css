@@ -144,6 +144,6 @@ td {
     background-color: #111;
 }
 
-tr.error td {
+#errors {
     color: red;
 }

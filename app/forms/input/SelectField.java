@@ -12,7 +12,7 @@ public class SelectField extends BasicField {
     public boolean multiple;
     public Map<String, String> options;
 
-    public List<String> value;
+    public List<String> value = new ArrayList<>();
 
     @Override
     public void setValue(Object obj) {
