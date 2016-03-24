@@ -81,7 +81,7 @@
 
             <td>
                 @for((value, label)  <- radioGroup.options) {
-                <input type="radio" name="@radioGroup.name" value="@value" @if(radioGroup.value == value) { checked="checked" }>@label</input>
+                <input type="radio" name="@radioGroup.name" value="@value" @if(radioGroup.selected == value) { checked="checked" }>@label</input>
                 }
             </td>
             }

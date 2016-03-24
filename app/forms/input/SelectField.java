@@ -12,27 +12,15 @@ public class SelectField extends BasicField {
     public boolean multiple;
     public Map<String, String> options;
 
-    public List<String> value;
+    public String[] selected;
 
     @Override
     public void setValue(Object obj) {
-        String[] values = ((String[]) obj);
-
-        for(String val : values) {
-           this.value.add(val);
-        }
+        selected = ((String[]) obj);
     }
 
     @Override
-    public String getValue() {
-        // TODO: add support for return of a list of values
-        return value.get(0).toString();
-    }
-
-    @Override
-    public String toString() {
-        return "SelectField{" +
-                "value=" + value +
-                '}';
+    public Object getValue() {
+        return fieldHandler.transform(selected);
     }
 }

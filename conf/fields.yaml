@@ -21,3 +21,15 @@ types:
 
 - id: Option
   className: forms.input.Option
+
+- id: BooleanHandler
+  className: forms.handlers.BooleanHandler
+
+- id: FilePathHandler
+  className: forms.handlers.FilePathHandler
+
+- id: MultipleValueHandler
+  className: forms.handlers.MultipleValueHandler
+
+- id: SingleValueHandler
+  className: forms.handlers.SingleValueHandler

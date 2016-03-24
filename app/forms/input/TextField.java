@@ -10,20 +10,11 @@ public class TextField extends BasicField {
 
     @Override
     public void setValue(Object obj) {
-        String val = ((String[]) obj)[0];
-
-        this.value = val;
+        this.value = ((String[]) obj)[0];
     }
 
     @Override
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return "TextField{" +
-                "value='" + value + '\'' +
-                '}';
+    public Object getValue() {
+        return fieldHandler.transform(value);
     }
 }

@@ -10,23 +10,15 @@ import java.util.Map;
 public class RadioGroup extends BasicField {
     public Map<String, String> options;
 
-    public String value;
+    public String selected;
 
     @Override
     public void setValue(Object obj) {
-        String val = ((String[]) obj)[0];
-        this.value = val;
+        selected = ((String[]) obj)[0];
     }
 
     @Override
-    public String getValue() {
-        return value.toString();
-    }
-
-    @Override
-    public String toString() {
-        return "RadioGroup{" +
-                "value=" + value +
-                '}';
+    public Object getValue() {
+        return fieldHandler.transform(selected);
     }
 }

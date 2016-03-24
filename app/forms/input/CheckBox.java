@@ -6,21 +6,12 @@ package forms.input;
 public class CheckBox extends BasicField {
     public boolean checked;
 
-    @Override
     public void setValue(Object obj) {
         checked = true;
     }
 
     @Override
-    public String getValue() {
-        return Boolean.toString(checked);
-    }
-
-    @Override
-    public String toString() {
-        return "CheckBox{" +
-                "name='" + name + '\'' +
-                ", checked=" + checked +
-                '}';
+    public Object getValue() {
+        return fieldHandler.transform(checked);
     }
 }
