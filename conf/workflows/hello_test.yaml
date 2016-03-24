@@ -79,8 +79,8 @@ components:
     name: choose
     label: Choose
     options:
-      yes: Yes
-      no: No
+      yes_opt: "Yes"
+      no_opt: "No"
 
 - id: DescriptionField
   type: TextField

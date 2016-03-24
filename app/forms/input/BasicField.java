@@ -15,5 +15,5 @@ public abstract class BasicField<T> {
     }
 
     public abstract void setValue(T value);
-    public abstract Object getValue();
+    public abstract Object value();
 }

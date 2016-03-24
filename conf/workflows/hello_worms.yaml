@@ -74,3 +74,5 @@ components:
   properties:
     name: in
     label: Upload File
+    fieldHandler: !inline
+      type: FilePathHandler

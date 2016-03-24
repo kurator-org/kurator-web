@@ -1,22 +1,27 @@
 package forms.input;
 
+import forms.handlers.FileObjectHandler;
+import models.UserUpload;
 import play.mvc.Http.MultipartFormData.FilePart;
 
 /**
  * Created by lowery on 2/29/2016.
  */
-public class FileInput extends BasicField<FilePart> {
+public class FileInput extends BasicField<UserUpload> {
     public boolean multiple;
 
-    public FilePart filePart;
+    public UserUpload value;
 
+    public FileInput() {
+        fieldHandler = new FileObjectHandler();
+    }
 
-    public Object getValue() {
-        return fieldHandler.transform(filePart);
+    public Object value() {
+        return fieldHandler.transform(value);
     }
 
     @Override
-    public void setValue(FilePart value) {
-        this.filePart = value;
+    public void setValue(UserUpload value) {
+        this.value = value;
     }
 }

@@ -7,7 +7,6 @@ import models.UserUpload;
 import models.WorkflowResult;
 import models.WorkflowRun;
 import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONObject;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
 import org.restflow.yaml.spring.YamlBeanDefinitionReader;
@@ -59,7 +58,7 @@ import views.html.*;
 
         Map<String, Object> settings = new HashMap<>();
         for (BasicField field : form.fields) {
-            settings.put(field.name, field.getValue());
+            settings.put(field.name, field.value());
         }
 
         ObjectNode response = run(form.yamlFile, form.title, settings);

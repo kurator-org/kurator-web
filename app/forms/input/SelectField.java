@@ -1,5 +1,7 @@
 package forms.input;
 
+import forms.handlers.MultipleValueHandler;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,13 +16,17 @@ public class SelectField extends BasicField {
 
     public String[] selected;
 
+    public SelectField() {
+        fieldHandler = new MultipleValueHandler();
+    }
+
     @Override
     public void setValue(Object obj) {
         selected = ((String[]) obj);
     }
 
     @Override
-    public Object getValue() {
+    public Object value() {
         return fieldHandler.transform(selected);
     }
 }

@@ -1,5 +1,6 @@
 package forms.handlers;
 
+import models.UserUpload;
 import play.mvc.Http.MultipartFormData.FilePart;
 
 /**
@@ -7,10 +8,10 @@ import play.mvc.Http.MultipartFormData.FilePart;
  */
 public class FilePathHandler implements FieldHandler<String> {
     public String transform(Object obj) {
-        if (obj instanceof FilePart) {
-            FilePart filePart = (FilePart) obj;
+        if (obj instanceof UserUpload) {
+            UserUpload file = (UserUpload) obj;
 
-            return filePart.getFile().getAbsolutePath();
+            return file.absolutePath;
         } else {
             throw new UnsupportedOperationException("Could not transfrom instance of " + obj.getClass());
         }
