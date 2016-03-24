@@ -7,16 +7,14 @@ import models.UserUpload;
 import models.WorkflowResult;
 import models.WorkflowRun;
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
 import org.restflow.yaml.spring.YamlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import play.Play;
 import play.libs.Json;
-import play.mvc.Controller;
-import play.mvc.Http;
-import play.mvc.Result;
-import play.mvc.Security;
+import play.mvc.*;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -34,25 +32,6 @@ import views.html.*;
         List<FormDefinition> workflows = new ArrayList<>();
 
     @Security.Authenticated(Secured.class)
-    public static Result helloworkflow() {
-        return ok(
-                helloworkflow.render()
-        );
-    }
-
-    /**
-     * Worms workflow page
-     */
-    @Security.Authenticated(Secured.class)
-    public static Result wormsworkflow() {
-        List<UserUpload> uploads = UserUpload.findUploadsByUserId(Application.getCurrentUserId());
-
-        return ok(
-                wormsworkflow.render(uploads)
-        );
-    }
-
-    @Security.Authenticated(Secured.class)
     public static Result test(String name) {
         List<FormDefinition> formDefs = loadWorkflowFormDefinitions();
         FormDefinition form = null;
@@ -66,8 +45,10 @@ import views.html.*;
         Http.MultipartFormData body = request().body().asMultipartFormData();
 
         for (Http.MultipartFormData.FilePart filePart : body.getFiles()) {
+            UserUpload userUpload = uploadFile(filePart);
+
             BasicField fileInputField = form.getField(filePart.getKey());
-            fileInputField.setValue(filePart);
+            fileInputField.setValue(userUpload);
         }
 
         Map<String, String[]> data = body.asFormUrlEncoded();
@@ -81,20 +62,10 @@ import views.html.*;
             settings.put(field.name, field.getValue());
         }
 
-        return ok(
-                run(form.yamlFile, form.title, settings)
-        );
-    }
-
-    /**
-     * Geo validator workflow page
-     */
-    @Security.Authenticated(Secured.class)
-    public static Result geoworkflow() {
-        List<UserUpload> uploads = UserUpload.findUploadsByUserId(Application.getCurrentUserId());
+        ObjectNode response = run(form.yamlFile, form.title, settings);
 
         return ok(
-                geovalidatorworkflow.render(uploads)
+                response
         );
     }
 
@@ -116,33 +87,6 @@ import views.html.*;
         return notFound("No workflow found for name " + name);
     }
 
-    /**
-     * Run workflow
-     */
-    @Security.Authenticated(Secured.class)
-    public static Result runhello() {
-            return ok(run("workflows/hello_file.yaml", "Hello File", new HashMap<>()));
-    }
-
-    /**
-     * Run worms workflow.
-     */
-    @Security.Authenticated(Secured.class)
-    public static Result runworms(Long uploadId) {
-        System.out.println(uploadId);
-        Map<String, Object> settings = new HashMap<>();
-
-        try {
-            File inFile = getUploadFileById(uploadId);
-            settings.put("in", inFile.getAbsolutePath());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return internalServerError(e.getMessage());
-        }
-
-        return ok(run("workflows/hello_worms.yaml", "Hello Worms", settings));
-    }
-
     private static File getUploadFileById(Long uploadId) throws FileNotFoundException {
         UserUpload uploadFile = UserUpload.find.byId(uploadId);
         File file = new File(uploadFile.absolutePath);
@@ -151,24 +95,6 @@ import views.html.*;
         }
 
         return file;
-    }
-
-    /**
-     * Run geo validator workflow.
-     */
-    @Security.Authenticated(Secured.class)
-    public static Result rungeo(Long uploadId) {
-        Map<String, Object> settings = new HashMap<>();
-
-        try {
-            File inFile = getUploadFileById(uploadId);
-            settings.put("in", inFile.getAbsolutePath());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return internalServerError(e.getMessage());
-        }
-
-        return ok(run("workflows/geo_validator.yaml", "Geo Validator", settings));
     }
 
     private static ObjectNode run(String yamlFile, String workflowName, Map<String, Object> settings) {
@@ -194,11 +120,7 @@ import views.html.*;
         run.startTime = new Date();
         run.save();
 
-        WorkflowResult result = runYamlWorkflow(yamlStream, outFile, settings);
-
-        run.result = result;
-        run.endTime = new Date();
-        run.save();
+        runYamlWorkflow(yamlStream, outFile, settings, run);
 
         try {
             ResultNotificationMailer mailer = new ResultNotificationMailer();
@@ -210,14 +132,13 @@ import views.html.*;
 
         ObjectNode response = Json.newObject();
 
-        response.put("output", result.outputText);
         response.put("filename", outFile.getName());
         response.put("runId", run.id);
 
         return response;
     }
 
-    private static WorkflowResult runYamlWorkflow(InputStream yamlStream, File outFile, Map<String, Object> settings) {
+    private static void runYamlWorkflow(InputStream yamlStream, File outFile, Map<String, Object> settings, WorkflowRun run) {
         settings.put("out", outFile.getAbsolutePath());
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -231,18 +152,27 @@ import views.html.*;
             runner.apply(settings)
                     .outputStream(new PrintStream(outStream))
                     .errorStream(new PrintStream(errStream))
-                    .run();
+                    .runAsync(new Runnable() {
+                        @Override
+                        public void run() {
+                            result.errorText = new String(errStream.toByteArray());
+                            result.outputText = new String(outStream.toByteArray());
+                            result.resultFile = outFile.getAbsolutePath();
 
-            result.errorText = new String(errStream.toByteArray());
-            result.outputText = new String(outStream.toByteArray());
-            result.resultFile = outFile.getAbsolutePath();
-            return result;
+                            run.result = result;
+                            run.endTime = new Date();
+                            run.save();
+                        }
+                    });
         } catch (Exception e) {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
             result.errorText = writer.toString();
             result.outputText = new String(outStream.toByteArray());
-            return result;
+
+            run.result = result;
+            run.endTime = new Date();
+            run.save();
         }
     }
 
@@ -313,6 +243,25 @@ import views.html.*;
         ObjectNode response = Json.newObject();
         response.put("uploadId", uploadFile.id);
         return ok(response);
+    }
+
+    public static UserUpload uploadFile(Http.MultipartFormData.FilePart filePart) {
+        File src = filePart.getFile();
+        File file = null;
+        try {
+            file = File.createTempFile(filePart.getFilename() + "-", ".csv");
+            FileUtils.copyFile(src, file);
+        } catch (IOException e) {
+           e.printStackTrace();
+        }
+
+        UserUpload uploadFile = new UserUpload();
+        uploadFile.absolutePath = file.getAbsolutePath();
+        uploadFile.fileName = filePart.getFilename();
+        uploadFile.user = Application.getCurrentUser();
+        uploadFile.save();
+
+        return uploadFile;
     }
 
     @Security.Authenticated(Secured.class)

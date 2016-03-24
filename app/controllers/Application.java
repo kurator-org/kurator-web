@@ -26,19 +26,6 @@ import views.html.*;
 
 public class Application extends Controller {
 
-    /**
-     * Javascript routes for jQuery ajax
-     */
-    public static Result jsRoutes() {
-        response().setContentType("text/javascript");
-        return ok(Routes.javascriptRouter("jsRoutes",
-                        controllers.routes.javascript.Workflow.runhello(),
-                        controllers.routes.javascript.Workflow.runworms(),
-                        controllers.routes.javascript.Workflow.rungeo()
-                )
-        );
-    }
-
     public static Result login() {
         return ok(
                 login.render(form(Login.class))
@@ -66,8 +53,6 @@ public class Application extends Controller {
         user.password = BCrypt.hashpw(registerForm.get().password, BCrypt.gensalt());
         user.affiliation = registerForm.get().affiliation;
         user.save();
-
-        System.out.println(user.password);
 
         return redirect(
                 routes.Application.index()

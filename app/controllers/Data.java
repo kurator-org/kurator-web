@@ -2,7 +2,9 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import forms.FormDefinition;
 import models.UserUpload;
+import models.WorkflowRun;
 import org.json.simple.JSONObject;
 import play.Routes;
 import play.libs.Json;
@@ -33,9 +35,19 @@ public class Data extends Controller {
         return ok(uploads);
     }
 
-    public static Result test() {
-        return ok(
-                test.render()
-        );
+    public static Result status(Long runId) {
+        WorkflowRun run = WorkflowRun.find.byId(runId);
+
+        ObjectNode response = Json.newObject();
+
+        if (run.endTime == null) {
+            response.put("status", "running");
+        } else {
+            response.put("status", "terminated");
+            response.put("output", run.result.outputText);
+            response.put("errors", run.result.errorText != null ? run.result.errorText : "");
+        }
+
+        return ok(response);
     }
 }
