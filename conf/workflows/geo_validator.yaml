@@ -12,7 +12,7 @@ components:
       filePath: './src/main/resources/org/kurator/akka/samples/data/eight_specimen_records.csv'
 
 - id: RunGeoValidation
-  type: RESTActor
+  type: RestActor
   properties:
     parameters:
       url: 'http://api-geospatial.vertnet-portal.appspot.com/geospatial'
@@ -21,17 +21,11 @@ components:
     listensTo:
       - !ref ReadInput
 
-- id: MapToFramework
-  type: GeoValidatorToDQReport
-  properties:
-    listensTo:
-      - !ref RunGeoValidation
-
 - id: WriteDQReport
   type: PrintDQReport
   properties:
     listensTo:
-      - !ref MapToFramework
+      - !ref RunGeoValidation
 
 - id: VertNetGeoValidatorWorkflow
   type: Workflow
@@ -39,7 +33,6 @@ components:
     actors:
       - !ref ReadInput
       - !ref RunGeoValidation
-      - !ref MapToFramework
       - !ref WriteDQReport
     parameters:
       in:
