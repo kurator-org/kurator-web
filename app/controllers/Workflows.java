@@ -257,11 +257,17 @@ import views.html.*;
                         improvementsHeader.createCell(i+offset).setCellValue(improvementKeys.get(i));
                     }
 
+                    int measuresRowNum = 1;
+                    int validationsRowNum = 1;
+                    int improvementsRowNum = 1;
+
                     for (DQReport report : reports) {
-                        int rowNum = 1;
+                        measures.createRow(measuresRowNum++);
+                        validations.createRow(validationsRowNum++);
+                        improvements.createRow(improvementsRowNum++);
 
                         for (Measure measure : report.getMeasures()) {
-                            HSSFRow row = measures.createRow(rowNum);
+                            HSSFRow row = measures.createRow(measuresRowNum);
 
                             row.createCell(0).setCellValue(measure.getDimension());
                             row.createCell(1).setCellValue(measure.getMechanism());
@@ -281,14 +287,11 @@ import views.html.*;
                                 measures.autoSizeColumn(i);
                             }
 
-                            rowNum++;
+                            measuresRowNum++;
                         }
 
-
-                        rowNum = 1;
-
                         for (Validation validation : report.getValidations()) {
-                            HSSFRow row = validations.createRow(rowNum);
+                            HSSFRow row = validations.createRow(validationsRowNum);
 
                             row.createCell(0).setCellValue(validation.getCriterion());
                             row.createCell(1).setCellValue(validation.getMechanism());
@@ -307,13 +310,11 @@ import views.html.*;
                                 validations.autoSizeColumn(i);
                             }
 
-                            rowNum++;
+                            validationsRowNum++;
                         }
 
-                        rowNum = 1;
-
                         for (Improvement improvement : report.getImprovements()) {
-                            HSSFRow row = improvements.createRow(rowNum);
+                            HSSFRow row = improvements.createRow(improvementsRowNum);
 
                             row.createCell(0).setCellValue(improvement.getEnhancement());
                             row.createCell(1).setCellValue(improvement.getMechanism());
@@ -333,7 +334,7 @@ import views.html.*;
                                 improvements.autoSizeColumn(i);
                             }
 
-                            rowNum++;
+                            improvementsRowNum++;
                         }
                     }
 
