@@ -68,6 +68,7 @@ components:
       - !ref FileUpload
     name: hello_worms
     title: Hello Worms
+    outputFormat: csv
 
 - id: FileUpload
   type: FileInput

@@ -12,19 +12,19 @@ GET     /logout                     controllers.Application.logout()
 GET     /createaccount              controllers.Application.createaccount()
 POST     /register                   controllers.Application.register()
 
-POST    /upload                     controllers.Workflow.upload()
-GET     /file/*id                   controllers.Workflow.file(id : Long)
+POST    /upload                     controllers.Workflows.upload()
+GET     /file/*id                   controllers.Workflows.file(id : Long)
 
 # Workflow page
-GET     /workflow/*name             controllers.Workflow.workflow(name: String)
+GET     /workflow/*name             controllers.Workflows.workflow(name: String)
 
 # Run workflow
-POST     /test/*name                     controllers.Workflow.test(name: String)
+POST     /test/*name                     controllers.Workflows.test(name: String)
 
 # Workflow result
-GET     /result/*id                 controllers.Workflow.result(id : Long)
-GET     /error/*id                 controllers.Workflow.error(id : Long)
-GET     /output/*id                 controllers.Workflow.output(id : Long)
+GET     /result/*id                 controllers.Workflows.result(id : Long)
+GET     /error/*id                 controllers.Workflows.error(id : Long)
+GET     /output/*id                 controllers.Workflows.output(id : Long)
 
 # Workflow builder
 

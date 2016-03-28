@@ -49,6 +49,7 @@ components:
       - !ref FileUpload
     name: geo_validator
     title: Geo Validator
+    outputFormat: ffdq
 
 - id: FileUpload
   type: FileInput

@@ -14,6 +14,7 @@ public class FormDefinition {
     public List<BasicField> fields = new ArrayList<>();
     public String title;
     public String name;
+    public String outputFormat;
 
     public String yamlFile;
 

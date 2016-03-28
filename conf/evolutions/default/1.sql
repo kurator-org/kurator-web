@@ -26,14 +26,22 @@ CREATE TABLE workflow_result (
   output_text LONGTEXT,
   error_text LONGTEXT,
   result_file VARCHAR(255),
-  PRIMARY KEY (id),
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE workflow (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  name VARCHAR (255),
+  title VARCHAR (255),
+  output_format VARCHAR (255),
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE workflow_run (
   id bigint(20) NOT NULL AUTO_INCREMENT,
-  workflow VARCHAR (255),
   start_time TIMESTAMP,
   end_time TIMESTAMP,
+  workflow_id BIGINT(20),
   user_id BIGINT(20),
   result_id BIGINT(20),
   PRIMARY KEY (id),
@@ -47,7 +55,7 @@ CREATE TABLE user_upload (
     file_name VARCHAR(255),
     user_id BIGINT(20),
     PRIMARY KEY (id),
-    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
 -- username: admin, password: admin

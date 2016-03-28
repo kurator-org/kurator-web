@@ -92,7 +92,7 @@ public class Application extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public static Result index() {
-        List<FormDefinition> workflows = Workflow.loadWorkflowFormDefinitions();
+        List<FormDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
 
         String uid = session().get("uid");
         List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", uid).findList();

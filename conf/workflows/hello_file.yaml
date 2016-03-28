@@ -59,6 +59,7 @@ components:
       - !ref GreetingField
     name: hello_file
     title: Hello File
+    outputFormat: text
 
 - id: GreetingField
   type: TextField

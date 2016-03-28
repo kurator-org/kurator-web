@@ -36,7 +36,7 @@
                 </tr>
                 @workflowRuns.map { workflowRun =>
                     <tr @if(workflowRun.result != null && !workflowRun.result.errorText.equals("")) { class="error" }>
-                        <td>@workflowRun.workflow</td>
+                        <td>@workflowRun.workflow.title</td>
                         <td>@workflowRun.startTime</td>
                         <td>@workflowRun.endTime</td>
                         <td>@if(workflowRun.result == null || workflowRun.result.getResultFileName == null) {

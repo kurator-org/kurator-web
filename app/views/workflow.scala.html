@@ -34,7 +34,7 @@
                 var formData = new FormData($(this)[0]);
 
                 $.ajax({
-                    url: "@routes.Workflow.test(form.name)",
+                    url: "@routes.Workflows.test(form.name)",
                     type: "POST",
                     data: formData,
                     async: false,
@@ -109,7 +109,7 @@
     <div id="progressbar" class="ui-progressbar-indeterminate"></div>
     <div id="complete">
         Result: <span id="result"></span>
-        <a id="download">Download csv...</a>
+        <a id="download">Download result...</a>
     </div>
     <div id="error"></div>
 

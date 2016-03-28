@@ -16,7 +16,8 @@ public class WorkflowRun extends Model {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    public String workflow;
+    @ManyToOne
+    public Workflow workflow;
     public Date startTime;
     public Date endTime;
 

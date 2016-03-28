@@ -1,14 +1,24 @@
 package controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import forms.FormDefinition;
 import forms.input.*;
 import models.UserUpload;
+import models.Workflow;
 import models.WorkflowResult;
 import models.WorkflowRun;
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
+import org.kurator.akka.data.DQReport.DQReport;
+import org.kurator.akka.data.DQReport.Improvement;
+import org.kurator.akka.data.DQReport.Measure;
+import org.kurator.akka.data.DQReport.Validation;
 import org.restflow.yaml.spring.YamlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import play.Play;
@@ -27,7 +37,7 @@ import views.html.*;
  * Created by lowery on 2/4/16.
     /**
      */
-    public class Workflow extends Controller {
+    public class Workflows extends Controller {
         List<FormDefinition> workflows = new ArrayList<>();
 
     @Security.Authenticated(Secured.class)
@@ -61,7 +71,18 @@ import views.html.*;
             settings.put(field.name, field.value());
         }
 
-        ObjectNode response = run(form.yamlFile, form.title, settings);
+        Workflow workflow = Workflow.find.where().eq("name", form.name).findUnique();
+
+        if (workflow == null) {
+            workflow = new Workflow();
+            workflow.name = form.name;
+            workflow.title = form.title;
+            workflow.outputFormat = form.outputFormat;
+
+            workflow.save();
+        }
+
+        ObjectNode response = run(form.yamlFile, workflow, settings);
 
         return ok(
                 response
@@ -96,7 +117,7 @@ import views.html.*;
         return file;
     }
 
-    private static ObjectNode run(String yamlFile, String workflowName, Map<String, Object> settings) {
+    private static ObjectNode run(String yamlFile, Workflow workflow, Map<String, Object> settings) {
         InputStream yamlStream = null;
 
         try {
@@ -115,7 +136,7 @@ import views.html.*;
 
         WorkflowRun run = new WorkflowRun();
         run.user = Application.getCurrentUser();
-        run.workflow = workflowName;
+        run.workflow = workflow;
         run.startTime = new Date();
         run.save();
 
@@ -179,11 +200,155 @@ import views.html.*;
     public static Result result(long workflowRunId) {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
-        if (run != null) {
-            File file = new File(run.result.resultFile);
-            if (file.exists()) {
-                return ok(file);
+        try {
+            if (run != null) {
+                File file = new File(run.result.resultFile);
+
+                if (run.workflow.outputFormat.equals("ffdq")) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    List<DQReport> reports = mapper.readValue(file, new TypeReference<List<DQReport>>(){});
+
+                    response().setHeader("Content-Disposition", "attachment; filename=result.xls");
+
+                    HSSFWorkbook wb = new HSSFWorkbook();
+                    HSSFSheet measures = wb.createSheet("Measures");
+                    HSSFSheet validations = wb.createSheet("Validations");
+                    HSSFSheet improvements = wb.createSheet("Improvements");
+
+                    List<String> measureKeys = new ArrayList<String>();
+                    measureKeys.addAll(reports.get(0).getMeasures().get(0).getDataResource().keySet());
+
+                    HSSFRow measuresHeader = measures.createRow(0);
+
+                    measuresHeader.createCell(0).setCellValue("Dimension");
+                    measuresHeader.createCell(1).setCellValue("Mechanism");
+                    measuresHeader.createCell(2).setCellValue("Result");
+                    measuresHeader.createCell(3).setCellValue("Specification");
+
+                    for (int i = 0, offset = 4; i < measureKeys.size(); i++) {
+                        measuresHeader.createCell(i+offset).setCellValue(measureKeys.get(i));
+                    }
+
+                    List<String> validationKeys = new ArrayList<String>(); // list instead of set to preserve ordering
+                    validationKeys.addAll(reports.get(0).getValidations().get(0).getDataResource().keySet());
+
+                    HSSFRow validationsHeader = validations.createRow(0);
+
+                    validationsHeader.createCell(0).setCellValue("Criterion");
+                    validationsHeader.createCell(1).setCellValue("Mechanism");
+                    validationsHeader.createCell(2).setCellValue("Result");
+                    validationsHeader.createCell(3).setCellValue("Specification");
+
+                    for (int i = 0, offset = 4; i < measureKeys.size(); i++) {
+                        validationsHeader.createCell(i+offset).setCellValue(validationKeys.get(i));
+                    }
+
+                    List<String> improvementKeys = new ArrayList<String>();
+                    improvementKeys.addAll(reports.get(0).getImprovements().get(0).getDataResource().keySet());
+
+                    HSSFRow improvementsHeader = improvements.createRow(0);
+
+                    improvementsHeader.createCell(0).setCellValue("Enhancement");
+                    improvementsHeader.createCell(1).setCellValue("Mechanism");
+                    improvementsHeader.createCell(2).setCellValue("Result");
+                    improvementsHeader.createCell(3).setCellValue("Specification");
+
+                    for (int i = 0, offset = 4; i < improvementKeys.size(); i++) {
+                        improvementsHeader.createCell(i+offset).setCellValue(improvementKeys.get(i));
+                    }
+
+                    for (DQReport report : reports) {
+                        int rowNum = 1;
+
+                        for (Measure measure : report.getMeasures()) {
+                            HSSFRow row = measures.createRow(rowNum);
+
+                            row.createCell(0).setCellValue(measure.getDimension());
+                            row.createCell(1).setCellValue(measure.getMechanism());
+                            row.createCell(2).setCellValue(measure.getResult());
+                            row.createCell(3).setCellValue(measure.getSpecification());
+
+                            int offset = 4;
+
+                            for (int i = 0; i < offset; i++) {
+                                measures.autoSizeColumn(i);
+                            }
+
+                            Map<String, String> dataResource = measure.getDataResource();
+                            for (int i = 0; i < measureKeys.size(); i++) {
+                                String key = measureKeys.get(i);
+                                row.createCell(i+offset).setCellValue(dataResource.get(key));
+                                measures.autoSizeColumn(i);
+                            }
+
+                            rowNum++;
+                        }
+
+
+                        rowNum = 1;
+
+                        for (Validation validation : report.getValidations()) {
+                            HSSFRow row = validations.createRow(rowNum);
+
+                            row.createCell(0).setCellValue(validation.getCriterion());
+                            row.createCell(1).setCellValue(validation.getMechanism());
+                            row.createCell(2).setCellValue(validation.getResult());
+                            row.createCell(3).setCellValue(validation.getSpecification());
+
+                            int offset = 4;
+                            for (int i = 0; i < offset; i++) {
+                                validations.autoSizeColumn(i);
+                            }
+
+                            Map<String, String> dataResource = validation.getDataResource();
+                            for (int i = 0; i < validationKeys.size(); i++) {
+                                String key = validationKeys.get(i);
+                                row.createCell(i+offset).setCellValue(dataResource.get(key));
+                                validations.autoSizeColumn(i);
+                            }
+
+                            rowNum++;
+                        }
+
+                        rowNum = 1;
+
+                        for (Improvement improvement : report.getImprovements()) {
+                            HSSFRow row = improvements.createRow(rowNum);
+
+                            row.createCell(0).setCellValue(improvement.getEnhancement());
+                            row.createCell(1).setCellValue(improvement.getMechanism());
+                            row.createCell(2).setCellValue(improvement.getResult());
+                            row.createCell(3).setCellValue(improvement.getSpecification());
+
+                            int offset = 4;
+
+                            for (int i = 0; i < offset; i++) {
+                                improvements.autoSizeColumn(i);
+                            }
+
+                            Map<String, String> dataResource = improvement.getDataResource();
+                            for (int i = 0; i < improvementKeys.size(); i++) {
+                                String key = improvementKeys.get(i);
+                                row.createCell(i+offset).setCellValue(dataResource.get(key));
+                                improvements.autoSizeColumn(i);
+                            }
+
+                            rowNum++;
+                        }
+                    }
+
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    wb.write(out);
+
+                    return ok(out.toByteArray());
+                } else {
+                    if (file.exists()) {
+                        return ok(file);
+                    }
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return notFound("No result found for workflow run with id " + workflowRunId);
