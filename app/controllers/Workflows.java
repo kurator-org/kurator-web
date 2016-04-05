@@ -22,6 +22,7 @@ import org.kurator.akka.data.DQReport.Validation;
 import org.restflow.yaml.spring.YamlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import play.Play;
+import play.api.data.validation.Valid;
 import play.libs.Json;
 import play.mvc.*;
 
@@ -216,126 +217,129 @@ import views.html.*;
                     HSSFSheet improvements = wb.createSheet("Improvements");
 
                     List<String> measureKeys = new ArrayList<String>();
-                    measureKeys.addAll(reports.get(0).getMeasures().get(0).getDataResource().keySet());
+
+                    List<Measure> measuresList = reports.get(0).getMeasures();
+                    measureKeys.addAll(measuresList.get(0).getDataResource().keySet());
 
                     HSSFRow measuresHeader = measures.createRow(0);
 
-                    measuresHeader.createCell(0).setCellValue("Dimension");
+                    for (int i = 0; i < measuresList.size(); i++) {
+                        measuresHeader.createCell(i).setCellValue(measuresList.get(i).getDimension());
+                    }
+
+                    /*measuresHeader.createCell(0).setCellValue("Dimension");
                     measuresHeader.createCell(1).setCellValue("Mechanism");
                     measuresHeader.createCell(2).setCellValue("Result");
                     measuresHeader.createCell(3).setCellValue("Specification");
+                    /*
 
-                    for (int i = 0, offset = 4; i < measureKeys.size(); i++) {
+                     */
+                    for (int i = 0, offset = measuresList.size(); i < measureKeys.size(); i++) {
                         measuresHeader.createCell(i+offset).setCellValue(measureKeys.get(i));
                     }
 
                     List<String> validationKeys = new ArrayList<String>(); // list instead of set to preserve ordering
+
+                    List<Validation> validationList = reports.get(0).getValidations();
                     validationKeys.addAll(reports.get(0).getValidations().get(0).getDataResource().keySet());
 
                     HSSFRow validationsHeader = validations.createRow(0);
 
-                    validationsHeader.createCell(0).setCellValue("Criterion");
+                    for (int i = 0; i < validationList.size(); i++) {
+                        validationsHeader.createCell(i).setCellValue(validationList.get(i).getCriterion());
+                    }
+
+                    /*validationsHeader.createCell(0).setCellValue("Criterion");
                     validationsHeader.createCell(1).setCellValue("Mechanism");
                     validationsHeader.createCell(2).setCellValue("Result");
                     validationsHeader.createCell(3).setCellValue("Specification");
+                    */
 
-                    for (int i = 0, offset = 4; i < measureKeys.size(); i++) {
+                    for (int i = 0, offset = validationList.size(); i < validationKeys.size(); i++) {
                         validationsHeader.createCell(i+offset).setCellValue(validationKeys.get(i));
                     }
 
                     List<String> improvementKeys = new ArrayList<String>();
-                    improvementKeys.addAll(reports.get(0).getImprovements().get(0).getDataResource().keySet());
+
+                    List<Improvement> improvementList = reports.get(0).getImprovements();
+                    improvementKeys.addAll(improvementList.get(0).getDataResource().keySet());
 
                     HSSFRow improvementsHeader = improvements.createRow(0);
 
-                    improvementsHeader.createCell(0).setCellValue("Enhancement");
+                    for (int i = 0; i < improvementList.size(); i++) {
+                        improvementsHeader.createCell(i).setCellValue(improvementList.get(i).getEnhancement());
+                    }
+                    /*improvementsHeader.createCell(0).setCellValue("Enhancement");
                     improvementsHeader.createCell(1).setCellValue("Mechanism");
                     improvementsHeader.createCell(2).setCellValue("Result");
                     improvementsHeader.createCell(3).setCellValue("Specification");
+                    */
 
-                    for (int i = 0, offset = 4; i < improvementKeys.size(); i++) {
+                    for (int i = 0, offset = improvementList.size(); i < improvementKeys.size(); i++) {
                         improvementsHeader.createCell(i+offset).setCellValue(improvementKeys.get(i));
                     }
+
 
                     int measuresRowNum = 1;
                     int validationsRowNum = 1;
                     int improvementsRowNum = 1;
 
+
                     for (DQReport report : reports) {
-                        measures.createRow(measuresRowNum++);
+                        /*measures.createRow(measuresRowNum++);
                         validations.createRow(validationsRowNum++);
-                        improvements.createRow(improvementsRowNum++);
+                        improvements.createRow(improvementsRowNum++);*/
 
-                        for (Measure measure : report.getMeasures()) {
-                            HSSFRow row = measures.createRow(measuresRowNum);
+                        measuresList = report.getMeasures();
+                        HSSFRow measuresRow = measures.createRow(measuresRowNum);
 
-                            row.createCell(0).setCellValue(measure.getDimension());
-                            row.createCell(1).setCellValue(measure.getMechanism());
-                            row.createCell(2).setCellValue(measure.getResult());
-                            row.createCell(3).setCellValue(measure.getSpecification());
+                        for (int i = 0; i < measuresList.size(); i++) {
+                            measuresRow.createCell(i).setCellValue(measuresList.get(i).getResult());
+                            measures.autoSizeColumn(i);
 
-                            int offset = 4;
-
-                            for (int i = 0; i < offset; i++) {
-                                measures.autoSizeColumn(i);
+                            Map<String, String> dataResource = measuresList.get(0).getDataResource();
+                            for (int j = 0, offset = measuresList.size(); j < measureKeys.size(); j++) {
+                                String key = measureKeys.get(j);
+                                measuresRow.createCell(j+offset).setCellValue(dataResource.get(key));
+                                measures.autoSizeColumn(j);
                             }
-
-                            Map<String, String> dataResource = measure.getDataResource();
-                            for (int i = 0; i < measureKeys.size(); i++) {
-                                String key = measureKeys.get(i);
-                                row.createCell(i+offset).setCellValue(dataResource.get(key));
-                                measures.autoSizeColumn(i);
-                            }
-
-                            measuresRowNum++;
                         }
 
-                        for (Validation validation : report.getValidations()) {
-                            HSSFRow row = validations.createRow(validationsRowNum);
+                        measuresRowNum++;
 
-                            row.createCell(0).setCellValue(validation.getCriterion());
-                            row.createCell(1).setCellValue(validation.getMechanism());
-                            row.createCell(2).setCellValue(validation.getResult());
-                            row.createCell(3).setCellValue(validation.getSpecification());
+                        validationList = report.getValidations();
+                        HSSFRow validationsRow = validations.createRow(validationsRowNum);
 
-                            int offset = 4;
-                            for (int i = 0; i < offset; i++) {
-                                validations.autoSizeColumn(i);
+                        for (int i = 0; i < validationList.size(); i++) {
+                            validationsRow.createCell(i).setCellValue(validationList.get(i).getResult());
+                            validations.autoSizeColumn(i);
+
+                            Map<String, String> dataResource = validationList.get(0).getDataResource();
+                            for (int j = 0, offset = validationList.size(); j < validationKeys.size(); j++) {
+                                String key = validationKeys.get(j);
+                                validationsRow.createCell(j+offset).setCellValue(dataResource.get(key));
+                                validations.autoSizeColumn(j);
                             }
-
-                            Map<String, String> dataResource = validation.getDataResource();
-                            for (int i = 0; i < validationKeys.size(); i++) {
-                                String key = validationKeys.get(i);
-                                row.createCell(i+offset).setCellValue(dataResource.get(key));
-                                validations.autoSizeColumn(i);
-                            }
-
-                            validationsRowNum++;
                         }
 
-                        for (Improvement improvement : report.getImprovements()) {
-                            HSSFRow row = improvements.createRow(improvementsRowNum);
+                        validationsRowNum++;
 
-                            row.createCell(0).setCellValue(improvement.getEnhancement());
-                            row.createCell(1).setCellValue(improvement.getMechanism());
-                            row.createCell(2).setCellValue(improvement.getResult());
-                            row.createCell(3).setCellValue(improvement.getSpecification());
+                        improvementList = report.getImprovements();
+                        HSSFRow improvementsRow = improvements.createRow(improvementsRowNum);
 
-                            int offset = 4;
+                        for (int i = 0; i < improvementList.size(); i++) {
+                            improvementsRow.createCell(i).setCellValue(improvementList.get(i).getResult());
+                            improvements.autoSizeColumn(i);
 
-                            for (int i = 0; i < offset; i++) {
-                                improvements.autoSizeColumn(i);
+                            Map<String, String> dataResource = improvementList.get(0).getDataResource();
+                            for (int j = 0, offset = improvementList.size(); j < improvementKeys.size(); j++) {
+                                String key = improvementKeys.get(j);
+                                improvementsRow.createCell(j+offset).setCellValue(dataResource.get(key));
+                                improvements.autoSizeColumn(j);
                             }
-
-                            Map<String, String> dataResource = improvement.getDataResource();
-                            for (int i = 0; i < improvementKeys.size(); i++) {
-                                String key = improvementKeys.get(i);
-                                row.createCell(i+offset).setCellValue(dataResource.get(key));
-                                improvements.autoSizeColumn(i);
-                            }
-
-                            improvementsRowNum++;
                         }
+
+                        improvementsRowNum++;
                     }
 
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
