@@ -22,7 +22,7 @@ GET     /workflow/*name             controllers.Workflows.workflow(name: String)
 POST     /test/*name                     controllers.Workflows.test(name: String)
 
 # Workflow result
-GET     /result/*id                 controllers.Workflows.result(id : Long)
+GET     /result/*id                 controllers.Workflows.result(id : Long, format : String)
 GET     /error/*id                 controllers.Workflows.error(id : Long)
 GET     /output/*id                 controllers.Workflows.output(id : Long)
 

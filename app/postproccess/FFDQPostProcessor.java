@@ -129,11 +129,17 @@ public class FFDQPostProcessor {
             }
 
             for (Improvement improvement : report.getImprovements()) {
+                StringBuilder resultText = new StringBuilder();
+                Map<String, String> result = improvement.getResult();
+                for (String key : result.keySet()) {
+                    resultText.append(": " + result.get(key) + " ");
+                }
+
                 HSSFRow row = improvements.createRow(improvementsRowNum);
 
                 row.createCell(0).setCellValue(improvement.getEnhancement());
                 row.createCell(1).setCellValue(improvement.getMechanism());
-                row.createCell(2).setCellValue(improvement.getResult());
+                row.createCell(2).setCellValue(resultText.toString());
                 row.createCell(3).setCellValue(improvement.getSpecification());
 
                 int offset = 4;
