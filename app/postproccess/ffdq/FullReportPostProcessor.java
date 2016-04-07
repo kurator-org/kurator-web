@@ -1,5 +1,9 @@
-package postproccess;
+package postproccess.ffdq;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -7,8 +11,10 @@ import org.kurator.akka.data.DQReport.DQReport;
 import org.kurator.akka.data.DQReport.Improvement;
 import org.kurator.akka.data.DQReport.Measure;
 import org.kurator.akka.data.DQReport.Validation;
+import postproccess.PostProcessor;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +23,22 @@ import java.util.Map;
 /**
  * Created by lowery on 3/29/16.
  */
-public class FFDQPostProcessor {
-    private List<DQReport> reports;
+public class FullReportPostProcessor implements PostProcessor {
 
-    public FFDQPostProcessor(List<DQReport> reports) {
-        this.reports = reports;
+    public void postprocess(InputStream in, String format, OutputStream out) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        List<DQReport> reports = mapper.readValue(in, new TypeReference<List<DQReport>>(){});
+
+        if ("xls".equalsIgnoreCase(format)) {
+            writeXls(reports, out);
+        } if ("json".equalsIgnoreCase(format)) {
+            mapper.writeValue(out, reports);
+        } else {
+            throw new IllegalArgumentException("Invalid output format for postprocessor: " + format);
+        }
     }
 
-    public void writeXls(OutputStream out) {
+    private void writeXls(List<DQReport> reports, OutputStream out) throws IOException {
         HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet measures = wb.createSheet("Measures");
         HSSFSheet validations = wb.createSheet("Validations");
@@ -159,10 +173,6 @@ public class FFDQPostProcessor {
             }
         }
 
-        try {
-            wb.write(out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        wb.write(out);
     }
 }
