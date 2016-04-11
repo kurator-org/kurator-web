@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import forms.FormDefinition;
 import forms.input.*;
@@ -32,6 +33,7 @@ import java.net.URL;
 import java.util.*;
 
 import postproccess.PostProcessor;
+import postproccess.ReportSummary;
 import postproccess.ffdq.RecordRowPostProcessor;
 import util.ResultNotificationMailer;
 import views.html.*;
@@ -240,6 +242,74 @@ import views.html.*;
         return notFound("No result found for workflow run with id " + workflowRunId);
     }
 
+    @Security.Authenticated(Secured.class)
+    public static Result summary(long workflowRunId) {
+        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
+
+        try {
+            if (run != null) {
+                File file = new File(run.result.resultFile);
+                FileInputStream in = new FileInputStream(file);
+
+                ReportSummary reportSummary = new ReportSummary(in);
+                System.out.println("Compliant");
+                for (String criterion : reportSummary.getCompliantCriterion()) {
+                    System.out.println("    " + criterion + ": " + reportSummary.getCompliantCount(criterion));
+                }
+
+                System.out.println("\nNon Compliant");
+                for (String criterion : reportSummary.getNonCompliantCriterion()) {
+                    System.out.println("    " + criterion + ": " + reportSummary.getNonCompliantCount(criterion));
+                }
+
+                System.out.println("\nImprovements");
+                for (String enhancement : reportSummary.getEnhancements()) {
+                    System.out.println("    " + enhancement + ": " + reportSummary.getImprovementsCount(enhancement));
+                }
+
+                ArrayNode data = Json.newArray();
+
+                int compliantCount = reportSummary.getCompliantCount("Coordinates must fall inside the country");
+                ObjectNode compliant = Json.newObject();
+
+                compliant.put("value", compliantCount);
+                compliant.put("color", "#66cdaa");
+                compliant.put("highlight", "#a3e1cc");
+                compliant.put("label", "Compliant");
+
+                data.add(compliant);
+
+                int improvementsCount = reportSummary.getImprovementsCount(
+                        "Recommendation to transform decimal latitude and or decimal longitude");
+                ObjectNode improvements = Json.newObject();
+
+                improvements.put("value", improvementsCount);
+                improvements.put("color", "#6897bb");
+                improvements.put("highlight", "#a4c0d6");
+                improvements.put("label", "Improvements");
+
+                data.add(improvements);
+
+
+                int nonCompliantCount = reportSummary.getNonCompliantAfterImprovementsCount(
+                        "Coordinates must fall inside the country",
+                        "Recommendation to transform decimal latitude and or decimal longitude");
+                ObjectNode nonCompliant = Json.newObject();
+
+                nonCompliant.put("value", nonCompliantCount);
+                nonCompliant.put("color", "#fa8072");
+                nonCompliant.put("highlight", "#fcb2aa");
+                nonCompliant.put("label", "Non Compliant");
+
+                data.add(nonCompliant);
+                String json = data.toString();
+                return ok(summary.render(json));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return badRequest();
+    }
     @Security.Authenticated(Secured.class)
     public static Result error(long workflowRunId) {
         response().setHeader("Content-Disposition", "attachment; filename=error_log.txt");
