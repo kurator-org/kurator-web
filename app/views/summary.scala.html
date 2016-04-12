@@ -12,6 +12,7 @@
 </ul>
 
 @main(title = "The Kurator 'helloworld' application") {
+<h1>Coordinates must fall inside the country</h1>
 <canvas id="myChart" width="200" height="200"></canvas>
 
 <script src="@routes.Assets.at("javascripts/Chart.js")" type="text/javascript"></script>
@@ -21,6 +22,12 @@
 
         var ctx = $("#myChart").get(0).getContext("2d");
         var myDoughnutChart = new Chart(ctx).Doughnut(data);
+
+        $("#myChart").click(function(evt){
+            var activePoints = myDoughnutChart.getSegmentsAtEvent(evt);
+            console.log(activePoints);
+            // => activePoints is an array of segments on the canvas that are at the same position as the click event.
+        });
     });
 </script>
 }
