@@ -280,7 +280,7 @@ import views.html.*;
                 data.add(compliant);
 
                 int improvementsCount = reportSummary.getImprovementsCount(
-                        "Recommendation to transform decimal latitude and or decimal longitude");
+                        "Coordinates must fall inside the country");
                 ObjectNode improvements = Json.newObject();
 
                 improvements.put("value", improvementsCount);
@@ -292,8 +292,7 @@ import views.html.*;
 
 
                 int nonCompliantCount = reportSummary.getNonCompliantAfterImprovementsCount(
-                        "Coordinates must fall inside the country",
-                        "Recommendation to transform decimal latitude and or decimal longitude");
+                        "Coordinates must fall inside the country");
                 ObjectNode nonCompliant = Json.newObject();
 
                 nonCompliant.put("value", nonCompliantCount);

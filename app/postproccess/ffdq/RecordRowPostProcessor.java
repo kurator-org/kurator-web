@@ -89,7 +89,7 @@ public class RecordRowPostProcessor implements PostProcessor {
             HSSFRow measuresRow = measures.createRow(measuresRowNum);
 
             for (int i = 0; i < measuresList.size(); i++) {
-                measuresRow.createCell(i).setCellValue(measuresList.get(i).getResult());
+                measuresRow.createCell(i).setCellValue(measuresList.get(i).getResult().getComment());
                 measures.autoSizeColumn(i);
 
                 Map<String, String> dataResource = measuresList.get(0).getDataResource();
@@ -106,7 +106,7 @@ public class RecordRowPostProcessor implements PostProcessor {
             HSSFRow validationsRow = validations.createRow(validationsRowNum);
 
             for (int i = 0; i < validationList.size(); i++) {
-                validationsRow.createCell(i).setCellValue(validationList.get(i).getResult());
+                validationsRow.createCell(i).setCellValue(validationList.get(i).getResult().getComment());
                 validations.autoSizeColumn(i);
 
                 Map<String, String> dataResource = validationList.get(0).getDataResource();

@@ -100,7 +100,7 @@ public class FullReportPostProcessor implements PostProcessor {
 
                 row.createCell(0).setCellValue(measure.getDimension());
                 row.createCell(1).setCellValue(measure.getMechanism());
-                row.createCell(2).setCellValue(measure.getResult());
+                row.createCell(2).setCellValue(measure.getResult().getComment());
                 row.createCell(3).setCellValue(measure.getSpecification());
 
                 int offset = 4;
@@ -124,7 +124,7 @@ public class FullReportPostProcessor implements PostProcessor {
 
                 row.createCell(0).setCellValue(validation.getCriterion());
                 row.createCell(1).setCellValue(validation.getMechanism());
-                row.createCell(2).setCellValue(validation.getResult());
+                row.createCell(2).setCellValue(validation.getResult().getComment());
                 row.createCell(3).setCellValue(validation.getSpecification());
 
                 int offset = 4;

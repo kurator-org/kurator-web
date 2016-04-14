@@ -82,12 +82,20 @@ public class ReportSummary {
         return nonCompliant.get(criterion).size();
     }
 
-    public int getImprovementsCount(String enhancement) {
-        return improvements.get(enhancement).size();
+    public int getImprovementsCount(String criterion) {
+        List<Improvement> improvementsForValidation = new ArrayList<>();
+
+
+        for (Validation validation : nonCompliant.get(criterion)) {
+            if (validation.getImprovement() != null) {
+                improvementsForValidation.add(validation.getImprovement());
+            }
+        }
+        return improvementsForValidation.size();
     }
 
-    public int getNonCompliantAfterImprovementsCount(String criterion, String enhancement) {
-        return nonCompliant.get(criterion).size() - improvements.get(enhancement).size();
+    public int getNonCompliantAfterImprovementsCount(String criterion) {
+        return nonCompliant.get(criterion).size() - getImprovementsCount(criterion);
     }
 
     public Set<String> getEnhancements() {
@@ -100,5 +108,14 @@ public class ReportSummary {
 
     public Set<String> getNonCompliantCriterion() {
         return nonCompliant.keySet();
+    }
+
+    public Set<String> getAllCriterion() {
+        Set<String> criterion = new HashSet<>();
+
+        criterion.addAll(getCompliantCriterion());
+        criterion.addAll(getNonCompliantCriterion());
+
+        return criterion;
     }
 }
