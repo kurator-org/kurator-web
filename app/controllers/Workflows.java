@@ -172,7 +172,8 @@ import views.html.*;
         WorkflowResult result = new WorkflowResult();
 
         try {
-            WorkflowRunner runner = new YamlStreamWorkflowRunner(yamlStream);
+            WorkflowRunner runner = new YamlStreamWorkflowRunner()
+                                        .yamlStream(yamlStream);
 
             runner.apply(settings)
                     .outputStream(new PrintStream(outStream))
