@@ -131,21 +131,13 @@ import views.html.*;
             throw new RuntimeException("Could not load workflow from yaml file.", e);
         }
 
-        File outFile = null;
-
-        try {
-            outFile = File.createTempFile("result-", ".csv");
-        } catch (IOException e) {
-            throw new RuntimeException("Could not create temporary output file.", e);
-        }
-
         WorkflowRun run = new WorkflowRun();
         run.user = Application.getCurrentUser();
         run.workflow = workflow;
         run.startTime = new Date();
         run.save();
 
-        runYamlWorkflow(yamlStream, outFile, settings, run);
+        runYamlWorkflow(yamlStream, settings, run);
 
         try {
             ResultNotificationMailer mailer = new ResultNotificationMailer();
@@ -157,15 +149,12 @@ import views.html.*;
 
         ObjectNode response = Json.newObject();
 
-        response.put("filename", outFile.getName());
         response.put("runId", run.id);
 
         return response;
     }
 
-    private static void runYamlWorkflow(InputStream yamlStream, File outFile, Map<String, Object> settings, WorkflowRun run) {
-        settings.put("out", outFile.getAbsolutePath());
-
+    private static void runYamlWorkflow(InputStream yamlStream, Map<String, Object> settings, WorkflowRun run) {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errStream = new ByteArrayOutputStream();
 
@@ -183,7 +172,6 @@ import views.html.*;
                         public void run() {
                             result.errorText = new String(errStream.toByteArray());
                             result.outputText = new String(outStream.toByteArray());
-                            result.resultFile = outFile.getAbsolutePath();
 
                             run.result = result;
                             run.endTime = new Date();
@@ -202,7 +190,13 @@ import views.html.*;
         }
     }
 
-    @Security.Authenticated(Secured.class)
+    public static Result result(long workflowRunId, String format) {
+        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
+
+        return ok(run.result.outputText);
+    }
+
+    /*@Security.Authenticated(Secured.class)
     public static Result result(long workflowRunId, String format) {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
@@ -241,7 +235,7 @@ import views.html.*;
         }
 
         return notFound("No result found for workflow run with id " + workflowRunId);
-    }
+    }*/
 
     @Security.Authenticated(Secured.class)
     public static Result summary(long workflowRunId) {

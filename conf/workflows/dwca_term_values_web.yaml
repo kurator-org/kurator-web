@@ -1,0 +1,23 @@
+
+imports:
+
+- classpath:/packages/kurator_dwca/workflows/dwca_term_values.yaml
+- classpath:/fields.yaml
+
+components:
+
+- id: WorkflowView
+  type: FormDefinition
+  properties:
+    fields:
+      - !ref UrlField
+    name: dwca_term_values
+    title: Dwca Term Values
+    outputFormat: text
+
+- id: UrlField
+  type: TextField
+  properties:
+    name: testinput
+    label: Url
+
