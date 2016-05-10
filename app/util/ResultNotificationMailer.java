@@ -24,7 +24,7 @@ public class ResultNotificationMailer {
         email.setSubject("Kurator result for " + workflowRun.workflow);
         email.setFrom("Kurator Admin <from@email.com>");
         email.addTo(user.email);
-        email.addAttachment(workflowRun.result.getResultFileName(), new File(workflowRun.result.resultFile));
+        //email.addAttachment(workflowRun.result.getResultFileName(), new File(workflowRun.result.resultFile));
         email.setBodyText("This message is to notify you that the result for workflow run #" + workflowRun.id +
                 " is available for download. See the attachment for the result file.");
 

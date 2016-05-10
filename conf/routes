@@ -26,8 +26,6 @@ GET     /result/*id                 controllers.Workflows.result(id : Long, form
 GET     /error/*id                 controllers.Workflows.error(id : Long)
 GET     /output/*id                 controllers.Workflows.output(id : Long)
 
-GET     /summary/*id                    controllers.Workflows.summary(id : Long)
-
 # Workflow builder
 
 GET     /builder                controllers.Application.builder()

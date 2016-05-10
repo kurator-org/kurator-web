@@ -25,8 +25,16 @@ CREATE TABLE workflow_result (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   output_text LONGTEXT,
   error_text LONGTEXT,
-  result_file VARCHAR(255),
   PRIMARY KEY (id)
+);
+
+CREATE TABLE result_file (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  label VARCHAR(255),
+  file_name VARCHAR(255),
+  workflow_result_id BIGINT(20),
+  PRIMARY KEY (id),
+  FOREIGN KEY (workflow_result_id) REFERENCES workflow_result(id)
 );
 
 CREATE TABLE workflow (

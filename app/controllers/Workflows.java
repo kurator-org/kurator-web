@@ -131,179 +131,46 @@ import views.html.*;
             throw new RuntimeException("Could not load workflow from yaml file.", e);
         }
 
-        WorkflowRun run = new WorkflowRun();
-        run.user = Application.getCurrentUser();
-        run.workflow = workflow;
-        run.startTime = new Date();
-        run.save();
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errStream = new ByteArrayOutputStream();
 
-        runYamlWorkflow(yamlStream, settings, run);
+        AsyncWorkflowRunnable runnable = new AsyncWorkflowRunnable();
 
         try {
-            ResultNotificationMailer mailer = new ResultNotificationMailer();
-            mailer.sendNotification(run.user, run);
+            WorkflowRunner runner = new YamlStreamWorkflowRunner()
+                    .yamlStream(yamlStream);
+
+            runnable.init(workflow, runner, errStream, outStream);
+
+            runner.apply(settings)
+                    .outputStream(new PrintStream(outStream))
+                    .errorStream(new PrintStream(errStream))
+                    .runAsync(runnable);
         } catch (Exception e) {
-            // TODO: Handle exceptions related to sending the email
-            e.printStackTrace();
+            StringWriter writer = new StringWriter();
+            e.printStackTrace(new PrintWriter(writer));
+
+            String errorText = writer.toString();
+            String outputText = new String(outStream.toByteArray());
+
+            runnable.error(errorText, outputText);
         }
 
         ObjectNode response = Json.newObject();
 
+        WorkflowRun run = runnable.getWorkflowRun();
         response.put("runId", run.id);
 
         return response;
     }
 
-    private static void runYamlWorkflow(InputStream yamlStream, Map<String, Object> settings, WorkflowRun run) {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        ByteArrayOutputStream errStream = new ByteArrayOutputStream();
-
-        WorkflowResult result = new WorkflowResult();
-
-        try {
-            WorkflowRunner runner = new YamlStreamWorkflowRunner()
-                                        .yamlStream(yamlStream);
-
-            runner.apply(settings)
-                    .outputStream(new PrintStream(outStream))
-                    .errorStream(new PrintStream(errStream))
-                    .runAsync(new Runnable() {
-                        @Override
-                        public void run() {
-                            result.errorText = new String(errStream.toByteArray());
-                            result.outputText = new String(outStream.toByteArray());
-
-                            run.result = result;
-                            run.endTime = new Date();
-                            run.save();
-                        }
-                    });
-        } catch (Exception e) {
-            StringWriter writer = new StringWriter();
-            e.printStackTrace(new PrintWriter(writer));
-            result.errorText = writer.toString();
-            result.outputText = new String(outStream.toByteArray());
-
-            run.result = result;
-            run.endTime = new Date();
-            run.save();
-        }
-    }
-
+    @Security.Authenticated(Secured.class)
     public static Result result(long workflowRunId, String format) {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
         return ok(run.result.outputText);
     }
 
-    /*@Security.Authenticated(Secured.class)
-    public static Result result(long workflowRunId, String format) {
-        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
-
-        try {
-            if (run != null) {
-                File file = new File(run.result.resultFile);
-                FileInputStream in = new FileInputStream(file);
-
-                if (run.workflow.outputFormat.equals("ffdq")) {
-                    if (format == null) {
-                        format = "xls";
-                    }
-
-                    if (format.equals("xls") || format.equals("json")) {
-                        response().setHeader("Content-Disposition", "attachment; filename=result." + format);
-                    } else {
-                        throw new IllegalArgumentException("Unsupported file format: " + format);
-                    }
-
-                    PostProcessor postProcessor = new RecordRowPostProcessor();
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-                    postProcessor.postprocess(in, format, out);
-
-                    return ok(out.toByteArray());
-                } else {
-                    response().setHeader("Content-Disposition", "attachment; filename=" + run.result.getResultFileName());
-
-                    if (file.exists()) {
-                        return ok(file);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return notFound("No result found for workflow run with id " + workflowRunId);
-    }*/
-
-    @Security.Authenticated(Secured.class)
-    public static Result summary(long workflowRunId) {
-        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
-
-        try {
-            if (run != null) {
-                File file = new File(run.result.resultFile);
-                FileInputStream in = new FileInputStream(file);
-
-                ReportSummary reportSummary = new ReportSummary(in);
-                System.out.println("Compliant");
-                for (String criterion : reportSummary.getCompliantCriterion()) {
-                    System.out.println("    " + criterion + ": " + reportSummary.getCompliantCount(criterion));
-                }
-
-                System.out.println("\nNon Compliant");
-                for (String criterion : reportSummary.getNonCompliantCriterion()) {
-                    System.out.println("    " + criterion + ": " + reportSummary.getNonCompliantCount(criterion));
-                }
-
-                System.out.println("\nImprovements");
-                for (String enhancement : reportSummary.getEnhancements()) {
-                    System.out.println("    " + enhancement + ": " + reportSummary.getImprovementsCount(enhancement));
-                }
-
-                ArrayNode data = Json.newArray();
-
-                int compliantCount = reportSummary.getCompliantCount("Coordinates must fall inside the country");
-                ObjectNode compliant = Json.newObject();
-
-                compliant.put("value", compliantCount);
-                compliant.put("color", "#66cdaa");
-                compliant.put("highlight", "#a3e1cc");
-                compliant.put("label", "Compliant");
-
-                data.add(compliant);
-
-                int improvementsCount = reportSummary.getImprovementsCount(
-                        "Coordinates must fall inside the country");
-                ObjectNode improvements = Json.newObject();
-
-                improvements.put("value", improvementsCount);
-                improvements.put("color", "#6897bb");
-                improvements.put("highlight", "#a4c0d6");
-                improvements.put("label", "Improvements");
-
-                data.add(improvements);
-
-
-                int nonCompliantCount = reportSummary.getNonCompliantAfterImprovementsCount(
-                        "Coordinates must fall inside the country");
-                ObjectNode nonCompliant = Json.newObject();
-
-                nonCompliant.put("value", nonCompliantCount);
-                nonCompliant.put("color", "#fa8072");
-                nonCompliant.put("highlight", "#fcb2aa");
-                nonCompliant.put("label", "Non Compliant");
-
-                data.add(nonCompliant);
-                String json = data.toString();
-                return ok(summary.render(json));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return badRequest();
-    }
     @Security.Authenticated(Secured.class)
     public static Result error(long workflowRunId) {
         response().setHeader("Content-Disposition", "attachment; filename=error_log.txt");

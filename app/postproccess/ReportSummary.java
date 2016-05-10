@@ -2,10 +2,15 @@ package postproccess;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.kurator.akka.data.DQReport.DQReport;
 import org.kurator.akka.data.DQReport.Improvement;
 import org.kurator.akka.data.DQReport.Validation;
+import play.libs.Json;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -26,6 +31,7 @@ public class ReportSummary {
 
         initSummary();
     }
+
     public ReportSummary(List<DQReport> reports) {
         this.reports = reports;
 
@@ -117,5 +123,58 @@ public class ReportSummary {
         criterion.addAll(getNonCompliantCriterion());
 
         return criterion;
+    }
+
+    public String asJson() {
+        System.out.println("Compliant");
+        for (String criterion : getCompliantCriterion()) {
+            System.out.println("    " + criterion + ": " + getCompliantCount(criterion));
+        }
+
+        System.out.println("\nNon Compliant");
+        for (String criterion : getNonCompliantCriterion()) {
+            System.out.println("    " + criterion + ": " + getNonCompliantCount(criterion));
+        }
+
+        System.out.println("\nImprovements");
+        for (String enhancement : getEnhancements()) {
+            System.out.println("    " + enhancement + ": " + getImprovementsCount(enhancement));
+        }
+
+        ArrayNode data = Json.newArray();
+
+        int compliantCount = getCompliantCount("Coordinates must fall inside the country");
+        ObjectNode compliant = Json.newObject();
+
+        compliant.put("value", compliantCount);
+        compliant.put("color", "#66cdaa");
+        compliant.put("highlight", "#a3e1cc");
+        compliant.put("label", "Compliant");
+
+        data.add(compliant);
+
+        int improvementsCount = getImprovementsCount(
+                "Coordinates must fall inside the country");
+        ObjectNode improvements = Json.newObject();
+
+        improvements.put("value", improvementsCount);
+        improvements.put("color", "#6897bb");
+        improvements.put("highlight", "#a4c0d6");
+        improvements.put("label", "Improvements");
+
+        data.add(improvements);
+
+
+        int nonCompliantCount = getNonCompliantAfterImprovementsCount(
+                "Coordinates must fall inside the country");
+        ObjectNode nonCompliant = Json.newObject();
+
+        nonCompliant.put("value", nonCompliantCount);
+        nonCompliant.put("color", "#fa8072");
+        nonCompliant.put("highlight", "#fcb2aa");
+        nonCompliant.put("label", "Non Compliant");
+
+        data.add(nonCompliant);
+        return data.toString();
     }
 }

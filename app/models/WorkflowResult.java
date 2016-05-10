@@ -2,11 +2,10 @@ package models;
 
 import com.avaje.ebean.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by lowery on 2/25/16.
@@ -22,15 +21,16 @@ public class WorkflowResult extends Model {
     public String errorText;
     public String outputText;
 
-    public String resultFile;
+    @OneToMany(cascade=CascadeType.ALL)
+    public List<ResultFile> resultFiles = new ArrayList<>();
 
-    public String getResultFileName() {
+    /*public String getResultFileName() {
         if (resultFile != null) {
             File file = new File(resultFile);
             return file.getName();
         }
 
         return null;
-    }
+    }*/
 
 }
