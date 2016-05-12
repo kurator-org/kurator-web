@@ -25,6 +25,7 @@ CREATE TABLE workflow_result (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   output_text LONGTEXT,
   error_text LONGTEXT,
+  archive_path VARCHAR(255),
   PRIMARY KEY (id)
 );
 

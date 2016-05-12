@@ -39,10 +39,10 @@
                         <td>@workflowRun.workflow.title</td>
                         <td>@workflowRun.startTime</td>
                         <td>@workflowRun.endTime</td>
-                        <td>@if(workflowRun.result == null) {
+                        <td>@if(workflowRun.result == null || workflowRun.result.resultFiles.isEmpty()) {
                                 Unavailable
                             } else {
-                                <a href="result/@workflowRun.id">@workflowRun.result.resultFiles</a>
+                                <a href="result/@workflowRun.id">Download</a>
                             }
                         </td>
                         <td>@if(workflowRun.result != null && !workflowRun.result.outputText.equals("")) {

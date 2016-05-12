@@ -1,29 +1,17 @@
 package controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import forms.FormDefinition;
 import forms.input.*;
 import models.UserUpload;
 import models.Workflow;
-import models.WorkflowResult;
 import models.WorkflowRun;
 import org.apache.commons.io.FileUtils;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
-import org.kurator.akka.data.DQReport.DQReport;
-import org.kurator.akka.data.DQReport.Improvement;
-import org.kurator.akka.data.DQReport.Measure;
-import org.kurator.akka.data.DQReport.Validation;
 import org.restflow.yaml.spring.YamlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import play.Play;
-import play.api.data.validation.Valid;
 import play.libs.Json;
 import play.mvc.*;
 
@@ -32,10 +20,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 
-import postproccess.PostProcessor;
-import postproccess.ReportSummary;
-import postproccess.ffdq.RecordRowPostProcessor;
-import util.ResultNotificationMailer;
+import org.kurator.postproccess.PostProcessor;
+import org.kurator.postproccess.ReportSummary;
+import org.kurator.postproccess.ffdq.RecordRowPostProcessor;
+import scala.concurrent.java8.FuturesConvertersImpl;
 import views.html.*;
 
 /**
@@ -168,7 +156,11 @@ import views.html.*;
     public static Result result(long workflowRunId, String format) {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
-        return ok(run.result.outputText);
+        if (run.result.archivePath != null && run.result.resultFiles.size() > 1) {
+            return ok(new File(run.result.archivePath));
+        } else {
+            return ok(new File(run.result.resultFiles.get(0).fileName));
+        }
     }
 
     @Security.Authenticated(Secured.class)

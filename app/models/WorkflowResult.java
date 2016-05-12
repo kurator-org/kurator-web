@@ -24,6 +24,8 @@ public class WorkflowResult extends Model {
     @OneToMany(cascade=CascadeType.ALL)
     public List<ResultFile> resultFiles = new ArrayList<>();
 
+    public String archivePath;
+
     /*public String getResultFileName() {
         if (resultFile != null) {
             File file = new File(resultFile);

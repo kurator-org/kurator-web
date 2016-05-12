@@ -10,9 +10,11 @@ import org.kurator.akka.actors.StringAppender;
 import org.kurator.akka.data.WorkflowProduct;
 import util.ResultNotificationMailer;
 
-import java.io.ByteArrayOutputStream;
+import java.io.*;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by lowery on 5/10/16.
@@ -52,6 +54,11 @@ public class AsyncWorkflowRunnable implements Runnable {
 
                 result.resultFiles.add(file);
             }
+
+            if (result.resultFiles.size() > 1) {
+                result.archivePath = createArchive(result.resultFiles);
+            }
+
             result.errorText = new String(errStream.toByteArray());
             result.outputText = new String(outStream.toByteArray());
             result.save();
@@ -69,6 +76,37 @@ public class AsyncWorkflowRunnable implements Runnable {
         } catch (Exception e) {
             // TODO: Handle exceptions related to sending the email
             e.printStackTrace();
+        }
+    }
+
+    private String createArchive(List<ResultFile> resultFiles) {
+        try {
+            File archive = File.createTempFile("artifacts", ".zip");
+            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(archive));
+
+            for (ResultFile resultFile : resultFiles) {
+                File file = new File(resultFile.fileName);
+                FileInputStream in = new FileInputStream(file);
+
+                out.putNextEntry(new ZipEntry(file.getName()));
+
+                byte[] b = new byte[1024];
+                int count;
+
+                while ((count = in.read(b)) > 0) {
+                    System.out.println();
+                    out.write(b, 0, count);
+                }
+
+                in.close();
+            }
+
+            out.close();
+
+            System.out.println(archive.getAbsolutePath());
+            return archive.getAbsolutePath();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
