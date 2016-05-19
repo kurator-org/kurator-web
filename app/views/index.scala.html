@@ -17,7 +17,12 @@
     <h1>Kurator workflows</h1>
 
         @workflows.map { workflow =>
-            <li><a href="workflow/@workflow.name">Run "@workflow.title"</a></li>
+            <li>
+                <a href="workflow/@workflow.name">Run "@workflow.title"</a>
+                @if(workflow.documentation != null) {
+                    <a href="@workflow.documentation"><img src="@routes.Assets.at("images/info.png")" /></a>
+                }
+            </li>
         }
 
     <h1>Workflow runs</h1>
