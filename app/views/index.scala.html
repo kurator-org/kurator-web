@@ -5,6 +5,9 @@
     <li><a class="active" href="@routes.Application.index">Home</a></li>
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
     <li><a href="@routes.Application.createaccount">Register</a></li>
+    @if(session.get("uid") == 0) {
+        <li><a href="@routes.Application.index">User Management</a></li>
+    }
     @if(session.get("uid") == null) {
         <li><a href="@routes.Application.login">Login</a></li>
     } else {
@@ -47,8 +50,7 @@
                         </td>
                         <td>@if(workflowRun.result != null && !workflowRun.result.outputText.equals("")) {
                             Output <a href="output/@workflowRun.id">(view log)</a>
-                            } else {
-                            No Output
+                            } else {                            No Output
                             }
                         </td>
                         <td>@if(workflowRun.result != null && !workflowRun.result.errorText.equals("")) {

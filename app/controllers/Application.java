@@ -38,6 +38,12 @@ public class Application extends Controller {
         );
     }
 
+    public static Result manager() {
+        List<User> users = User.find.all();
+
+        return ok(manager.render(users));
+    }
+
     public static Result register() {
         Form<Register> registerForm = form(Register.class).bindFromRequest();
 

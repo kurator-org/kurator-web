@@ -1,0 +1,38 @@
+@(users : List[User])
+
+<ul id="navbar">
+    <li><a href="@routes.Application.index">Home</a></li>
+    <li><a href="@routes.Application.builder">Workflow Builder</a></li>
+    <li><a href="@routes.Application.createaccount">Register</a></li>
+    @if(session.get("uid") == 0) {
+        <li><a class="active" href="@routes.Application.index">User Management</a></li>
+    }
+    @if(session.get("uid") == null) {
+        <li><a href="@routes.Application.login">Login</a></li>
+    } else {
+        <li><a href="@routes.Application.logout">Logout</a></li>
+    }
+</ul>
+
+@main(title = "The Kurator 'helloworld' application") {
+    <h1>User Management</h1>
+
+
+    <form action="#" method="post">
+        <table>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Active</th>
+            </tr>
+            @users.map { user =>
+              <tr>
+                  <td>@user.username</td>
+                  <td>@user.email</td>
+                  <td><input type="checkbox" name="active" @if(user.active) { checked="checked" } value="@user.id"></td>
+              </tr>
+            }
+        </table>
+        <input type="submit" />
+    </form>
+}

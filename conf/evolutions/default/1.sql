@@ -17,6 +17,7 @@ CREATE TABLE user (
   email VARCHAR(255),
   username VARCHAR (255) NOT NULL,
   password VARCHAR (255) NOT NULL,
+  active VARCHAR (255) NOT NULL,
   affiliation VARCHAR (255),
   PRIMARY KEY (id)
 );
@@ -69,7 +70,7 @@ CREATE TABLE user_upload (
 
 -- username: admin, password: admin
 
-INSERT INTO user (username, password) VALUES('admin', '$2a$10$8YF40nAp.y2iknDPi8.G1uqfv8u26ARgBvVncdr89BmXOim1nD6Qy');
+INSERT INTO user (username, password, active) VALUES('admin', '$2a$10$8YF40nAp.y2iknDPi8.G1uqfv8u26ARgBvVncdr89BmXOim1nD6Qy', TRUE);
 
 # --- !Downs
 
