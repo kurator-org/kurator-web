@@ -15,7 +15,7 @@ public class FormDefinition {
     public String title;
     public String name;
     public String outputFormat;
-
+    public String documentation;
     public String yamlFile;
 
     public void addField(BasicField field) {

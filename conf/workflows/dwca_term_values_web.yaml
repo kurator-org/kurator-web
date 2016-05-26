@@ -14,6 +14,7 @@ components:
     name: dwca_term_values
     title: Dwca Term Values
     outputFormat: text
+    documentation: http://wiki.datakurator.net/web/
 
 - id: UrlField
   type: TextField
