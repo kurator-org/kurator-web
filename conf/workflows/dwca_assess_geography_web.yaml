@@ -1,0 +1,24 @@
+
+imports:
+
+- classpath:/packages/kurator_dwca/workflows/dwca_assess_geography.yaml
+- classpath:/fields.yaml
+
+components:
+
+- id: WorkflowView
+  type: FormDefinition
+  properties:
+    fields:
+      - !ref UrlField
+    name: dwca_assess_geography
+    title: Dwca Assess Geography
+    outputFormat: text
+    documentation: http://wiki.datakurator.net/web/
+
+- id: UrlField
+  type: TextField
+  properties:
+    name: url
+    label: Url
+
