@@ -39,7 +39,7 @@ public class Application extends Controller {
     }
 
     public static Result manager() {
-        List<User> users = User.find.all();
+        List<User> users = User.find.where().ne("id", 1).findList();
 
         return ok(manager.render(users));
     }

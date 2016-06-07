@@ -18,20 +18,25 @@
     <h1>User Management</h1>
 
     <form id="usermanagment" action="@routes.Application.activate" method="post">
-        <table>
-            <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Active</th>
-            </tr>
-            @users.map { user =>
-              <tr>
-                  <td>@user.username</td>
-                  <td>@user.email</td>
-                  <td><input type="checkbox" name="active_@user.username" @if(user.active) { checked="checked" } value="@user.id"></td>
-              </tr>
-            }
-        </table>
+        @if(users.size > 0) {
+            <table>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Active</th>
+                </tr>
+
+                    @users.map { user =>
+                      <tr>
+                          <td>@user.username</td>
+                          <td>@user.email</td>
+                          <td><input type="checkbox" name="active_@user.username" @if(user.active) { checked="checked" } value="@user.id"></td>
+                      </tr>
+                    }
+            </table>
+        } else {
+            <p><i>No users registered.</i></p>
+        }
         <input type="submit" />
     </form>
 }

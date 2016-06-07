@@ -7,6 +7,7 @@ import models.WorkflowResult;
 import models.WorkflowRun;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.actors.StringAppender;
+import org.kurator.akka.actors.StringFileWriter;
 import org.kurator.akka.data.WorkflowProduct;
 import util.ResultNotificationMailer;
 
@@ -55,9 +56,9 @@ public class AsyncWorkflowRunnable implements Runnable {
                 result.resultFiles.add(file);
             }
 
-            if (result.resultFiles.size() > 1) {
-                result.archivePath = createArchive(result.resultFiles);
-            }
+            File archive = File.createTempFile("artifacts", ".zip");
+
+            result.archivePath = archive.getAbsolutePath();
 
             result.errorText = new String(errStream.toByteArray());
             result.outputText = new String(outStream.toByteArray());
@@ -66,6 +67,8 @@ public class AsyncWorkflowRunnable implements Runnable {
             run.result = result;
             run.endTime = new Date();
             run.save();
+
+            createArchive(archive, run);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,37 +82,65 @@ public class AsyncWorkflowRunnable implements Runnable {
         }
     }
 
-    private String createArchive(List<ResultFile> resultFiles) {
+    private void createArchive(File archive, WorkflowRun run) {
         try {
-            File archive = File.createTempFile("artifacts", ".zip");
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(archive));
+            List<ResultFile> resultFiles = run.result.resultFiles;
 
             for (ResultFile resultFile : resultFiles) {
                 File file = new File(resultFile.fileName);
-                FileInputStream in = new FileInputStream(file);
-
-                out.putNextEntry(new ZipEntry(file.getName()));
-
-                byte[] b = new byte[1024];
-                int count;
-
-                while ((count = in.read(b)) > 0) {
-                    System.out.println();
-                    out.write(b, 0, count);
-                }
-
-                in.close();
+                writeFile(file, out);
             }
+
+            File readmeFile = new File("readme.txt");
+            File outputFile = new File("output_log.txt");
+            File errorFile = new File("error_log.txt");
+
+            FileWriter readme = new FileWriter(readmeFile);
+
+            readme.append("Workflow: " + run.workflow.title + "\n");
+            readme.append("Start time: " + run.startTime + "\n");
+            readme.append("End time: " + run.endTime + "\n");
+
+            readme.close();
+
+            writeFile(readmeFile, out);
+
+            FileWriter output = new FileWriter(outputFile);
+            FileWriter error = new FileWriter(errorFile);
+
+            output.write(run.result.outputText);
+            error.write(run.result.errorText);
+
+            output.close();
+            error.close();
+
+            writeFile(outputFile, out);
+            writeFile(errorFile, out);
 
             out.close();
 
             System.out.println(archive.getAbsolutePath());
-            return archive.getAbsolutePath();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private void writeFile(File file, ZipOutputStream out) throws IOException {
+        FileInputStream in = new FileInputStream(file);
+
+        out.putNextEntry(new ZipEntry(file.getName()));
+
+        byte[] b = new byte[1024];
+        int count;
+
+        while ((count = in.read(b)) > 0) {
+            System.out.println();
+            out.write(b, 0, count);
+        }
+
+        in.close();
+    }
     public synchronized void error(String errorText, String outputText) {
         WorkflowResult result = new WorkflowResult();
 

@@ -155,12 +155,7 @@ import views.html.*;
     @Security.Authenticated(Secured.class)
     public static Result result(long workflowRunId, String format) {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
-
-        if (run.result.archivePath != null && run.result.resultFiles.size() > 1) {
-            return ok(new File(run.result.archivePath));
-        } else {
-            return ok(new File(run.result.resultFiles.get(0).fileName));
-        }
+        return ok(new File(run.result.archivePath));
     }
 
     @Security.Authenticated(Secured.class)
