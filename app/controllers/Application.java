@@ -44,6 +44,25 @@ public class Application extends Controller {
         return ok(manager.render(users));
     }
 
+    public static Result activate() {
+        DynamicForm form = form().bindFromRequest();
+
+        List<User> users = User.find.all();
+
+        for (User user : users) {
+            System.out.println(form.data());
+            if (form.data().containsValue(String.valueOf(user.id))) {
+                user.active = true;
+            } else {
+                user.active = false;
+            }
+
+            user.save();
+        }
+
+        return ok(manager.render(users));
+    }
+
     public static Result register() {
         Form<Register> registerForm = form(Register.class).bindFromRequest();
 

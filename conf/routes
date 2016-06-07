@@ -16,6 +16,7 @@ POST    /upload                     controllers.Workflows.upload()
 GET     /file/*id                   controllers.Workflows.file(id : Long)
 
 GET     /manager             controllers.Application.manager()
+POST    /manager/activate   controllers.Application.activate()
 
 # Workflow page
 GET     /workflow/*name             controllers.Workflows.workflow(name: String)

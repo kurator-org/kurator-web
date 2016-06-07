@@ -3,8 +3,8 @@
     <li><a href="@routes.Application.index">Home</a></li>
     <li><a class="active" href="@routes.Application.builder">Workflow Builder</a></li>
     <li><a href="@routes.Application.createaccount">Register</a></li>
-    @if(session.get("uid") == 0) {
-        <li><a href="@routes.Application.index">User Management</a></li>
+    @if(session.get("uid").equals("1")) {
+        <li><a href="@routes.Application.manager">User Management</a></li>
     }
     @if(session.get("uid") == null) {
         <li><a href="@routes.Application.login">Login</a></li>
