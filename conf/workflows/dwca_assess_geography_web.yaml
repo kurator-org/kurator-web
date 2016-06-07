@@ -14,7 +14,7 @@ components:
     name: dwca_assess_geography
     title: Dwca Assess Geography
     outputFormat: text
-    documentation: http://wiki.datakurator.net/web/
+    documentation: https://github.com/kurator-org/kurator-validation/wiki/dwca_assess_geography 
 
 - id: UrlField
   type: TextField
