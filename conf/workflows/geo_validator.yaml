@@ -1,0 +1,23 @@
+imports:
+
+- classpath:/org/kurator/akka/samples/geo_validator.yaml
+- classpath:/fields.yaml
+
+components:
+
+- id: WorkflowView
+  type: FormDefinition
+  properties:
+    fields:
+      - !ref FileUpload
+    name: geo_validator
+    title: Geo Validator
+    outputFormat: ffdq
+
+- id: FileUpload
+  type: FileInput
+  properties:
+    name: in
+    label: Upload File
+    fieldHandler: !inline
+      type: FilePathHandler
