@@ -106,6 +106,16 @@ To make your own Python code available to **Kurator-Akka** specify the directory
 
 Note that Python packages always require that a file named `__init__.py` be present in each directory comprising the package.  In the above example, the directories `$HOME/packages/math` and `$HOME/packages/math/operators` must each contain a file named `__init__.py`. These files may be empty.
 
+#### Python actor dependencies
+
+The python actor workflows included with the webapp require the installation of a few dependencies via jython pip. Install the following with the pip tool found in $JYTHON_HOME/bin/pip
+
+    jython pip install requests
+    jython pip install python-dwca-reader
+    jython pip install py
+    jython pip install unicodecsv
+    jython pip install unidecode
+
 #### Stopping the Play server
 
 Use the play2:stop maven goal to shutdown the Play server.
