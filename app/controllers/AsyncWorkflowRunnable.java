@@ -1,6 +1,8 @@
 package controllers;
 
 import akka.actor.ActorRef;
+import org.apache.commons.mail.EmailException;
+
 import models.ResultFile;
 import models.Workflow;
 import models.WorkflowResult;
@@ -76,9 +78,10 @@ public class AsyncWorkflowRunnable implements Runnable {
         try {
             ResultNotificationMailer mailer = new ResultNotificationMailer();
             mailer.sendNotification(run.user, run);
-        } catch (Exception e) {
+        
+        } catch (EmailException e) { 
             // TODO: Handle exceptions related to sending the email
-            e.printStackTrace();
+            System.out.println("Error sending notification email message: " + e.getMessage());
         }
     }
 
