@@ -19,6 +19,6 @@ components:
 - id: UrlField
   type: TextField
   properties:
-    name: testinput
+    name: url
     label: Url
 
