@@ -91,36 +91,29 @@ On Windows it is easiest to define the variable using the Advanced system settin
 
     Control Panel -> System -> Advanced system settings -> Advanced -> Environment Variables
 
-**Kurator-Akka** now will have access to all Python packages installed to your Jython installation.  Jython 2.7 includes the `pip` tool (in the `bin` subdirectory of the Jython installation) which makes it easy to install 3rd-party Python packages and to install their dependencies automatically.  For example, this following command installs the `suds-jurko` package which subsequently can be imported by Python actors:
-
-    $JYTHON_HOME/bin/pip install suds-jurko
-
-#### Make your own Python code available to **Kurator-Akka**
-
-To make your own Python code available to **Kurator-Akka** specify the directory (or directories) containing your Python packages using the `JYTHONPATH` variable.  For example, if you have defined a Python function `add_two_numbers()` in a file named `adders.py`, and placed this Python module (file) in the `$HOME/packages/math/operators` directory, you can make your function available for use in an actor via the `math.operators.adders` module by defining `JYTHONPATH` to include the `$HOME/packages/` directory and then declaring the `module` and `onData` properties of the actor as follows:
-
-    types:
-    - id: Adder
-      type: PythonClassActor
-      properties:
-        module: math.operators.adders
-        onData: add_two_numbers
-
-Note that Python packages always require that a file named `__init__.py` be present in each directory comprising the package.  In the above example, the directories `$HOME/packages/math` and `$HOME/packages/math/operators` must each contain a file named `__init__.py`. These files may be empty.
+See the documentation in Kurator-Akka on how to make your own Python code available to **Kurator-Akka**.
 
 #### Python actor dependencies
 
-The python actor workflows included with the webapp require the installation of a few dependencies via jython pip. Install the following with the pip tool found in $JYTHON_HOME/bin/pip error messages suggesting a missing python package probably indicate that additional pip installations need to be performed.
+The python actor workflows included with the webapp require the installation of a few dependencies via jython pip. Install the following with the pip tool found in $JYTHON_HOME/bin/pip error messages suggesting a missing python module (Error importing python module ... No module named ...) probably indicate that additional pip installations need to be performed, try running pip install with the module name found after "No module named".  Currently packaged workflows depend on the following modules being installed:
 
-    jython pip install requests
-    jython pip install python-dwca-reader
-    jython pip install py
-    jython pip install unicodecsv
-    jython pip install unidecode
+    $JYTHONHOME/bin/pip install requests
+    $JYTHONHOME/bin/pip install python-dwca-reader
+    $JYTHONHOME/bin/pip install py
+    $JYTHONHOME/bin/pip install unicodecsv
+    $JYTHONHOME/bin/pip install unidecode
+
+#### Starting the Play server
+
+Use the play2:ebean-enhance and play2:run maven goal to start the Play server.
+
+    mvn play2:ebean-enhance play2:run 
 
 #### Stopping the Play server
 
 Use the play2:stop maven goal to shutdown the Play server.
+
+    mvn play2:stop
 
 #### Deploying to Tomcat ####
 
