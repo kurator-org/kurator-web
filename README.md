@@ -67,14 +67,34 @@ In the project directory, build the project using the package goal. You may also
 
 By default the Play server will listen on port 9000. Open http://localhost:9000/ in your browser after starting the server to test the web application.
 
-To invoke actors implemented in python, you will need to (currently) set an environment variables:
+#### Make installed Python packages available to Kurator
 
-    export KURATOR_LOCAL_PACKAGES=~/somepath/kurator-validation/src/main/python/
+Define the environment variable `JYTHONHOME` to indicate the path to the newly installed Jython 2.7.0 distribution. **Kurator-Akka** uses this variable to locate 3rd-party Python packages that specific actors depend upon.
 
-These two might also need to be set:
+In a bash shell the environment variable can be assigned with the following command (assuming, for example, that Jython was installed to the `jython2.7.1b3` directory within your home directory):
 
-    export KURATOR_LOCAL_PYTHON=~/somepath/jython2.7.0/Lib/
-    export PYTHONPATH="/home/somepath/kurator-validation/src/main/python/:$PYTHONPATH"
+    export JYTHONHOME=$HOME/jython2.7.1b3/
+
+On Windows it is easiest to define the variable using the Advanced system settings Environment Variables dialog:
+
+    Control Panel -> System -> Advanced system settings -> Advanced -> Environment Variables
+
+**Kurator-Akka** now will have access to all Python packages installed to your Jython installation.  Jython 2.7 includes the `pip` tool (in the `bin` subdirectory of the Jython installation) which makes it easy to install 3rd-party Python packages and to install their dependencies automatically.  For example, this following command installs the `suds-jurko` package which subsequently can be imported by Python actors:
+
+    $JYTHON_HOME/bin/pip install suds-jurko
+
+#### Make your own Python code available to **Kurator-Akka**
+
+To make your own Python code available to **Kurator-Akka** specify the directory (or directories) containing your Python packages using the `JYTHONPATH` variable.  For example, if you have defined a Python function `add_two_numbers()` in a file named `adders.py`, and placed this Python module (file) in the `$HOME/packages/math/operators` directory, you can make your function available for use in an actor via the `math.operators.adders` module by defining `JYTHONPATH` to include the `$HOME/packages/` directory and then declaring the `module` and `onData` properties of the actor as follows:
+
+    types:
+    - id: Adder
+      type: PythonClassActor
+      properties:
+        module: math.operators.adders
+        onData: add_two_numbers
+
+Note that Python packages always require that a file named `__init__.py` be present in each directory comprising the package.  In the above example, the directories `$HOME/packages/math` and `$HOME/packages/math/operators` must each contain a file named `__init__.py`. These files may be empty.
 
 #### Stopping the Play server
 
