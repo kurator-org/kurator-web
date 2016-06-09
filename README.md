@@ -49,6 +49,8 @@ The web application configuration file can be found at conf/application.conf. Ed
 
 By default the play application is configured to use the embedded in memory H2 database.
 
+##### Optional MariaDB/MySQL Configuration
+
 If you plan on using MySQL as the production database comment out the two lines in conf/application.conf that configure the h2 database and uncomment the lines for mysql configuration instead.
 
 You must also create the kurator user and database with privileges in MySQL:
@@ -108,7 +110,7 @@ Note that Python packages always require that a file named `__init__.py` be pres
 
 #### Python actor dependencies
 
-The python actor workflows included with the webapp require the installation of a few dependencies via jython pip. Install the following with the pip tool found in $JYTHON_HOME/bin/pip
+The python actor workflows included with the webapp require the installation of a few dependencies via jython pip. Install the following with the pip tool found in $JYTHON_HOME/bin/pip error messages suggesting a missing python package probably indicate that additional pip installations need to be performed.
 
     jython pip install requests
     jython pip install python-dwca-reader
