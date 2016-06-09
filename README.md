@@ -67,6 +67,16 @@ In the project directory, build the project using the package goal. You may also
 
 By default the Play server will listen on port 9000. Open http://localhost:9000/ in your browser after starting the server to test the web application.
 
+#### Install the Jython 2.7.1b3 distribution to support 3rd party Python packages
+
+* Download the [Jython 2.7.1.b3 installer jar](http://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7.1b3/jython-installer-2.7.1b3.jar). The downloaded jar file will be named `jython_installer-2.7.1b3.jar`.
+
+* The Jython installer can be started either by double-clicking the downloaded jar file (on Windows or OS X) or executing the downloaded jar at the command prompt using the `java -jar` command:
+
+        java -jar jython_installer-2.7.1b3.jar
+
+* Note the location of the Jython installation directory created by the installer.
+
 #### Make installed Python packages available to Kurator
 
 Define the environment variable `JYTHONHOME` to indicate the path to the newly installed Jython 2.7.0 distribution. **Kurator-Akka** uses this variable to locate 3rd-party Python packages that specific actors depend upon.
