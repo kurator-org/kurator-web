@@ -95,9 +95,9 @@ public class AsyncWorkflowRunnable implements Runnable {
                 writeFile(file, out);
             }
 
-            File readmeFile = new File("readme.txt");
-            File outputFile = new File("output_log.txt");
-            File errorFile = new File("error_log.txt");
+            File readmeFile = File.createTempFile("readme", ".txt");
+            File outputFile = File.createTempFile("output_log", ".txt");
+            File errorFile = File.createTempFile("error_log", ".txt");
 
             FileWriter readme = new FileWriter(readmeFile);
 
