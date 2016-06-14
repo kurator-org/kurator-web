@@ -20,5 +20,7 @@ public class Workflow extends Model {
     public String title;
     public String outputFormat;
 
+    public String yamlFile;
+
     public static Finder<Long, Workflow> find = new Finder<Long,Workflow>(Workflow.class);
 }

@@ -1,5 +1,5 @@
 @import forms._
-@(workflows : List[FormDefinition])(workflowRuns : List[WorkflowRun])(userUploads : List[UserUpload])
+@(workflows : List[FormDefinition])(userUploads : List[UserUpload])
 
 <ul id="navbar">
     <li><a class="active" href="@routes.Application.index">Home</a></li>
@@ -19,6 +19,54 @@
 
     <h1>Kurator workflows</h1>
 
+    <script type="text/javascript">
+            $(function() {
+
+                function updateWorkflowRuns(data) {
+                    if (data.length != 0) {
+                        data.sort(function(a, b) {
+                            return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
+                        });
+
+                        var html = "    <table>" +
+                                "        <tr>" +
+                                "            <th>Workflow</th>" +
+                                "            <th>Start Time</th>" +
+                                "            <th>End Time</th>" +
+                                "            <th>Result</th>" +
+                                "            <th>Output Log</th>" +
+                                "            <th>Error Log</th>" +
+                                "        </tr>";
+
+                        $.each(data, function(i, val) {
+                            html += "        <tr>" +
+                                    "            <td>" + val.workflow + "</td>" +
+                                    "            <td>" + val.startTime + "</td>" +
+                                    "            <td>" + (val.endTime != null ? val.endTime : "Running...") + "</td>" +
+                                    "            <td>" + (val.hasResult ? "<a href=\"result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
+                                    "            <td>" + (val.hasOutput ? "<a href=\"output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
+                                    "            <td>" + (val.hasErrors ? "<a href=\"error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
+                                    "        </tr>";
+                        });
+
+                        html += "    </table>";
+                        $("#workflowRuns").html(html);
+                    }
+                    console.log(data);
+                }
+
+                $.ajax({ url: "data/status/@(session.get("uid"))", success: updateWorkflowRuns});
+
+                (function poll() {
+                    setTimeout(function() {
+                        $.ajax({ url: "data/status/@(session.get("uid"))", success: updateWorkflowRuns, dataType: "json", complete: poll });
+                    }, 3000);
+                })()
+            })
+
+            /*;*/
+    </script>
+
         @workflows.map { workflow =>
             <li>
                 <a href="workflow/@workflow.name">Run "@workflow.title"</a>
@@ -28,59 +76,7 @@
             </li>
         }
 
-    <h1>Workflow runs</h1>
-    <p>
-        @if(workflowRuns.isEmpty) {
-            <i>No workflow runs</i>
-        } else {
-            <table>
-                <tr>
-                    <th>Workflow</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Result</th>
-                    <th>Output Log</th>
-                    <th>Error Log</th>
-                </tr>
-                @workflowRuns.map { workflowRun =>
-                    <tr @if(workflowRun.result != null && !workflowRun.result.errorText.equals("")) { class="error" }>
-                        <td>@workflowRun.workflow.title</td>
-                        <td>@workflowRun.startTime</td>
-                        <td>@workflowRun.endTime</td>
-                        <td>@if(workflowRun.result == null || workflowRun.result.resultFiles.isEmpty()) {
-                                Unavailable
-                            } else {
-                                <a href="result/@workflowRun.id">Download</a>
-                            }
-                        </td>
-                        <td>@if(workflowRun.result != null && !workflowRun.result.outputText.equals("")) {
-                            Output <a href="output/@workflowRun.id">(view log)</a>
-                            } else {                            No Output
-                            }
-                        </td>
-                        <td>@if(workflowRun.result != null && !workflowRun.result.errorText.equals("")) {
-                            Error <a href="error/@workflowRun.id">(view stack trace)</a>
-                            } else {
-                            No Errors
-                            }
-                        </td>
-                    </tr>
-                }
-            </table>
-        }
-    </p>
-
-    <h1>Uploads</h1>
-    <p>
-        @if(userUploads.isEmpty) {
-            <i>No user uploads</i>
-        } else {
-            <ul>
-                @userUploads.map { userUpload =>
-                    <li><a href="file/@userUpload.id">@userUpload.fileName</a></li>
-                }
-            </ul>
-        }
-    </p>
+    <h1>Workflow runs (Most recent first)</h1>
+    <div id="workflowRuns"></div>
     
 }

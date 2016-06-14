@@ -120,11 +120,11 @@ public class Application extends Controller {
         List<FormDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
 
         String uid = session().get("uid");
-        List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", uid).findList();
+        //List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", uid).findList();
         List<UserUpload> userUploads = UserUpload.find.where().eq("user.id", uid).findList();
 
         return ok(
-            index.render(workflows, workflowRuns, userUploads)
+            index.render(workflows, userUploads)
         );
     }
 

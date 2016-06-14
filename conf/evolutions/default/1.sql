@@ -44,6 +44,7 @@ CREATE TABLE workflow (
   name VARCHAR (255),
   title VARCHAR (255),
   output_format VARCHAR (255),
+  yaml_file VARCHAR (255),
   PRIMARY KEY (id)
 );
 

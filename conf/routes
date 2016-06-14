@@ -36,7 +36,7 @@ GET     /builder                controllers.Application.builder()
 # REST Api routes for data
 
 GET     /data/uploads            controllers.Data.uploads()
-GET     /data/status/*id                 controllers.Data.status(id : Long)
+GET     /data/status/*uid                 controllers.Data.status(uid : Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

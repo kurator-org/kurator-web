@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import forms.FormDefinition;
 import models.UserUpload;
+import models.Workflow;
 import models.WorkflowRun;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import play.Routes;
 import play.libs.Json;
@@ -12,6 +14,8 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import views.html.*;
 
@@ -35,19 +39,32 @@ public class Data extends Controller {
         return ok(uploads);
     }
 
-    public static Result status(Long runId) {
-        WorkflowRun run = WorkflowRun.find.byId(runId);
+    public static Result status(Long uid) {
+        List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", uid).findList();
 
-        ObjectNode response = Json.newObject();
+        ArrayNode response = Json.newArray();
+        for (WorkflowRun run : workflowRuns) {
+            ObjectNode runJson = Json.newObject();
 
-        if (run.endTime == null) {
-            response.put("status", "running");
-        } else {
-            response.put("status", "terminated");
-            response.put("output", run.result.outputText);
-            response.put("errors", run.result.errorText != null ? run.result.errorText : "");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+
+            runJson.put("id", run.id);
+            runJson.put("workflow", run.workflow.title);
+            runJson.put("startTime", dateFormat.format(run.startTime));
+            runJson.put("endTime", run.endTime != null ? dateFormat.format(run.endTime) : null);
+            runJson.put("hasResult", run.result != null);
+            if (run.result != null) {
+                runJson.put("hasOutput", !run.result.outputText.equals(""));
+                runJson.put("hasErrors", !run.result.errorText.equals(""));
+            } else {
+                runJson.put("hasOutput", false);
+                runJson.put("hasErrors", false);
+            }
+
+            response.add(runJson);
         }
 
         return ok(response);
+
     }
 }

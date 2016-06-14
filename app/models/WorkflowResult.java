@@ -18,8 +18,8 @@ public class WorkflowResult extends Model {
 
     // TODO: add hasErrors boolean and check after running to display error to the user
 
-    public String errorText;
-    public String outputText;
+    public String errorText = "";
+    public String outputText = "";
 
     @OneToMany(cascade=CascadeType.ALL)
     public List<ResultFile> resultFiles = new ArrayList<>();

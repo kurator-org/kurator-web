@@ -19,50 +19,7 @@
 
     <h1>@form.title</h1>
 
-     <script type="text/javascript">
-        $(function() {
-            $("#complete").hide();
-
-            $("#progressbar").progressbar({
-                value: false
-            }).hide();
-
-            $("#overlay").hide();
-            $("#modal").hide();
-
-            $("#runWorkflow").submit(function (event) {
-                $("#progressbar").show("fade");
-
-                event.preventDefault();
-                var formData = new FormData($(this)[0]);
-
-                $.ajax({
-                    url: "@routes.Workflows.test(form.name)",
-                    type: "POST",
-                    data: formData,
-                    async: false,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        $("#result").html(data.output);
-                        $("#download").attr("href", "../result/" + data.runId);
-                        console.log(data)
-                        $("#progressbar").hide("fade");
-                        $("#complete").show("drop");
-                    },
-                    error: function (request, status, error) {
-                        $("#progressbar").hide("fade");
-                        $("#error").html(data);
-                    }
-                });
-
-                return false;
-            });
-        });
-     </script>
-
-<form id="runWorkflow" enctype="multipart/form-data">
+<form id="runWorkflow" action="@routes.Workflows.test(form.name)" method="POST" enctype="multipart/form-data">
     <table>
         @for(field <- form.fields) {
         <tr>
@@ -108,17 +65,4 @@
         <tr><td colspan="2"><input id="runButton" type="submit" value="Run Workflow"/><input type="reset" /></td></tr>
     </table>
     </form>
-
-    <div id="progressbar" class="ui-progressbar-indeterminate"></div>
-    <div id="complete">
-        Result: <span id="result"></span>
-        <a id="download">Download result...</a>
-    </div>
-    <div id="error"></div>
-
-    <br />
-    <div id='overlay'></div>
-    <div id='modal'>
-        <div id='content'>File upload complete!</div>
-    </div>
 }

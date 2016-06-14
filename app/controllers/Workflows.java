@@ -71,15 +71,15 @@ import views.html.*;
             workflow.name = form.name;
             workflow.title = form.title;
             workflow.outputFormat = form.outputFormat;
+            workflow.yamlFile = form.yamlFile;
 
             workflow.save();
         }
 
         ObjectNode response = run(form.yamlFile, workflow, settings);
 
-        return ok(
-                response
-        );
+
+        return redirect("/");
     }
 
     /**

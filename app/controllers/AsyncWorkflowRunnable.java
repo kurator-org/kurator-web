@@ -58,7 +58,7 @@ public class AsyncWorkflowRunnable implements Runnable {
                 result.resultFiles.add(file);
             }
 
-            File archive = File.createTempFile("artifacts", ".zip");
+            File archive = File.createTempFile("artifacts_", ".zip");
 
             result.archivePath = archive.getAbsolutePath();
 
@@ -95,9 +95,11 @@ public class AsyncWorkflowRunnable implements Runnable {
                 writeFile(file, out);
             }
 
-            File readmeFile = File.createTempFile("readme", ".txt");
-            File outputFile = File.createTempFile("output_log", ".txt");
-            File errorFile = File.createTempFile("error_log", ".txt");
+            File readmeFile = File.createTempFile("README_", ".txt");
+            File outputFile = File.createTempFile("output_log_", ".txt");
+            File errorFile = File.createTempFile("error_log_", ".txt");
+
+            File yamlFile = new File(run.workflow.yamlFile);
 
             FileWriter readme = new FileWriter(readmeFile);
 
@@ -120,6 +122,7 @@ public class AsyncWorkflowRunnable implements Runnable {
 
             writeFile(outputFile, out);
             writeFile(errorFile, out);
+            writeFile(yamlFile, out);
 
             out.close();
 
