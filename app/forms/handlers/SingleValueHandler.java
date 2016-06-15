@@ -11,7 +11,7 @@ public class SingleValueHandler implements FieldHandler<String> {
         if (obj instanceof List) {
             return ((List<String>) obj).get(0).toString(); // For single value list
         } else {
-            return obj.toString();
+            return ((String[])obj)[0];
         }
     }
 }

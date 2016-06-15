@@ -10,6 +10,7 @@ components:
   properties:
     fields:
       - !ref FileUpload
+      - !ref AuthorityField
     name: dwca_workflow
     title: Dwca Workflow
     outputFormat: json
@@ -21,3 +22,16 @@ components:
     label: Upload File
     fieldHandler: !inline
       type: FilePathHandler
+
+- id: AuthorityField
+  type: SelectField
+  properties:
+    name: authority
+    label: Taxon Authority
+    options:
+      ipni: IPNI
+      if: IF
+      worms: WoRMS
+      col: COL
+      gbif: GBIF
+      globalnames: GlobalNames
