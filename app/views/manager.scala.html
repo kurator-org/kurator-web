@@ -1,4 +1,4 @@
-@(users : List[User])
+@(form: Form[Application.ChangePass])(users : List[User])
 
 <ul id="navbar">
     <li><a href="@routes.Application.index">Home</a></li>
@@ -15,6 +15,29 @@
 </ul>
 
 @main(title = "The Kurator 'helloworld' application") {
+    <h1>Change Password</h1>
+
+    @if(form.hasGlobalErrors) {
+        <p class="error">
+        @form.globalError.message
+        </p>
+    }
+
+    @helper.form(routes.Application.changepw) {
+        <p>
+            <input type="password" placeholder="Password" name="oldPassword" required>
+        </p>
+        <p>
+            <input type="password" placeholder="New Password" name="password" required>
+        </p>
+        <p>
+            <input type="password" placeholder="Confirm New Password" name="confirmPassword" required>
+        </p>
+        <p>
+            <button type="submit">Change Password</button>
+        </p>
+    }
+
     <h1>User Management</h1>
 
     <form id="usermanagment" action="@routes.Application.activate" method="post">

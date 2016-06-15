@@ -18,6 +18,8 @@ GET     /file/*id                   controllers.Workflows.file(id : Long)
 GET     /manager             controllers.Application.manager()
 POST    /manager/activate   controllers.Application.activate()
 
+POST    /manager/changepw   controllers.Application.changepw()
+
 # Workflow page
 GET     /workflow/*name             controllers.Workflows.workflow(name: String)
 

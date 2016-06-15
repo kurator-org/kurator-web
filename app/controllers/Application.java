@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import scala.App;
 import views.html.*;
 
 public class Application extends Controller {
@@ -38,10 +39,15 @@ public class Application extends Controller {
         );
     }
 
-    public static Result manager() {
+    private static List<User> getNonAdminUsers() {
         List<User> users = User.find.where().ne("id", 1).findList();
+        return users;
+    }
 
-        return ok(manager.render(users));
+    public static Result manager() {
+
+
+        return ok(manager.render(form(ChangePass.class), getNonAdminUsers()));
     }
 
     public static Result activate() {
@@ -60,7 +66,22 @@ public class Application extends Controller {
             user.save();
         }
 
-        return ok(manager.render(users));
+        return ok(manager.render(form(ChangePass.class), users));
+    }
+
+    public static Result changepw() {
+        Form<ChangePass> changePassForm = form(ChangePass.class).bindFromRequest();
+        if (changePassForm.hasErrors()) {
+            return badRequest(manager.render(changePassForm, getNonAdminUsers()));
+        }
+
+        User user = Application.getCurrentUser();
+        user.password = BCrypt.hashpw(changePassForm.get().password, BCrypt.gensalt());
+        user.save();
+
+        return ok(
+                manager.render(form(ChangePass.class), getNonAdminUsers())
+        );
     }
 
     public static Result register() {
@@ -167,6 +188,24 @@ public class Application extends Controller {
         public String affiliation;
 
         public String validate() {
+            if (!password.equals(confirmPassword)) {
+                return "Passwords do not match";
+            }
+            return null;
+        }
+    }
+
+    public static class ChangePass {
+        public String oldPassword;
+        public String password;
+        public String confirmPassword;
+
+        public String validate() {
+            User user = User.authenticate(session().get("username"), oldPassword);
+            if (user == null) {
+                return "Current password is invalid.";
+            }
+
             if (!password.equals(confirmPassword)) {
                 return "Passwords do not match";
             }

@@ -31,6 +31,8 @@ public class User extends Model {
 
     public boolean active;
 
+    public static void main(String[] args) {}
+
     public static User authenticate(String username, String password) {
         User user = User.find.where().eq("username", username).findUnique();
 
