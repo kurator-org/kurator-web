@@ -53,7 +53,7 @@ public class Application extends Controller {
     public static Result activate() {
         DynamicForm form = form().bindFromRequest();
 
-        List<User> users = User.find.all();
+        List<User> users = getNonAdminUsers();
 
         for (User user : users) {
             System.out.println(form.data());

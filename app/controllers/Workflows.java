@@ -79,7 +79,9 @@ import views.html.*;
         ObjectNode response = run(form.yamlFile, workflow, settings);
 
 
-        return redirect("/");
+        return redirect(
+                routes.Application.index()
+        );
     }
 
     /**
