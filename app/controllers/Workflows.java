@@ -7,6 +7,7 @@ import models.UserUpload;
 import models.Workflow;
 import models.WorkflowRun;
 import org.apache.commons.io.FileUtils;
+import org.kurator.akka.WorkflowConfig;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
 import org.restflow.yaml.spring.YamlBeanDefinitionReader;
@@ -18,12 +19,10 @@ import play.mvc.*;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
-import org.kurator.postproccess.PostProcessor;
-import org.kurator.postproccess.ReportSummary;
-import org.kurator.postproccess.ffdq.RecordRowPostProcessor;
-import scala.concurrent.java8.FuturesConvertersImpl;
 import views.html.*;
 
 /**
@@ -62,6 +61,47 @@ import views.html.*;
         Map<String, Object> settings = new HashMap<>();
         for (BasicField field : form.fields) {
             settings.put(field.name, field.value());
+        }
+
+        WorkflowConfig workflowConfig;
+        InputStream in = Play.application().classloader().getResourceAsStream("kurator.properties");
+
+        if (in != null) {
+            try {
+
+                Properties properties = new Properties();
+                properties.load(in);
+
+                String workspace = properties.getProperty("kurator.web.workspace");
+                String vocabdir = properties.getProperty("kurator.web.vocabdir");
+                String vocabfile = properties.getProperty("kurator.web.vocabfile");
+
+                GenericApplicationContext springContext = new GenericApplicationContext();
+                YamlBeanDefinitionReader yamlBeanReader = new YamlBeanDefinitionReader(springContext);
+                yamlBeanReader.loadBeanDefinitions(new FileInputStream(form.yamlFile), "-");
+                springContext.refresh();
+
+                workflowConfig = springContext.getBean(WorkflowConfig.class);
+
+                Path path = Paths.get(workspace, "workspace_" + UUID.randomUUID());
+                path.toFile().mkdir();
+
+                if (workflowConfig.getParameters().containsKey("workspace")) {
+                    settings.put("workspace", path.toString());
+                }
+
+                if (workflowConfig.getParameters().containsKey("vocabdir")) {
+                    settings.put("vocabdir", vocabdir);
+                }
+
+                if (workflowConfig.getParameters().containsKey("vocabfile")) {
+                    settings.put("vocabfile", vocabfile);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Error creating workspace directory.", e);
+            } catch (Exception e) {
+                throw new RuntimeException("Error reading yaml file for parameters.", e);
+            }
         }
 
         Workflow workflow = Workflow.find.where().eq("name", form.name).findUnique();
