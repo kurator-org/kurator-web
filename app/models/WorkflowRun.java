@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.Date;
 
 /**
- * Created by lowery on 2/11/16.
+ * The model object that represents a single run of a workflow.
  */
 @Entity
 public class WorkflowRun extends Model {

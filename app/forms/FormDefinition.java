@@ -8,14 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by lowery on 2/29/2016.
+ * The form definition object contains a list of form fields and their values. It also contains metadata about the
+ * workflow for display on the form.
  */
 public class FormDefinition {
     public List<BasicField> fields = new ArrayList<>();
     public String title;
     public String name;
     public String outputFormat;
-    public String documentation;
+    public String documentation;  // A link to documentation for this workflow
     public String yamlFile;
 
     public void addField(BasicField field) {

@@ -3,7 +3,7 @@ package forms.input;
 import forms.handlers.FieldHandler;
 
 /**
- * Created by lowery on 2/29/2016.
+ * Abstract super class for a generic form field.
  */
 public abstract class BasicField<T> {
     public FieldHandler fieldHandler;

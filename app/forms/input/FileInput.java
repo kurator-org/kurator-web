@@ -5,7 +5,7 @@ import models.UserUpload;
 import play.mvc.Http.MultipartFormData.FilePart;
 
 /**
- * Created by lowery on 2/29/2016.
+ * File input field abstraction class
  */
 public class FileInput extends BasicField<UserUpload> {
     public boolean multiple;

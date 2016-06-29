@@ -3,7 +3,7 @@ package forms.handlers;
 import java.util.List;
 
 /**
- * Created by lowery on 3/16/16.
+ * Handles a single value and returns a string. Treats multiple values as single value lists.
  */
 public class SingleValueHandler implements FieldHandler<String> {
     @Override

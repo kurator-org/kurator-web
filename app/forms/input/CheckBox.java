@@ -3,7 +3,7 @@ package forms.input;
 import forms.handlers.BooleanHandler;
 
 /**
- * Created by lowery on 2/29/2016.
+ * The checkbox field abstraction.
  */
 public class CheckBox extends BasicField {
     public boolean checked;

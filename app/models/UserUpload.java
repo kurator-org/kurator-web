@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
- * Created by lowery on 2/25/16.
+ * File uploaded by a user
  */
 @Entity
 public class UserUpload extends Model {

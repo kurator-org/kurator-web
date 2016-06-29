@@ -1,7 +1,7 @@
 package forms.handlers;
 
 /**
- * Created by lowery on 3/15/16.
+ * The interface for a field handler object.
  */
 public interface FieldHandler<T> {
     public T transform(Object obj);

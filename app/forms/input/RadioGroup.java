@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by lowery on 2/29/2016.
+ * Radio group form field
  */
 public class RadioGroup extends BasicField {
     public Map<String, String> options;

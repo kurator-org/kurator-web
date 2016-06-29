@@ -5,11 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by lowery on 3/22/16.
+ * Supports multiple value transformation (array of values to list)
  */
 public class MultipleValueHandler implements FieldHandler<List> {
 
-    @Override
     public List transform(Object obj) {
         if (obj instanceof List) {
             return (List) obj;

@@ -1,7 +1,7 @@
 package forms.input;
 
 /**
- * Created by lowery on 2/29/2016.
+ * Represents an option as part of a radio group field
  */
 public class Option {
     public String name;

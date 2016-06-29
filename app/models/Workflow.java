@@ -8,7 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * Created by lowery on 3/28/2016.
+ * The workflow metadata
  */
 @Entity
 public class Workflow extends Model {

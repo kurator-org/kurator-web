@@ -3,7 +3,7 @@ package forms.input;
 import forms.handlers.SingleValueHandler;
 
 /**
- * Created by lowery on 2/29/2016.
+ * Textbox field
  */
 public class TextField extends BasicField {
     public boolean textArea;

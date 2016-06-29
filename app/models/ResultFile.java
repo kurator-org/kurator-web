@@ -8,7 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * Created by lowery on 5/10/16.
+ * A single artifact produced by a workflow run.
  */
 @Entity
 public class ResultFile extends Model {

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by lowery on 2/25/16.
+ * The workflow result and result metadata.
  */
 @Entity
 public class WorkflowResult extends Model {

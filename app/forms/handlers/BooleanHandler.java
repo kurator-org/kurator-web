@@ -1,11 +1,10 @@
 package forms.handlers;
 
 /**
- * Created by lowery on 3/24/16.
+ * Field handler for boolean values capable of transforming text to an instance of Boolean
  */
 public class BooleanHandler implements FieldHandler<Boolean> {
 
-    @Override
     public Boolean transform(Object obj) {
         if (obj instanceof Boolean) {
             return (Boolean) obj;

@@ -4,7 +4,7 @@ import models.UserUpload;
 import play.mvc.Http.MultipartFormData.FilePart;
 
 /**
- * Created by lowery on 3/15/16.
+ * Transform a file input object to its absolute path.
  */
 public class FilePathHandler implements FieldHandler<String> {
     public String transform(Object obj) {

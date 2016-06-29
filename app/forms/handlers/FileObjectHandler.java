@@ -7,11 +7,9 @@ import views.html.helper.FieldConstructor;
 import java.io.File;
 
 /**
- * Created by lowery on 3/24/16.
+ * Handler for transforming web app file objects to appropriate inputs for the actors
  */
 public class FileObjectHandler implements FieldHandler<File> {
-
-    @Override
     public File transform(Object obj) {
         if (obj instanceof UserUpload) {
             UserUpload file = (UserUpload) obj;

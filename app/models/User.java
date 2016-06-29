@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by lowery on 2/1/2016.
+ * Web application user
  */
 @Entity
 public class User extends Model {

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by lowery on 2/29/2016.
+ * A selection list field abstraction
  */
 public class SelectField extends BasicField {
     public boolean multiple;
