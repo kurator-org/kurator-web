@@ -71,8 +71,10 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result logout() {
         session().clear();
+
+        flash("message", "User successfully logged out.");
         return redirect(
-                routes.Application.index()
+                routes.Application.login()
         );
     }
 
@@ -120,8 +122,10 @@ public class Application extends Controller {
         user.affiliation = registerForm.get().affiliation;
         user.save();
 
+        flash("message", "New user registration successful! The admin will send an email notification when your account has been activated.");
+
         return redirect(
-                routes.Application.index()
+                routes.Application.login()
         );
     }
 
@@ -139,6 +143,7 @@ public class Application extends Controller {
      * deactivate the user accounts specified.
      */
     public static Result activateAccount() {
+
         DynamicForm form = form().bindFromRequest();
 
         List<User> users = User.findNonAdminUsers();
@@ -152,6 +157,8 @@ public class Application extends Controller {
 
             user.save();
         }
+
+        flash("activate_success", "Updated user(s) active status!");
 
         return redirect(
                 routes.Application.admin()
@@ -171,6 +178,7 @@ public class Application extends Controller {
         user.password = BCrypt.hashpw(changePassForm.get().password, BCrypt.gensalt());
         user.save();
 
+        flash("change_success", "Password successfully changed!");
         return redirect(
                 routes.Application.admin()
         );
@@ -225,6 +233,14 @@ public class Application extends Controller {
         public String validate() {
             if (!password.equals(confirmPassword)) {
                 return "Passwords do not match";
+            }
+
+            if (User.find.where().eq("username", username).findUnique() != null) {
+                return "A user with that name already exists!";
+            }
+
+            if (User.find.where().eq("email", email).findUnique() != null) {
+                return "A user with that email already exists!";
             }
             return null;
         }

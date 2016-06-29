@@ -4,11 +4,11 @@
 <ul id="navbar">
     <li><a class="active" href="@routes.Application.index">Home</a></li>
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
-    <li><a href="@routes.Application.register">Register</a></li>
     @if(session.get("uid").equals("1")) {
         <li><a href="@routes.Application.admin">User Management</a></li>
     }
     @if(session.get("uid") == null) {
+        <li><a href="@routes.Application.register">Register</a></li>
         <li><a href="@routes.Application.login">Login</a></li>
     } else {
         <li><a href="@routes.Application.logout">Logout</a></li>

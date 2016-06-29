@@ -3,11 +3,11 @@
 <ul id="navbar">
     <li><a href="@routes.Application.index">Home</a></li>
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
-    <li><a href="@routes.Application.register">Register</a></li>
     @if(session.get("uid").equals("1")) {
         <li><a class="active" href="@routes.Application.admin">User Management</a></li>
     }
     @if(session.get("uid") == null) {
+        <li><a href="@routes.Application.register">Register</a></li>
         <li><a href="@routes.Application.login">Login</a></li>
     } else {
         <li><a href="@routes.Application.logout">Logout</a></li>
@@ -20,6 +20,12 @@
     @if(form.hasGlobalErrors) {
         <p class="error">
         @form.globalError.message
+        </p>
+    }
+
+    @if(flash.containsKey("change_success")) {
+        <p class="success">
+            @flash.get("change_success")
         </p>
     }
 
@@ -39,6 +45,12 @@
     }
 
     <h1>User Management</h1>
+
+    @if(flash.containsKey("activate_success")) {
+        <p class="success">
+            @flash.get("activate_success")
+        </p>
+    }
 
     <form id="usermanagment" action="@routes.Application.activateAccount()" method="post">
         @if(users.size > 0) {
