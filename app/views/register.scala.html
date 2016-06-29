@@ -3,9 +3,9 @@
 <ul id="navbar">
     <li><a href="@routes.Application.index">Home</a></li>
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
-    <li><a class="active" href="@routes.Application.createaccount">Register</a></li>
+    <li><a class="active" href="@routes.Application.register">Register</a></li>
     @if(session.get("uid") != null && session.get("uid").equals("1")) {
-        <li><a href="@routes.Application.manager">User Management</a></li>
+        <li><a href="@routes.Application.admin">User Management</a></li>
     }
     @if(session.get("uid") == null) {
         <li><a href="@routes.Application.login">Login</a></li>
@@ -22,7 +22,7 @@
 </p>
 }
 
-@helper.form(routes.Application.register) {
+@helper.form(routes.Application.registerSubmit()) {
 <h1>Create Account</h1>
 
 <p>

@@ -4,9 +4,9 @@
 <ul id="navbar">
     <li><a href="@routes.Application.index">Home</a></li>
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
-    <li><a href="@routes.Application.createaccount">Register</a></li>
+    <li><a href="@routes.Application.register">Register</a></li>
     @if(session.get("uid").equals("1")) {
-        <li><a href="@routes.Application.manager">User Management</a></li>
+        <li><a href="@routes.Application.admin">User Management</a></li>
     }
     @if(session.get("uid") == null) {
         <li><a href="@routes.Application.login">Login</a></li>
@@ -19,7 +19,7 @@
 
     <h1>@form.title</h1>
 
-<form id="runWorkflow" action="@routes.Workflows.test(form.name)" method="POST" enctype="multipart/form-data">
+<form id="runWorkflow" action="@routes.Workflows.runWorkflow(form.name)" method="POST" enctype="multipart/form-data">
     <table>
         @for(field <- form.fields) {
         <tr>

@@ -1,8 +1,8 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import forms.FormDefinition;
-import models.Task;
 import models.User;
 import models.UserUpload;
 import models.WorkflowRun;
@@ -17,6 +17,7 @@ import static play.data.Form.*;
 import play.data.validation.Constraints.*;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,70 +26,89 @@ import java.util.Map;
 import scala.App;
 import views.html.*;
 
+/**
+ * The main application controller
+ */
 public class Application extends Controller {
 
+    /**
+     * Index page.
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result index() {
+        List<FormDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
+
+        String uid = session().get("uid");
+        List<UserUpload> userUploads = UserUpload.find.where().eq("user.id", uid).findList();
+
+        return ok(
+                index.render(workflows, userUploads)
+        );
+    }
+
+    /**
+     * The page for the workflow builder tool.
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result builder() {
+        return ok(
+                builder.render()
+        );
+    }
+
+    /**
+     * The login form page.
+     */
     public static Result login() {
         return ok(
                 login.render(form(Login.class))
         );
     }
 
-    public static Result createaccount() {
-        return ok(
-                createaccount.render(form(Register.class))
+    /**
+     * The logout action.
+     */
+    @Security.Authenticated(Secured.class)
+    public static Result logout() {
+        session().clear();
+        return redirect(
+                routes.Application.index()
         );
     }
 
-    private static List<User> getNonAdminUsers() {
-        List<User> users = User.find.where().ne("id", 1).findList();
-        return users;
-    }
+    /**
+     * Action to process the login form submission and authenticate the user.
+     */
+    public static Result authenticate() {
+        Form<Login> loginForm = form(Login.class).bindFromRequest();
 
-    public static Result manager() {
-
-
-        return ok(manager.render(form(ChangePass.class), getNonAdminUsers()));
-    }
-
-    public static Result activate() {
-        DynamicForm form = form().bindFromRequest();
-
-        List<User> users = getNonAdminUsers();
-
-        for (User user : users) {
-            System.out.println(form.data());
-            if (form.data().containsValue(String.valueOf(user.id))) {
-                user.active = true;
-            } else {
-                user.active = false;
-            }
-
-            user.save();
+        if (loginForm.hasErrors()) {
+            return badRequest(login.render(loginForm));
+        } else {
+            return redirect(
+                    routes.Application.index()
+            );
         }
-
-        return ok(manager.render(form(ChangePass.class), users));
     }
 
-    public static Result changepw() {
-        Form<ChangePass> changePassForm = form(ChangePass.class).bindFromRequest();
-        if (changePassForm.hasErrors()) {
-            return badRequest(manager.render(changePassForm, getNonAdminUsers()));
-        }
-
-        User user = Application.getCurrentUser();
-        user.password = BCrypt.hashpw(changePassForm.get().password, BCrypt.gensalt());
-        user.save();
-
-        return ok(
-                manager.render(form(ChangePass.class), getNonAdminUsers())
-        );
-    }
-
+    /**
+     * Display the register a new user form page.
+     */
     public static Result register() {
+        return ok(
+                register.render(form(Register.class))
+        );
+    }
+
+    /**
+     * Action processes the submission of the new user registration form and creates a deactivated user that admin can
+     * activate.
+     */
+    public static Result registerSubmit() {
         Form<Register> registerForm = form(Register.class).bindFromRequest();
 
         if(registerForm.hasErrors()) {
-            return badRequest(createaccount.render(registerForm));
+            return badRequest(register.render(registerForm));
         }
 
         User user = new User();
@@ -105,59 +125,60 @@ public class Application extends Controller {
         );
     }
 
-    public static Result authenticate() {
-        Form<Login> loginForm = form(Login.class).bindFromRequest();
-        if (loginForm.hasErrors()) {
-            return badRequest(login.render(loginForm));
-        } else {
-            return redirect(
-                    routes.Application.index()
-            );
-        }
-    }
-
-    @Security.Authenticated(Secured.class)
-    public static Result logout() {
-        session().clear();
-        return redirect(
-                routes.Application.index()
-        );
-    }
-
-    @Security.Authenticated(Secured.class)
-    public static Result builder() {
+    /**
+     * The user management and admin page.
+     */
+    public static Result admin() {
         return ok(
-                builder.render()
+                admin.render(form(ChangePass.class), User.findNonAdminUsers())
         );
     }
-
-    // -- Actions
 
     /**
-     * Home page
+     * Process the data submitted on the user activation form (user administration page) and activate or
+     * deactivate the user accounts specified.
      */
-    @Security.Authenticated(Secured.class)
-    public static Result index() {
-        List<FormDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
+    public static Result activateAccount() {
+        DynamicForm form = form().bindFromRequest();
 
-        String uid = session().get("uid");
-        //List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", uid).findList();
-        List<UserUpload> userUploads = UserUpload.find.where().eq("user.id", uid).findList();
+        List<User> users = User.findNonAdminUsers();
 
-        return ok(
-            index.render(workflows, userUploads)
+        for (User user : users) {
+            if (form.data().containsValue(String.valueOf(user.id))) {
+                user.active = true;
+            } else {
+                user.active = false;
+            }
+
+            user.save();
+        }
+
+        return redirect(
+                routes.Application.admin()
         );
     }
 
-    public static User getCurrentUser() {
-        String uid = session().get("uid");
-        return User.find.byId(Long.parseLong(uid));
+    /**
+     * Action to process the change password form submission for the currently logged in user.
+     */
+    public static Result changePassword() {
+        Form<ChangePass> changePassForm = form(ChangePass.class).bindFromRequest();
+        if (changePassForm.hasErrors()) {
+            return badRequest(admin.render(changePassForm, User.findNonAdminUsers()));
+        }
+
+        User user = Application.getCurrentUser();
+        user.password = BCrypt.hashpw(changePassForm.get().password, BCrypt.gensalt());
+        user.save();
+
+        return redirect(
+                routes.Application.admin()
+        );
     }
 
-    public static Long getCurrentUserId() {
-        return Long.valueOf(session().get("uid"));
-    }
-
+    /**
+     * The login form object.
+     */
     public static class Login {
 
         public String username;
@@ -177,6 +198,20 @@ public class Application extends Controller {
         }
     }
 
+
+
+    public static User getCurrentUser() {
+        String uid = session().get("uid");
+        return User.find.byId(Long.parseLong(uid));
+    }
+
+    public static Long getCurrentUserId() {
+        return Long.valueOf(session().get("uid"));
+    }
+
+    /**
+     * The register form object
+     */
     public static class Register {
 
         public String email;
@@ -195,6 +230,9 @@ public class Application extends Controller {
         }
     }
 
+    /**
+     * The change password form object (user administration page)
+     */
     public static class ChangePass {
         public String oldPassword;
         public String password;

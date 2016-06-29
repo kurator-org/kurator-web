@@ -45,6 +45,11 @@ public class User extends Model {
 
     public static Finder<Long, User> find = new Finder<Long,User>(User.class);
 
+    public static List<User> findNonAdminUsers() {
+        List<User> users = User.find.where().ne("id", 1).findList();
+        return users;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

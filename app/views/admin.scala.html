@@ -3,9 +3,9 @@
 <ul id="navbar">
     <li><a href="@routes.Application.index">Home</a></li>
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
-    <li><a href="@routes.Application.createaccount">Register</a></li>
+    <li><a href="@routes.Application.register">Register</a></li>
     @if(session.get("uid").equals("1")) {
-        <li><a class="active" href="@routes.Application.manager">User Management</a></li>
+        <li><a class="active" href="@routes.Application.admin">User Management</a></li>
     }
     @if(session.get("uid") == null) {
         <li><a href="@routes.Application.login">Login</a></li>
@@ -23,7 +23,7 @@
         </p>
     }
 
-    @helper.form(routes.Application.changepw) {
+    @helper.form(routes.Application.changePassword()) {
         <p>
             <input type="password" placeholder="Password" name="oldPassword" required>
         </p>
@@ -40,7 +40,7 @@
 
     <h1>User Management</h1>
 
-    <form id="usermanagment" action="@routes.Application.activate" method="post">
+    <form id="usermanagment" action="@routes.Application.activateAccount()" method="post">
         @if(users.size > 0) {
             <table>
                 <tr>

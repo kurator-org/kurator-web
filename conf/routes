@@ -5,40 +5,45 @@
 # Home page
 GET     /                           controllers.Application.index()
 
-GET     /login                  controllers.Application.login()
-POST     /authenticate                  controllers.Application.authenticate()
+# Login and logout
+
+GET     /login                      controllers.Application.login()
+POST    /authenticate               controllers.Application.authenticate()
 GET     /logout                     controllers.Application.logout()
 
-GET     /createaccount              controllers.Application.createaccount()
-POST     /register                   controllers.Application.register()
+# User registration
 
-POST    /upload                     controllers.Workflows.upload()
-GET     /file/*id                   controllers.Workflows.file(id : Long)
+GET     /register                   controllers.Application.register()
+POST    /register                   controllers.Application.registerSubmit()
 
-GET     /manager             controllers.Application.manager()
-POST    /manager/activate   controllers.Application.activate()
+# Admin pages
 
-POST    /manager/changepw   controllers.Application.changepw()
+GET     /admin                      controllers.Application.admin()
+POST    /admin/activate             controllers.Application.activateAccount()
+POST    /admin/change               controllers.Application.changePassword()
 
 # Workflow page
+
 GET     /workflow/*name             controllers.Workflows.workflow(name: String)
 
 # Run workflow
-POST     /test/*name                     controllers.Workflows.test(name: String)
 
-# Workflow result
-GET     /result/*id                 controllers.Workflows.result(id : Long, format : String ?= null)
-GET     /error/*id                 controllers.Workflows.error(id : Long)
-GET     /output/*id                 controllers.Workflows.output(id : Long)
+POST    /workflow/*name             controllers.Workflows.runWorkflow(name: String)
+
+# Workflow results
+
+GET     /result/*id                 controllers.Workflows.resultArchive(id : Long)
+GET     /error/*id                  controllers.Workflows.errorLog(id : Long)
+GET     /output/*id                 controllers.Workflows.outputLog(id : Long)
 
 # Workflow builder
 
-GET     /builder                controllers.Application.builder()
+GET     /builder                    controllers.Application.builder()
 
 # REST Api routes for data
 
-GET     /data/uploads            controllers.Data.uploads()
-GET     /data/status/*uid                 controllers.Data.status(uid : Long)
+GET     /data/uploads               controllers.Workflows.listUploads()
+GET     /data/status/*uid           controllers.Workflows.status(uid : String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

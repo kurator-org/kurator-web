@@ -1,6 +1,7 @@
-package controllers;
+package util;
 
 import akka.actor.ActorRef;
+import controllers.Application;
 import org.apache.commons.mail.EmailException;
 
 import models.ResultFile;
@@ -44,13 +45,11 @@ public class AsyncWorkflowRunnable implements Runnable {
         return run;
     }
 
-    @Override
     public void run() {
         WorkflowResult result = new WorkflowResult();
 
         try {
             for (WorkflowProduct product : runner.getWorkflowProducts()) {
-                System.out.println(product);
                 ResultFile file = new ResultFile();
                 file.fileName = String.valueOf(product.value);
                 file.label = product.label;
@@ -95,21 +94,13 @@ public class AsyncWorkflowRunnable implements Runnable {
                 writeFile(file, out);
             }
 
-            File readmeFile = File.createTempFile("README_", ".txt");
+            File readmeFile = createReadmeFile();
+
             File outputFile = File.createTempFile("output_log_", ".txt");
             File errorFile = File.createTempFile("error_log_", ".txt");
 
+            // TODO: yaml file should be workflow yaml and not web app version
             File yamlFile = new File(run.workflow.yamlFile);
-
-            FileWriter readme = new FileWriter(readmeFile);
-
-            readme.append("Workflow: " + run.workflow.title + "\n");
-            readme.append("Start time: " + run.startTime + "\n");
-            readme.append("End time: " + run.endTime + "\n");
-
-            readme.close();
-
-            writeFile(readmeFile, out);
 
             FileWriter output = new FileWriter(outputFile);
             FileWriter error = new FileWriter(errorFile);
@@ -120,16 +111,28 @@ public class AsyncWorkflowRunnable implements Runnable {
             output.close();
             error.close();
 
+            writeFile(readmeFile, out);
             writeFile(outputFile, out);
             writeFile(errorFile, out);
             writeFile(yamlFile, out);
 
             out.close();
-
-            System.out.println(archive.getAbsolutePath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private File createReadmeFile() throws IOException {
+        File readmeFile = File.createTempFile("README_", ".txt");
+        FileWriter readme = new FileWriter(readmeFile);
+
+        readme.append("Workflow: " + run.workflow.title + "\n");
+        readme.append("Start time: " + run.startTime + "\n");
+        readme.append("End time: " + run.endTime + "\n");
+
+        readme.close();
+
+        return readmeFile;
     }
 
     private void writeFile(File file, ZipOutputStream out) throws IOException {

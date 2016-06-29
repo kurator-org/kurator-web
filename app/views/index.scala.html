@@ -4,9 +4,9 @@
 <ul id="navbar">
     <li><a class="active" href="@routes.Application.index">Home</a></li>
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
-    <li><a href="@routes.Application.createaccount">Register</a></li>
+    <li><a href="@routes.Application.register">Register</a></li>
     @if(session.get("uid").equals("1")) {
-        <li><a href="@routes.Application.manager">User Management</a></li>
+        <li><a href="@routes.Application.admin">User Management</a></li>
     }
     @if(session.get("uid") == null) {
         <li><a href="@routes.Application.login">Login</a></li>
@@ -55,11 +55,11 @@
                     console.log(data);
                 }
 
-                $.ajax({ url: "data/status/@(session.get("uid"))", success: updateWorkflowRuns});
+                $.ajax({ url: "@routes.Workflows.status(session.get("uid"))", success: updateWorkflowRuns});
 
                 (function poll() {
                     setTimeout(function() {
-                        $.ajax({ url: "data/status/@(session.get("uid"))", success: updateWorkflowRuns, dataType: "json", complete: poll });
+                        $.ajax({ url: "@routes.Workflows.status(session.get("uid"))", success: updateWorkflowRuns, dataType: "json", complete: poll });
                     }, 3000);
                 })()
             })
