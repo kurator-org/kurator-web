@@ -117,6 +117,11 @@ Use the play2:stop maven goal to shutdown the Play server.
 
 #### Deploying to Tomcat ####
 
+
+For Tomcat deployments kurator-web must be configured to point to a temp directory with write permissions for the python workflow worspace. Edit the kurator.properties.example file with appropriate values and rename it to kurator.properties before building.
+
+The kurator.web.workspace directory should point to the tomcat temp directory. The kurator.web.vocabdir and kurator.web.vocabfile properties refer to the paths found in kurator-validation\packages\kurator_dwca.
+
 The maven package goal will create a war file by default that can be deployed to Tomcat 8. JAVA_HOME must be set to point to an installation of Java 8 prior to deployment.
 
 Once you have configured the database and JAVA_HOME variable deploy the war file to your tomcat webapps directory.
