@@ -16,7 +16,6 @@ import java.util.List;
 @Entity
 public class User extends Model {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     public String firstname;
@@ -31,11 +30,8 @@ public class User extends Model {
 
     public boolean active;
 
-    public static void main(String[] args) {}
-
     public static User authenticate(String username, String password) {
         User user = User.find.where().eq("username", username).findUnique();
-
         if (user != null && user.active && BCrypt.checkpw(password, user.password)) {
             return user;
         } else {
@@ -46,8 +42,72 @@ public class User extends Model {
     public static Finder<Long, User> find = new Finder<Long,User>(User.class);
 
     public static List<User> findNonAdminUsers() {
-        List<User> users = User.find.where().ne("id", 1).findList();
+        List<User> users = User.find.where().ne("id", 0).findList();
         return users;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getAffiliation() {
+        return affiliation;
+    }
+
+    public void setAffiliation(String affiliation) {
+        this.affiliation = affiliation;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @Override
@@ -57,11 +117,12 @@ public class User extends Model {
 
         User user = (User) o;
 
-        if (id != null ? !id.equals(user.id) : user.id != null) return false;
+        if (active != user.active) return false;
+        if (!id.equals(user.id)) return false;
         if (firstname != null ? !firstname.equals(user.firstname) : user.firstname != null) return false;
         if (lastname != null ? !lastname.equals(user.lastname) : user.lastname != null) return false;
         if (email != null ? !email.equals(user.email) : user.email != null) return false;
-        if (username != null ? !username.equals(user.username) : user.username != null) return false;
+        if (!username.equals(user.username)) return false;
         if (password != null ? !password.equals(user.password) : user.password != null) return false;
         return affiliation != null ? affiliation.equals(user.affiliation) : user.affiliation == null;
 
@@ -69,13 +130,14 @@ public class User extends Model {
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = id.hashCode();
         result = 31 * result + (firstname != null ? firstname.hashCode() : 0);
         result = 31 * result + (lastname != null ? lastname.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + username.hashCode();
         result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (affiliation != null ? affiliation.hashCode() : 0);
+        result = 31 * result + (active ? 1 : 0);
         return result;
     }
 }

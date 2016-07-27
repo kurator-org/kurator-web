@@ -11,7 +11,6 @@ import java.util.List;
 @Entity
 public class UserUpload extends Model {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     public String absolutePath;

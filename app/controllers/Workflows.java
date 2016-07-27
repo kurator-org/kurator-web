@@ -44,13 +44,14 @@ public class Workflows extends Controller {
      * @return json response containing id
      */
     @Security.Authenticated(Secured.class)
-    public static Result runWorkflow(String name) {
+    public Result runWorkflow(String name) {
         FormDefinition form = formDefinitionForWorkflow(name);
 
         // Process file upload first if present in form data
         Http.MultipartFormData body = request().body().asMultipartFormData();
 
-        for (Http.MultipartFormData.FilePart filePart : body.getFiles()) {
+        for (Object obj : body.getFiles()) {
+            Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
             UserUpload userUpload = uploadFile(filePart);
 
             BasicField fileInputField = form.getField(filePart.getKey());
@@ -166,7 +167,7 @@ public class Workflows extends Controller {
      * @param name workflow name
      */
     @Security.Authenticated(Secured.class)
-    public static Result workflow(String name) {
+    public Result workflow(String name) {
         FormDefinition form = formDefinitionForWorkflow(name);
 
         if (form != null) {
@@ -185,7 +186,7 @@ public class Workflows extends Controller {
      * @return the zip archive
      */
     @Security.Authenticated(Secured.class)
-    public static Result resultArchive(long workflowRunId) {
+    public Result resultArchive(long workflowRunId) {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
         return ok(new File(run.result.archivePath));
     }
@@ -197,7 +198,7 @@ public class Workflows extends Controller {
      * @return error log as text file
      */
     @Security.Authenticated(Secured.class)
-    public static Result errorLog(long workflowRunId) {
+    public Result errorLog(long workflowRunId) {
         response().setHeader("Content-Disposition", "attachment; filename=error_log.txt");
         response().setContentType("text/plain");
 
@@ -217,7 +218,7 @@ public class Workflows extends Controller {
      * @return output log as text file
      */
     @Security.Authenticated(Secured.class)
-    public static Result outputLog(long workflowRunId) {
+    public Result outputLog(long workflowRunId) {
         response().setHeader("Content-Disposition", "attachment; filename=output_log.txt");
         response().setContentType("text/plain");
 
@@ -235,7 +236,7 @@ public class Workflows extends Controller {
      *
      * @return json containing file upload ids and filenames
      */
-    public static Result listUploads() {
+    public Result listUploads() {
         List<UserUpload> uploadList = UserUpload.findUploadsByUserId(Application.getCurrentUserId());
 
         ObjectNode response = Json.newObject();
@@ -256,7 +257,7 @@ public class Workflows extends Controller {
      * @param uid
      * @return
      */
-    public static Result status(String uid) {
+    public Result status(String uid) {
         List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", uid).findList();
 
         ArrayNode response = Json.newArray();
@@ -361,7 +362,7 @@ public class Workflows extends Controller {
      * @return an instance of UploadFile that has been persisted to the db
      */
     private static UserUpload uploadFile(Http.MultipartFormData.FilePart filePart) {
-        File src = filePart.getFile();
+        File src = (File) filePart.getFile();
         File file = null;
         try {
             file = File.createTempFile(filePart.getFilename() + "-", ".csv");

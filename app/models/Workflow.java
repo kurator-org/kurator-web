@@ -13,7 +13,6 @@ import javax.persistence.Id;
 @Entity
 public class Workflow extends Model {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     public String name;

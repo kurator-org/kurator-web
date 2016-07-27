@@ -1,9 +1,9 @@
-@(form: Form[Application.ChangePass])(users : List[User])
+@(form: Form[ChangePass])(users : List[User])
 
 <ul id="navbar">
     <li><a href="@routes.Application.index">Home</a></li>
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
-    @if(session.get("uid").equals("1")) {
+    @if(session.get("uid").equals("0")) {
         <li><a class="active" href="@routes.Application.admin">User Management</a></li>
     }
     @if(session.get("uid") == null) {

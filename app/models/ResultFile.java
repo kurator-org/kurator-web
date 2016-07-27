@@ -1,5 +1,6 @@
 package models;
 
+
 import com.avaje.ebean.Model;
 
 import javax.persistence.Entity;
@@ -13,7 +14,6 @@ import javax.persistence.Id;
 @Entity
 public class ResultFile extends Model {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     public String label;

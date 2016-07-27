@@ -17,9 +17,10 @@ import java.io.File;
  * Created by lowery on 3/2/2016.
  */
 public class ResultNotificationMailer {
-    public void sendNotification(User user, WorkflowRun workflowRun) throws EmailException {
-        MailerClient mailerClient = Play.application().injector().instanceOf(MailerClient.class);
+    @Inject
+    MailerClient mailerClient;
 
+    public void sendNotification(User user, WorkflowRun workflowRun) throws EmailException {
         Email email = new Email();
         email.setSubject("Kurator result for " + workflowRun.workflow);
         email.setFrom("Kurator Admin <from@email.com>");

@@ -13,7 +13,6 @@ import java.util.Date;
 @Entity
 public class WorkflowRun extends Model {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     @ManyToOne

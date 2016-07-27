@@ -13,7 +13,6 @@ import java.util.List;
 @Entity
 public class WorkflowResult extends Model {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     // TODO: add hasErrors boolean and check after running to display error to the user

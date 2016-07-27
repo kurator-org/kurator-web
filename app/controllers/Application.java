@@ -1,5 +1,7 @@
 package controllers;
 
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.EbeanServer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import forms.FormDefinition;
@@ -10,6 +12,7 @@ import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
 import org.mindrot.jbcrypt.BCrypt;
 import play.*;
+import play.data.validation.ValidationError;
 import play.libs.Json;
 import play.mvc.*;
 import play.data.*;
@@ -18,24 +21,27 @@ import play.data.validation.Constraints.*;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import scala.App;
 import views.html.*;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * The main application controller
  */
+@Singleton
 public class Application extends Controller {
 
+    @Inject
+    FormFactory formFactory;
     /**
      * Index page.
      */
     @Security.Authenticated(Secured.class)
-    public static Result index() {
+    public Result index() {
         List<FormDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
 
         String uid = session().get("uid");
@@ -50,7 +56,7 @@ public class Application extends Controller {
      * The page for the workflow builder tool.
      */
     @Security.Authenticated(Secured.class)
-    public static Result builder() {
+    public Result builder() {
         return ok(
                 builder.render()
         );
@@ -59,9 +65,9 @@ public class Application extends Controller {
     /**
      * The login form page.
      */
-    public static Result login() {
+    public Result login() {
         return ok(
-                login.render(form(Login.class))
+                login.render(formFactory.form(Login.class))
         );
     }
 
@@ -69,7 +75,7 @@ public class Application extends Controller {
      * The logout action.
      */
     @Security.Authenticated(Secured.class)
-    public static Result logout() {
+    public Result logout() {
         session().clear();
 
         flash("message", "User successfully logged out.");
@@ -81,8 +87,8 @@ public class Application extends Controller {
     /**
      * Action to process the login form submission and authenticate the user.
      */
-    public static Result authenticate() {
-        Form<Login> loginForm = form(Login.class).bindFromRequest();
+    public Result authenticate() {
+        Form<Login> loginForm = formFactory.form(Login.class).bindFromRequest();
 
         if (loginForm.hasErrors()) {
             return badRequest(login.render(loginForm));
@@ -96,9 +102,9 @@ public class Application extends Controller {
     /**
      * Display the register a new user form page.
      */
-    public static Result register() {
+    public Result register() {
         return ok(
-                register.render(form(Register.class))
+                register.render(formFactory.form(Register.class))
         );
     }
 
@@ -106,8 +112,8 @@ public class Application extends Controller {
      * Action processes the submission of the new user registration form and creates a deactivated user that admin can
      * activate.
      */
-    public static Result registerSubmit() {
-        Form<Register> registerForm = form(Register.class).bindFromRequest();
+    public Result registerSubmit() {
+        Form<Register> registerForm = formFactory.form(Register.class).bindFromRequest();
 
         if(registerForm.hasErrors()) {
             return badRequest(register.render(registerForm));
@@ -132,9 +138,10 @@ public class Application extends Controller {
     /**
      * The user management and admin page.
      */
-    public static Result admin() {
+    public Result admin() {
+        List<User> users = User.find.where().ne("id", 0).findList();
         return ok(
-                admin.render(form(ChangePass.class), User.findNonAdminUsers())
+                admin.render(formFactory.form(ChangePass.class), users)
         );
     }
 
@@ -142,21 +149,21 @@ public class Application extends Controller {
      * Process the data submitted on the user activation form (user administration page) and activate or
      * deactivate the user accounts specified.
      */
-    public static Result activateAccount() {
+    public Result activateAccount() {
 
-        DynamicForm form = form().bindFromRequest();
+        DynamicForm form = formFactory.form().bindFromRequest();
 
-        List<User> users = User.findNonAdminUsers();
+                    List<User> users = User.find.where().ne("id", 0).findList();
 
-        for (User user : users) {
-            if (form.data().containsValue(String.valueOf(user.id))) {
-                user.active = true;
-            } else {
-                user.active = false;
-            }
+                    for (User user : users) {
+                        if (form.data().containsValue(Long.toString(user.id))) {
+                            user.setActive(true);
+                        } else {
+                            user.setActive(false);
+                        }
 
-            user.save();
-        }
+                        user.save();
+                    }
 
         flash("activate_success", "Updated user(s) active status!");
 
@@ -168,14 +175,14 @@ public class Application extends Controller {
     /**
      * Action to process the change password form submission for the currently logged in user.
      */
-    public static Result changePassword() {
-        Form<ChangePass> changePassForm = form(ChangePass.class).bindFromRequest();
+    public Result changePassword() {
+        Form<ChangePass> changePassForm = formFactory.form(ChangePass.class).bindFromRequest();
         if (changePassForm.hasErrors()) {
             return badRequest(admin.render(changePassForm, User.findNonAdminUsers()));
         }
 
         User user = Application.getCurrentUser();
-        user.password = BCrypt.hashpw(changePassForm.get().password, BCrypt.gensalt());
+        user.setPassword(BCrypt.hashpw(changePassForm.get().password, BCrypt.gensalt()));
         user.save();
 
         flash("change_success", "Password successfully changed!");
@@ -184,27 +191,7 @@ public class Application extends Controller {
         );
     }
 
-    /**
-     * The login form object.
-     */
-    public static class Login {
 
-        public String username;
-        public String password;
-
-        public String validate() {
-            User user = User.authenticate(username, password);
-            if (user == null) {
-                return "Invalid user or password";
-            }
-
-            session().clear();
-            session("uid", String.valueOf(user.id));
-            session("username", user.username);
-
-            return null;
-        }
-    }
 
 
 
@@ -215,55 +202,5 @@ public class Application extends Controller {
 
     public static Long getCurrentUserId() {
         return Long.valueOf(session().get("uid"));
-    }
-
-    /**
-     * The register form object
-     */
-    public static class Register {
-
-        public String email;
-        public String firstName;
-        public String lastName;
-        public String username;
-        public String password;
-        public String confirmPassword;
-        public String affiliation;
-
-        public String validate() {
-            if (!password.equals(confirmPassword)) {
-                return "Passwords do not match";
-            }
-
-            if (User.find.where().eq("username", username).findUnique() != null) {
-                return "A user with that name already exists!";
-            }
-
-            if (User.find.where().eq("email", email).findUnique() != null) {
-                return "A user with that email already exists!";
-            }
-            return null;
-        }
-    }
-
-    /**
-     * The change password form object (user administration page)
-     */
-    public static class ChangePass {
-        public String oldPassword;
-        public String password;
-        public String confirmPassword;
-
-        public String validate() {
-            User user = User.authenticate(session().get("username"), oldPassword);
-            if (user == null) {
-                return "Current password is invalid.";
-            }
-
-            if (!password.equals(confirmPassword)) {
-                return "Passwords do not match";
-            }
-            return null;
-        }
     }
 }
