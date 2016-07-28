@@ -25,7 +25,7 @@ libraryDependencies ++= Seq(
   "org.kurator" % "kurator-fp-validation" % "0.4-SNAPSHOT"
 )
 
-libraryDependencies := libraryDependencies.value.map(_.excludeAll(
+    libraryDependencies := libraryDependencies.value.map(_.excludeAll(
     ExclusionRule("org.springframework", "spring-context"),
     ExclusionRule("org.springframework", "spring-core"),
     ExclusionRule("org.springframework", "spring-beans")

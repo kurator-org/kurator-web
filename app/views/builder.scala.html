@@ -100,6 +100,87 @@
                 addOutput(actor.name);
             }
         });
+
+        // Selection box
+
+        var selection = $("<div>").addClass("selection-box");
+        var select_top, select_right, select_left, select_bottom;
+        var dragging = false;
+
+        var selected = [];
+
+        $("#canvas").mousedown(function(e) {
+            selected.forEach(function(item) {
+                item.removeClass("selected")
+                jsPlumb.removeFromPosse(item, "selection");
+            });
+
+            selected = [];
+
+            var click_x = e.pageX;
+            var click_y = e.pageY;
+
+
+            selection.css({
+                "top": click_y,
+                "left" : click_x,
+                "width": 0,
+                "height" : 0
+            });
+
+            selection.appendTo($(this));
+
+            $(this).on("mousemove", function(e) {
+                dragging = true;
+
+                var move_x = e.pageX,
+                        move_y = e.pageY,
+                        width  = Math.abs(move_x - click_x),
+                        height = Math.abs(move_y - click_y),
+                        new_x, new_y;
+
+                new_x = (move_x < click_x) ? (click_x - width) : click_x;
+                new_y = (move_y < click_y) ? (click_y - height) : click_y;
+
+                selection.css({
+                    "width": width,
+                    "height": height,
+                    "top": new_y,
+                    "left": new_x
+                });
+
+                select_top = new_y;
+                select_right = new_x + width;
+                select_bottom = new_y + height;
+                select_left = new_x;
+            });
+
+            $(this).mouseup(function(e) {
+                if (dragging) {
+                    dragging = false;
+
+                    $(".actor").each(function() {
+                        var top = this.getBoundingClientRect().top;
+                        var bottom = this.getBoundingClientRect().bottom;
+                        var left = this.getBoundingClientRect().left;
+                        var right = this.getBoundingClientRect().right;
+
+                        if (select_top < top && select_left < left && select_right > right && select_bottom > bottom) {
+                            selected.push($(this));
+                            $(this).addClass("selected");
+                            jsPlumb.addToPosse($(this), "selection");
+                        }
+                    });
+                }
+
+                $(this).off("mousemove");
+                selection.remove();
+            });
+        }).mouseleave(function(e) {
+            $(this).off("mousemove");
+            selection.remove();
+        });
+
     });
 </script>
 
