@@ -2,6 +2,9 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import config.KuratorConfig;
+import config.KuratorConfigFactory;
+import config.ParameterConfig;
 import forms.FormDefinition;
 import forms.input.*;
 import models.UserUpload;
@@ -18,15 +21,12 @@ import play.libs.Json;
 import play.mvc.*;
 
 import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import util.AsyncWorkflowRunnable;
-import views.html.*;
 
 /**
  * This controller deals with actions related to running a workflow, uploading files, checking the status of a run, and
@@ -93,7 +93,6 @@ public class Workflows extends Controller {
             workflow = new Workflow();
             workflow.name = form.name;
             workflow.title = form.title;
-            workflow.outputFormat = form.outputFormat;
             workflow.yamlFile = form.yamlFile;
 
             workflow.save();
@@ -103,7 +102,7 @@ public class Workflows extends Controller {
         ObjectNode response = runYamlWorkflow(form.yamlFile, workflow, settings);
 
         return redirect(
-                routes.Application.index()
+                Application.index()
         );
     }
 
@@ -117,9 +116,10 @@ public class Workflows extends Controller {
      */
     private static ObjectNode runYamlWorkflow(String yamlFile, Workflow workflow, Map<String, Object> settings) {
         InputStream yamlStream = null;
-
         try {
-            yamlStream = new FileInputStream(new File(yamlFile));
+
+                yamlStream = Play.application().resourceAsStream(yamlFile);
+
         } catch (Exception e) {
             throw new RuntimeException("Could not load workflow from yaml file.", e);
         }
@@ -141,7 +141,7 @@ public class Workflows extends Controller {
                     .errorStream(new PrintStream(errStream))
                     .runAsync(runnable);
         } catch (Exception e) {
-
+e.printStackTrace();
             // Log exceptions as part of the workflow error log
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
@@ -312,23 +312,66 @@ public class Workflows extends Controller {
      * @return
      */
     public static List<FormDefinition> loadWorkflowFormDefinitions() {
+//        List<FormDefinition> formDefs = new ArrayList<>();
+//
+//        URL path = Play.application().classloader().getResource(WORKFLOWS_PATH);
+//        try {
+//            File dir = new File(path.toURI());
+//
+//            File[] workflows = dir.listFiles(new FilenameFilter() {
+//                public boolean accept(File dir, String name) {
+//                    return name.toLowerCase().endsWith(".yaml");
+//                }
+//            });
+//
+//            for (File file : workflows) {
+//                formDefs.add(loadFormDefinition(file.getAbsolutePath()));
+//            }
+//        } catch (URISyntaxException e) { /* Should not occur */ }
+
         List<FormDefinition> formDefs = new ArrayList<>();
 
-        URL path = Play.application().classloader().getResource(WORKFLOWS_PATH);
-        try {
-            File dir = new File(path.toURI());
+        KuratorConfig config = KuratorConfigFactory.load();
+        Collection<config.WorkflowConfig> workflows = config.getAllWorkflows();
 
-            File[] workflows = dir.listFiles(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return name.toLowerCase().endsWith(".yaml");
+        System.out.println(workflows.size());
+        for (config.WorkflowConfig workflow : workflows) {
+            FormDefinition formDef = new FormDefinition();
+            formDef.name = workflow.getName();
+            formDef.title = workflow.getTitle();
+            formDef.yamlFile = workflow.getYaml();
+            formDef.documentation = workflow.getDocumentation();
+
+            for (ParameterConfig parameter : workflow.getParameters()) {
+                if (parameter.isTyped()) {
+                    String type = parameter.getType();
+
+                    switch (type) {
+                        case "text":
+                            TextField textField = new TextField();
+                            textField.name = parameter.getName();
+                            textField.label = parameter.getLabel();
+                            formDef.addField(textField);
+                            break;
+                        case "select":
+                            SelectField selectField = new SelectField();
+                            selectField.name = parameter.getName();
+                            selectField.label = parameter.getLabel();
+                            selectField.options = parameter.getOptions();
+                            formDef.addField(selectField);
+                            break;
+                        case "upload":
+                            FileInput fileInput = new FileInput();
+                            fileInput.name = parameter.getName();
+                            fileInput.label = parameter.getLabel();
+                            formDef.addField(fileInput);
+                            break;
+                    }
                 }
-            });
-
-            for (File file : workflows) {
-                formDefs.add(loadFormDefinition(file.getAbsolutePath()));
             }
-        } catch (URISyntaxException e) { /* Should not occur */ }
 
+            formDefs.add(formDef);
+        }
         return formDefs;
     }
 
@@ -338,21 +381,21 @@ public class Workflows extends Controller {
      * @param yamlFile
      * @return
      */
-    private static FormDefinition loadFormDefinition(String yamlFile) {
-        try {
-            GenericApplicationContext springContext = new GenericApplicationContext();
-            YamlBeanDefinitionReader yamlBeanReader = new YamlBeanDefinitionReader(springContext);
-            yamlBeanReader.loadBeanDefinitions(new FileInputStream(yamlFile), "-");
-            springContext.refresh();
-
-            FormDefinition formDefinition = springContext.getBean(FormDefinition.class);
-            formDefinition.yamlFile = yamlFile;
-
-            return formDefinition;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    private static FormDefinition loadFormDefinition(String yamlFile) {
+//        try {
+//            GenericApplicationContext springContext = new GenericApplicationContext();
+//            YamlBeanDefinitionReader yamlBeanReader = new YamlBeanDefinitionReader(springContext);
+//            yamlBeanReader.loadBeanDefinitions(new FileInputStream(yamlFile), "-");
+//            springContext.refresh();
+//
+//            FormDefinition formDefinition = springContext.getBean(FormDefinition.class);
+//            formDefinition.yamlFile = yamlFile;
+//
+//            return formDefinition;
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     /**
      * Helper method creates a temp file from the multipart form data and persists the upload file metadata to the

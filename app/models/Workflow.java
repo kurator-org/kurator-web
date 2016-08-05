@@ -17,7 +17,6 @@ public class Workflow extends Model {
 
     public String name;
     public String title;
-    public String outputFormat;
 
     public String yamlFile;
 

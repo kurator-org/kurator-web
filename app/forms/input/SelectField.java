@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class SelectField extends BasicField {
     public boolean multiple;
-    public Map<String, String> options;
+    public Map<String, Object> options;
 
     public String[] selected;
 

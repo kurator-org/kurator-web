@@ -1,29 +1,14 @@
 package controllers;
 
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.EbeanServer;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import forms.FormDefinition;
 import models.User;
 import models.UserUpload;
-import models.WorkflowRun;
-import org.kurator.akka.WorkflowRunner;
-import org.kurator.akka.YamlStreamWorkflowRunner;
 import org.mindrot.jbcrypt.BCrypt;
-import play.*;
-import play.data.validation.ValidationError;
-import play.libs.Json;
 import play.mvc.*;
 import play.data.*;
-import static play.data.Form.*;
-import play.data.validation.Constraints.*;
 
-import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import scala.App;
 import views.html.*;
 
 import javax.inject.Inject;
@@ -80,7 +65,7 @@ public class Application extends Controller {
 
         flash("message", "User successfully logged out.");
         return redirect(
-                routes.Application.login()
+                Application.login()
         );
     }
 
@@ -94,7 +79,7 @@ public class Application extends Controller {
             return badRequest(login.render(loginForm));
         } else {
             return redirect(
-                    routes.Application.index()
+                    Application.index()
             );
         }
     }
@@ -131,7 +116,7 @@ public class Application extends Controller {
         flash("message", "New user registration successful! The admin will send an email notification when your account has been activated.");
 
         return redirect(
-                routes.Application.login()
+                Application.login()
         );
     }
 
@@ -168,7 +153,7 @@ public class Application extends Controller {
         flash("activate_success", "Updated user(s) active status!");
 
         return redirect(
-                routes.Application.admin()
+                Application.admin()
         );
     }
 
@@ -187,7 +172,7 @@ public class Application extends Controller {
 
         flash("change_success", "Password successfully changed!");
         return redirect(
-                routes.Application.admin()
+                Application.admin()
         );
     }
 

@@ -1,7 +1,6 @@
 package util;
 
-import akka.actor.ActorRef;
-import controllers.Application;
+import controllers.oldcontrollers.Application;
 import org.apache.commons.mail.EmailException;
 
 import models.ResultFile;
@@ -9,10 +8,7 @@ import models.Workflow;
 import models.WorkflowResult;
 import models.WorkflowRun;
 import org.kurator.akka.WorkflowRunner;
-import org.kurator.akka.actors.StringAppender;
-import org.kurator.akka.actors.StringFileWriter;
 import org.kurator.akka.data.WorkflowProduct;
-import util.ResultNotificationMailer;
 
 import java.io.*;
 import java.util.Date;
@@ -100,7 +96,7 @@ public class AsyncWorkflowRunnable implements Runnable {
             File errorFile = File.createTempFile("error_log_", ".txt");
 
             // TODO: yaml file should be workflow yaml and not web app version
-            File yamlFile = new File(run.workflow.yamlFile);
+            //File yamlFile = new File(run.workflow.yamlFile);
 
             FileWriter output = new FileWriter(outputFile);
             FileWriter error = new FileWriter(errorFile);
@@ -114,7 +110,7 @@ public class AsyncWorkflowRunnable implements Runnable {
             writeFile(readmeFile, out);
             writeFile(outputFile, out);
             writeFile(errorFile, out);
-            writeFile(yamlFile, out);
+            //writeFile(yamlFile, out);
 
             out.close();
         } catch (IOException e) {

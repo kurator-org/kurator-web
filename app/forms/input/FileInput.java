@@ -1,6 +1,7 @@
 package forms.input;
 
 import forms.handlers.FileObjectHandler;
+import forms.handlers.FilePathHandler;
 import models.UserUpload;
 import play.mvc.Http.MultipartFormData.FilePart;
 
@@ -13,7 +14,7 @@ public class FileInput extends BasicField<UserUpload> {
     public UserUpload value;
 
     public FileInput() {
-        fieldHandler = new FileObjectHandler();
+        fieldHandler = new FilePathHandler();
     }
 
     public Object value() {
