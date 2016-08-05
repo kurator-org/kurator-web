@@ -18,5 +18,5 @@ public class KuratorConfigFactory {
         Config config = ConfigFactory.load();
         return new KuratorConfig(config.getConfig("workflows"));
     }
-
+    
 }
