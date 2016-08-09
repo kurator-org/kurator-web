@@ -1,8 +1,11 @@
 package controllers;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import forms.FormDefinition;
 import models.User;
 import models.UserUpload;
+import org.kurator.util.SystemClasspathManager;
 import org.mindrot.jbcrypt.BCrypt;
 import play.mvc.*;
 import play.data.*;
@@ -22,6 +25,7 @@ public class Application extends Controller {
 
     @Inject
     FormFactory formFactory;
+
     /**
      * Index page.
      */
@@ -65,7 +69,7 @@ public class Application extends Controller {
 
         flash("message", "User successfully logged out.");
         return redirect(
-                Application.login()
+                routes.Application.login()
         );
     }
 
@@ -75,11 +79,12 @@ public class Application extends Controller {
     public Result authenticate() {
         Form<Login> loginForm = formFactory.form(Login.class).bindFromRequest();
 
+
         if (loginForm.hasErrors()) {
             return badRequest(login.render(loginForm));
         } else {
             return redirect(
-                    Application.index()
+                    routes.Application.index()
             );
         }
     }
@@ -116,7 +121,7 @@ public class Application extends Controller {
         flash("message", "New user registration successful! The admin will send an email notification when your account has been activated.");
 
         return redirect(
-                Application.login()
+                routes.Application.login()
         );
     }
 
@@ -153,7 +158,7 @@ public class Application extends Controller {
         flash("activate_success", "Updated user(s) active status!");
 
         return redirect(
-                Application.admin()
+                routes.Application.admin()
         );
     }
 
@@ -172,7 +177,7 @@ public class Application extends Controller {
 
         flash("change_success", "Password successfully changed!");
         return redirect(
-                Application.admin()
+                routes.Application.admin()
         );
     }
 

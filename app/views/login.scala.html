@@ -18,13 +18,13 @@
 
 @if(form.hasGlobalErrors) {
 <p class="error">
-    @form.globalError.message
+    form.globalError.message
 </p>
 }
 
 @if(flash.containsKey("message")) {
 <p class="message">
-    @flash.get("message")
+    flash.get("message")
 </p>
 }
 

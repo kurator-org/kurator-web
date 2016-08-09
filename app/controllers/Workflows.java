@@ -28,6 +28,8 @@ import java.util.*;
 
 import util.AsyncWorkflowRunnable;
 
+import views.html.*;
+
 /**
  * This controller deals with actions related to running a workflow, uploading files, checking the status of a run, and
  * obtaining artifacts produced by the run.
@@ -98,11 +100,12 @@ public class Workflows extends Controller {
             workflow.save();
         }
 
+        System.out.println(form.yamlFile);
         // Run the workflow
         ObjectNode response = runYamlWorkflow(form.yamlFile, workflow, settings);
 
         return redirect(
-                Application.index()
+                routes.Application.index()
         );
     }
 
@@ -118,7 +121,7 @@ public class Workflows extends Controller {
         InputStream yamlStream = null;
         try {
 
-                yamlStream = Play.application().resourceAsStream(yamlFile);
+                yamlStream = Play.application().classloader().getResourceAsStream(yamlFile);
 
         } catch (Exception e) {
             throw new RuntimeException("Could not load workflow from yaml file.", e);
@@ -141,7 +144,6 @@ public class Workflows extends Controller {
                     .errorStream(new PrintStream(errStream))
                     .runAsync(runnable);
         } catch (Exception e) {
-e.printStackTrace();
             // Log exceptions as part of the workflow error log
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));

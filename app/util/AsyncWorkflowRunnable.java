@@ -1,6 +1,6 @@
 package util;
 
-import controllers.oldcontrollers.Application;
+import controllers.Application;
 import org.apache.commons.mail.EmailException;
 
 import models.ResultFile;

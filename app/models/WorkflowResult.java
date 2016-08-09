@@ -17,7 +17,10 @@ public class WorkflowResult extends Model {
 
     // TODO: add hasErrors boolean and check after running to display error to the user
 
+    @Lob
     public String errorText = "";
+
+    @Lob
     public String outputText = "";
 
     @OneToMany(cascade=CascadeType.ALL)

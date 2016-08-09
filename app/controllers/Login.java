@@ -12,23 +12,38 @@ import java.util.List;
      */
     public class Login {
 
-        public String username;
-        public String password;
+        protected String username;
+        protected String password;
 
-        public List<ValidationError> validate() {
-            List<ValidationError> errors = new ArrayList<ValidationError>();
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            System.out.println(username);
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public String validate() {
+            System.out.println(username);
             User user = User.authenticate(username, password);
             if (user == null) {
-                errors.add(new ValidationError("user", "Invalid user or password"));
+                return "Invalid user or password";
             } else {
-
                 Http.Session session = Http.Context.current().session();
                 session.clear();
                 session.put("uid", Long.toString(user.id));
                 session.put("username", user.username);
             }
-
-            return errors.isEmpty() ? null : errors;
+            return null;
         }
 
     }
