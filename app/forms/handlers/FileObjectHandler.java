@@ -7,7 +7,7 @@ import views.html.helper.FieldConstructor;
 import java.io.File;
 
 /**
- * Handler for transforming web app file objects to appropriate inputs for the actors
+ * ClasspathStreamHandler for transforming web app file objects to appropriate inputs for the actors
  */
 public class FileObjectHandler implements FieldHandler<File> {
     public File transform(Object obj) {

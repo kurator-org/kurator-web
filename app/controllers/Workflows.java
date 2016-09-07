@@ -21,6 +21,7 @@ import play.libs.Json;
 import play.mvc.*;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -28,6 +29,8 @@ import java.util.*;
 
 import util.AsyncWorkflowRunnable;
 
+import util.ClasspathStreamHandler;
+import util.ConfigurableStreamHandlerFactory;
 import views.html.*;
 
 /**
@@ -38,6 +41,10 @@ import views.html.*;
 public class Workflows extends Controller {
     private static final String WORKFLOWS_PATH = "workflows";
     private static final String KURATOR_PROPERTIES = "kurator.properties";
+
+    public Workflows() {
+        URL.setURLStreamHandlerFactory(new ConfigurableStreamHandlerFactory("classpath", new ClasspathStreamHandler()));
+    }
 
     /**
      * Start the workflow run asynchronously.
@@ -86,6 +93,8 @@ public class Workflows extends Controller {
             }
 
             settings.putAll(settingsFromConfig(properties, form));
+
+            System.out.println(settings);
         }
 
         // Update the workflow model object and persist to the db
@@ -120,9 +129,7 @@ public class Workflows extends Controller {
     private static ObjectNode runYamlWorkflow(String yamlFile, Workflow workflow, Map<String, Object> settings) {
         InputStream yamlStream = null;
         try {
-
-                yamlStream = Play.application().classloader().getResourceAsStream(yamlFile);
-
+            yamlStream = loadYamlStream(yamlFile);
         } catch (Exception e) {
             throw new RuntimeException("Could not load workflow from yaml file.", e);
         }
@@ -144,6 +151,8 @@ public class Workflows extends Controller {
                     .errorStream(new PrintStream(errStream))
                     .runAsync(runnable);
         } catch (Exception e) {
+            e.printStackTrace();
+
             // Log exceptions as part of the workflow error log
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
@@ -161,6 +170,11 @@ public class Workflows extends Controller {
         response.put("runId", run.id);
 
         return response;
+    }
+
+    private static InputStream loadYamlStream(String yamlFile) throws IOException {
+        URL url = new URL(yamlFile);
+        return url.openConnection().getInputStream();
     }
 
     /**
@@ -336,7 +350,6 @@ public class Workflows extends Controller {
         KuratorConfig config = KuratorConfigFactory.load();
         Collection<config.WorkflowConfig> workflows = config.getAllWorkflows();
 
-        System.out.println(workflows.size());
         for (config.WorkflowConfig workflow : workflows) {
             FormDefinition formDef = new FormDefinition();
             formDef.name = workflow.getName();
@@ -461,7 +474,7 @@ public class Workflows extends Controller {
 
             GenericApplicationContext springContext = new GenericApplicationContext();
             YamlBeanDefinitionReader yamlBeanReader = new YamlBeanDefinitionReader(springContext);
-            yamlBeanReader.loadBeanDefinitions(new FileInputStream(form.yamlFile), "-");
+            yamlBeanReader.loadBeanDefinitions(loadYamlStream(form.yamlFile), "-");
             springContext.refresh();
 
             WorkflowConfig workflowConfig = springContext.getBean(WorkflowConfig.class);

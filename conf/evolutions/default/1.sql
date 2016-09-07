@@ -38,7 +38,6 @@ create table workflow (
   id                            bigint not null,
   name                          varchar(255),
   title                         varchar(255),
-  output_format                 varchar(255),
   yaml_file                     varchar(255),
   constraint pk_workflow primary key (id)
 );
@@ -46,8 +45,8 @@ create sequence workflow_seq;
 
 create table workflow_result (
   id                            bigint not null,
-  error_text                    varchar(255),
-  output_text                   varchar(255),
+  error_text                    clob,
+  output_text                   clob,
   archive_path                  varchar(255),
   constraint pk_workflow_result primary key (id)
 );

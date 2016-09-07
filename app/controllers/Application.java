@@ -10,8 +10,11 @@ import org.mindrot.jbcrypt.BCrypt;
 import play.mvc.*;
 import play.data.*;
 
+import java.net.URL;
 import java.util.*;
 
+import util.ClasspathStreamHandler;
+import util.ConfigurableStreamHandlerFactory;
 import views.html.*;
 
 import javax.inject.Inject;
@@ -29,6 +32,7 @@ public class Application extends Controller {
     /**
      * Index page.
      */
+
     @Security.Authenticated(Secured.class)
     public Result index() {
         List<FormDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
