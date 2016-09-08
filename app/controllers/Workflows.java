@@ -33,11 +33,14 @@ import util.ClasspathStreamHandler;
 import util.ConfigurableStreamHandlerFactory;
 import views.html.*;
 
+import javax.inject.Singleton;
+
 /**
  * This controller deals with actions related to running a workflow, uploading files, checking the status of a run, and
  * obtaining artifacts produced by the run.
  *
  */
+@Singleton
 public class Workflows extends Controller {
     private static final String WORKFLOWS_PATH = "workflows";
     private static final String KURATOR_PROPERTIES = "kurator.properties";
