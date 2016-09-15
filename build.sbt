@@ -1,6 +1,6 @@
 import sbt.ExclusionRule
 
-name := "play-java"
+name := "kurator-web"
 
 version := "1.0-SNAPSHOT"
 
@@ -22,8 +22,8 @@ libraryDependencies ++= Seq(
   "org.pac4j" % "play-pac4j" % "2.4.0",
   "org.mindrot" % "jbcrypt" % "0.3m",
   "org.kurator" % "kurator-akka" % "0.4-SNAPSHOT" exclude("com.typesafe.akka", "akka-actor_2.10") exclude("com.typesafe.akka", "akka-slf4j_2.10") ,
-  "org.kurator" % "kurator-validation" % "0.4-SNAPSHOT" ,
-  "org.kurator" % "kurator-fp-validation" % "0.4-SNAPSHOT"
+  "org.kurator" % "kurator-fp-validation" % "0.4-SNAPSHOT",
+  "org.kurator" % "kurator-validation" % "0.4-SNAPSHOT"
 )
 
 libraryDependencies := libraryDependencies.value.map(_.excludeAll(

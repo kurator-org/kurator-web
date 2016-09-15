@@ -45,7 +45,7 @@ public class Workflows extends Controller {
     private static final String WORKFLOWS_PATH = "workflows";
     private static final String KURATOR_PROPERTIES = "kurator.properties";
 
-    public Workflows() {
+    static {
         URL.setURLStreamHandlerFactory(new ConfigurableStreamHandlerFactory("classpath", new ClasspathStreamHandler()));
     }
 
