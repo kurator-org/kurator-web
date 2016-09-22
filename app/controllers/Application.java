@@ -33,6 +33,10 @@ public class Application extends Controller {
      * Index page.
      */
 
+    public Application() {
+        System.out.println(ConfigFactory.defaultApplication().getString("jython.path"));
+    }
+
     @Security.Authenticated(Secured.class)
     public Result index() {
         List<FormDefinition> workflows = Workflows.loadWorkflowFormDefinitions();

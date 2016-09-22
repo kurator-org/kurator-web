@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.typesafe.config.ConfigFactory;
 import config.KuratorConfig;
 import config.KuratorConfigFactory;
 import config.ParameterConfig;
@@ -144,8 +145,15 @@ public class Workflows extends Controller {
         AsyncWorkflowRunnable runnable = new AsyncWorkflowRunnable();
 
         try {
+            String jythonPath = ConfigFactory.defaultApplication().getString("jython.path");
+            String jythonHome = ConfigFactory.defaultApplication().getString("jython.home");
+
+            Map<String, Object> config = new HashMap<String, Object>();
+            config.put("jython_home", jythonHome);
+            config.put("jython_path", jythonPath);
+
             WorkflowRunner runner = new YamlStreamWorkflowRunner()
-                    .yamlStream(yamlStream);
+                    .yamlStream(yamlStream).configure(config);
 
             runnable.init(workflow, runner, errStream, outStream);
 
