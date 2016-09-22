@@ -44,10 +44,14 @@ import javax.inject.Singleton;
 @Singleton
 public class Workflows extends Controller {
     private static final String WORKFLOWS_PATH = "workflows";
-    private static final String KURATOR_PROPERTIES = "kurator.properties";
 
     static {
-        URL.setURLStreamHandlerFactory(new ConfigurableStreamHandlerFactory("classpath", new ClasspathStreamHandler()));
+        try {
+            URL.setURLStreamHandlerFactory(new ConfigurableStreamHandlerFactory("classpath",
+                    new ClasspathStreamHandler()));
+        } catch (Error e) {
+            // if the stream handler was already set ignore the "factory already defined" error
+        }
     }
 
     /**
@@ -85,21 +89,9 @@ public class Workflows extends Controller {
             settings.put(field.name, field.value());
         }
 
-        // Load additional configuration (base directories for python workflows) and add to settings
-        InputStream in = Play.application().classloader().getResourceAsStream(KURATOR_PROPERTIES);
-
-        if (in != null) {
-            Properties properties = new Properties();
-            try {
-                properties.load(in);
-            } catch (IOException e) {
-                throw new RuntimeException("Could not load config from " + KURATOR_PROPERTIES, e);
-            }
-
-            settings.putAll(settingsFromConfig(properties, form));
+            settings.putAll(settingsFromConfig( form));
 
             System.out.println(settings);
-        }
 
         // Update the workflow model object and persist to the db
         Workflow workflow = Workflow.find.where().eq("name", form.name).findUnique();
@@ -145,6 +137,8 @@ public class Workflows extends Controller {
         AsyncWorkflowRunnable runnable = new AsyncWorkflowRunnable();
 
         try {
+
+            // Get jython home and path variables from application.conf and set them in workflow runner global config
             String jythonPath = ConfigFactory.defaultApplication().getString("jython.path");
             String jythonHome = ConfigFactory.defaultApplication().getString("jython.home");
 
@@ -152,6 +146,7 @@ public class Workflows extends Controller {
             config.put("jython_home", jythonHome);
             config.put("jython_path", jythonPath);
 
+            // Initialize and run the yaml workflow
             WorkflowRunner runner = new YamlStreamWorkflowRunner()
                     .yamlStream(yamlStream).configure(config);
 
@@ -468,21 +463,20 @@ public class Workflows extends Controller {
     }
 
     /**
-     * Will load additional settings from the web app config (properties file). Creates a map object that contains
+     * Will load additional settings from the web app config. Creates a map object that contains
      * workflow parameters to be provided as input to the runner
      *
-     * @param properties the web app configuration properties file
      * @param form form definition of the workflow being run
      * @return a map of the settings
      */
-    private static Map<String, String> settingsFromConfig(Properties properties, FormDefinition form) {
+    private static Map<String, String> settingsFromConfig(FormDefinition form) {
         try {
             Map<String, String> settings = new HashMap<String, String>();
 
-            String workspace = properties.getProperty("kurator.web.workspace");
-            String vocabdir = properties.getProperty("kurator.web.vocabdir");
-            String vocabfile = properties.getProperty("kurator.web.vocabfile");
+            // Get the workspace basedir from application.conf
+            String workspace = ConfigFactory.defaultApplication().getString("jython.workspace");
 
+            // Load workflow yaml file to check parameters
             GenericApplicationContext springContext = new GenericApplicationContext();
             YamlBeanDefinitionReader yamlBeanReader = new YamlBeanDefinitionReader(springContext);
             yamlBeanReader.loadBeanDefinitions(loadYamlStream(form.yamlFile), "-");
@@ -490,19 +484,13 @@ public class Workflows extends Controller {
 
             WorkflowConfig workflowConfig = springContext.getBean(WorkflowConfig.class);
 
+            // Create a workspace
             Path path = Paths.get(workspace, "workspace_" + UUID.randomUUID());
             path.toFile().mkdir();
 
+            // If the "workspace" parameter is present in the workflow set it to the path defined in the config
             if (workflowConfig.getParameters().containsKey("workspace")) {
                 settings.put("workspace", path.toString());
-            }
-
-            if (workflowConfig.getParameters().containsKey("vocabdir")) {
-                settings.put("vocabdir", vocabdir);
-            }
-
-            if (workflowConfig.getParameters().containsKey("vocabfile")) {
-                settings.put("vocabfile", vocabfile);
             }
 
             return settings;

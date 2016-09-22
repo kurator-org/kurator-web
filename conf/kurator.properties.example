@@ -1,3 +1,0 @@
-kurator.web.workspace=/var/lib/tomcat8/temp
-kurator.web.vocabdir=/home/shared/kurator-validation/packages/kurator_dwca/data/vocabularies/
-kurator.web.vocabfile=/home/shared/kurator-validation/packages/kurator_dwca/data/vocabularies/dwc_geography.txt

@@ -7,6 +7,7 @@ import models.User;
 import models.UserUpload;
 import org.kurator.util.SystemClasspathManager;
 import org.mindrot.jbcrypt.BCrypt;
+import play.api.Play;
 import play.mvc.*;
 import play.data.*;
 
@@ -32,11 +33,6 @@ public class Application extends Controller {
     /**
      * Index page.
      */
-
-    public Application() {
-        System.out.println(ConfigFactory.defaultApplication().getString("jython.path"));
-    }
-
     @Security.Authenticated(Secured.class)
     public Result index() {
         List<FormDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
@@ -188,10 +184,6 @@ public class Application extends Controller {
                 routes.Application.admin()
         );
     }
-
-
-
-
 
     public static User getCurrentUser() {
         String uid = session().get("uid");
