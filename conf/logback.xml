@@ -1,5 +1,7 @@
 <configuration>
+
     <timestamp key="bySecond" datePattern="yyyy_MM_dd_HH_mm"/>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%-5level - %msg%n</pattern>
@@ -7,23 +9,11 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>${application.home}/logs/application-${bySecond}.txt</file>
+        <file>${application.home:-.}/logs/application-${bySecond}.txt</file>
         <encoder>
             <pattern>%date - [%level] - from %logger in %thread %n%message%n%xException%n</pattern>
         </encoder>
     </appender>
-
-    <!-- SQL and bind values -->
-    <logger name="org.avaje.ebean.SQL" level="TRACE">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
-    </logger>
-
-    <!-- Transaction Commit and Rollback events -->
-    <logger name="org.avaje.ebean.TXN" level="TRACE">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
-    </logger>
 
     <logger name="play" level="DEBUG">
         <appender-ref ref="STDOUT" />
@@ -33,7 +23,21 @@
     <logger name="application" level="DEBUG">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
-
     </logger>
 
+    <!-- SQL and bind values -->
+    <logger name="org.avaje.ebean.SQL" level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- Transaction Commit and Rollback events -->
+    <logger name="org.avaje.ebean.TXN" level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <root level="WARN">
+        <appender-ref ref="FILE" />
+    </root>
 </configuration>

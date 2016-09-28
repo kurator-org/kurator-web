@@ -2,7 +2,7 @@ import sbt.ExclusionRule
 
 name := "kurator-web"
 
-version := "0.4"
+version := "0.5-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 scalaVersion := "2.11.7"
@@ -29,7 +29,8 @@ libraryDependencies ++= Seq(
 libraryDependencies := libraryDependencies.value.map(_.excludeAll(
     ExclusionRule("org.springframework", "spring-context"),
     ExclusionRule("org.springframework", "spring-core"),
-    ExclusionRule("org.springframework", "spring-beans")
+    ExclusionRule("org.springframework", "spring-beans"),
+    ExclusionRule("org.slf4j", "slf4j-log4j12")
   )
 )
 

@@ -20,7 +20,6 @@ import java.util.List;
         }
 
         public void setUsername(String username) {
-            System.out.println(username);
             this.username = username;
         }
 
@@ -33,7 +32,6 @@ import java.util.List;
         }
 
         public String validate() {
-            System.out.println(username);
             User user = User.authenticate(username, password);
             if (user == null) {
                 return "Invalid user or password";

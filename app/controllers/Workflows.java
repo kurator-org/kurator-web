@@ -91,8 +91,6 @@ public class Workflows extends Controller {
 
             settings.putAll(settingsFromConfig( form));
 
-            System.out.println(settings);
-
         // Update the workflow model object and persist to the db
         Workflow workflow = Workflow.find.where().eq("name", form.name).findUnique();
 
@@ -105,7 +103,6 @@ public class Workflows extends Controller {
             workflow.save();
         }
 
-        System.out.println(form.yamlFile);
         // Run the workflow
         ObjectNode response = runYamlWorkflow(form.yamlFile, workflow, settings);
 
