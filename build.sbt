@@ -23,7 +23,8 @@ libraryDependencies ++= Seq(
   "org.mindrot" % "jbcrypt" % "0.3m",
   "org.kurator" % "kurator-akka" % "0.5-SNAPSHOT" exclude("com.typesafe.akka", "akka-actor_2.10") exclude("com.typesafe.akka", "akka-slf4j_2.10") ,
   "org.kurator" % "kurator-fp-validation" % "0.5-SNAPSHOT",
-  "org.kurator" % "kurator-validation" % "0.5-SNAPSHOT"
+  "org.kurator" % "kurator-validation" % "0.5-SNAPSHOT",
+  "mysql" % "mysql-connector-java" % "5.1.18"
 )
 
 libraryDependencies := libraryDependencies.value.map(_.excludeAll(
