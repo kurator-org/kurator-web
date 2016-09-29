@@ -9,6 +9,7 @@ import models.WorkflowResult;
 import models.WorkflowRun;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.data.WorkflowProduct;
+import play.Logger;
 
 import java.io.*;
 import java.util.Date;
@@ -46,11 +47,18 @@ public class AsyncWorkflowRunnable implements Runnable {
 
         try {
             for (WorkflowProduct product : runner.getWorkflowProducts()) {
-                ResultFile file = new ResultFile();
-                file.fileName = String.valueOf(product.value);
-                file.label = product.label;
+                String fileName = String.valueOf(product.value);
+                File file = new File(fileName);
 
-                result.resultFiles.add(file);
+                if (file.exists()) {
+                    ResultFile resultFile = new ResultFile();
+                    resultFile.fileName = String.valueOf(product.value);
+                    resultFile.label = product.label;
+
+                    result.resultFiles.add(resultFile);
+                } else {
+                    Logger.error("artifact specified does not exist: " + fileName);
+                }
             }
 
             File archive = File.createTempFile("artifacts_", ".zip");
