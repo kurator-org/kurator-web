@@ -17,7 +17,7 @@
 
 @main(title = "The Kurator 'helloworld' application") {
 
-    <h1>Kurator workflows</h1>
+    <h1>Workflows</h1>
 
     <script type="text/javascript">
             $(function() {
@@ -67,14 +67,23 @@
             /*;*/
     </script>
 
+    <table>
         @workflows.map { workflow =>
-            <li>
-                <a href="workflow/@workflow.name">Run "@workflow.title"</a>
-                @if(workflow.documentation != null) {
-                    <a href="@workflow.documentation"><img src="@routes.Assets.at("images/info.png")" /></a>
-                }
-            </li>
+            <tr>
+                <td>
+                    @if(workflow.documentation != null) {
+                        <a href="@workflow.documentation"><img src="@routes.Assets.at("images/info.png")" /></a>
+                    }
+                </td>
+                <td>
+                    @workflow.title
+                </td>
+                <td>
+                    <a href="workflow/@workflow.name">Run</a>
+                </td>
+            </tr>
         }
+    </table>
 
     <h1>Workflow runs (Most recent first)</h1>
     <div id="workflowRuns"></div>
