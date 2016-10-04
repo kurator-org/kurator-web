@@ -1,7 +1,9 @@
 function updateWorkflowRuns(data) {
         if (data.length != 0) {
             data.sort(function (a, b) {
-                return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
+                var a = new Date(a.startTime).getTime();
+                var b = new Date(b.startTime).getTime();
+                return a>b ? -1 : a<b ? 1 : 0;
             });
 
             var html = "    <table>" +
@@ -27,6 +29,8 @@ function updateWorkflowRuns(data) {
 
             html += "    </table>";
             $("#workflowRuns").html(html);
+        } else {
+            $("#workflowRuns").html("<i>No workflow runs</i>");
         }
         console.log(data);
     }

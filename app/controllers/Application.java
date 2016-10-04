@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 @Singleton
 public class Application extends Controller {
 
+    private static final String DEFAULT_USER_ROLE = User.ROLE_USER;
     @Inject
     FormFactory formFactory;
 
@@ -119,6 +120,7 @@ public class Application extends Controller {
         user.lastname = registerForm.get().lastName;
         user.email = registerForm.get().email;
         user.password = BCrypt.hashpw(registerForm.get().password, BCrypt.gensalt());
+        user.role = DEFAULT_USER_ROLE;
         user.affiliation = registerForm.get().affiliation;
         user.save();
 
@@ -155,6 +157,8 @@ public class Application extends Controller {
                         } else {
                             user.setActive(false);
                         }
+
+                        user.role = form.data().get("role_" + user.username);
 
                         user.save();
                     }

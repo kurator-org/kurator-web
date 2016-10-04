@@ -1,12 +1,10 @@
 package models;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.EnumMapping;
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +13,10 @@ import java.util.List;
  */
 @Entity
 public class User extends Model {
+
+    public static String ROLE_ADMIN = "ADMIN";
+    public static String ROLE_USER = "USER";
+
     @Id
     public Long id;
 
@@ -27,6 +29,8 @@ public class User extends Model {
     public String password;
 
     public String affiliation;
+
+    public String role;
 
     public boolean active;
 

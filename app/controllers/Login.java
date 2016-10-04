@@ -39,7 +39,10 @@ import java.util.List;
                 Http.Session session = Http.Context.current().session();
                 session.clear();
                 session.put("uid", Long.toString(user.id));
+                session.put("user_role", user.role);
                 session.put("username", user.username);
+
+                // TODO: session timeout
             }
             return null;
         }
