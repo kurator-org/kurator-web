@@ -3,9 +3,7 @@
 <ul id="navbar">
     <li><a href="@routes.Application.index">Home</a></li>
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
-    @if(session.get("uid").equals("0")) {
-        <li><a class="active" href="@routes.Application.admin">User Management</a></li>
-    }
+    <li><a class="active" href="@routes.Application.admin">User Management</a></li>
     @if(session.get("uid") == null) {
         <li><a href="@routes.Application.register">Register</a></li>
         <li><a href="@routes.Application.login">Login</a></li>
@@ -44,34 +42,69 @@
         </p>
     }
 
-    <h1>User Management</h1>
+    @if(session.get("uid").equals("0")) {
+        <h1>User Management</h1>
 
-    @if(flash.containsKey("activate_success")) {
-        <p class="success">
-            @flash.get("activate_success")
-        </p>
-    }
+        @if(flash.containsKey("activate_success")) {
+            <p class="success">
+                @flash.get("activate_success")
+            </p>
+        }
 
-    <form id="usermanagment" action="@routes.Application.activateAccount()" method="post">
+        <form id="usermanagment" action="@routes.Application.activateAccount()" method="post">
+            @if(users.size > 0) {
+                <table>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Active</th>
+                    </tr>
+
+                        @users.map { user =>
+                          <tr>
+                              <td>@user.username</td>
+                              <td>@user.email</td>
+                              <td><input type="checkbox" name="active_@user.username" @if(user.active) { checked="checked" } value="@user.id"></td>
+                          </tr>
+                        }
+                </table>
+            } else {
+                <p><i>No users registered.</i></p>
+            }
+            <input type="submit" />
+        </form>
+
+        <h1>User Workflow Runs</h1>
+
+        <script type="text/javascript" src="@routes.Assets.at("javascripts/workflow.js")"></script>
+        <script>
+            $(function () {
+                if ($("#user_workflows").val() != null) {
+                    var uid = $("#user_workflows").val();
+                    $.ajax({ url: "data/status/" + uid, success: updateWorkflowRuns});
+                }
+
+                $("#user_workflows").change(function () {
+                    $("#workflowRuns").empty();
+
+                    var uid = $(this).val();
+                    $.ajax({ url: "data/status/" + uid, success: updateWorkflowRuns});
+                });
+            })
+        </script>
+
         @if(users.size > 0) {
-            <table>
-                <tr>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Active</th>
-                </tr>
+            Select user:
+            <select id="user_workflows">
 
-                    @users.map { user =>
-                      <tr>
-                          <td>@user.username</td>
-                          <td>@user.email</td>
-                          <td><input type="checkbox" name="active_@user.username" @if(user.active) { checked="checked" } value="@user.id"></td>
-                      </tr>
-                    }
-            </table>
+            @users.map { user =>
+                    <option value="@user.id">@user.username</option>
+            }
+            </select>
+
+            <div id="workflowRuns"></div>
         } else {
             <p><i>No users registered.</i></p>
         }
-        <input type="submit" />
-    </form>
+    }
 }

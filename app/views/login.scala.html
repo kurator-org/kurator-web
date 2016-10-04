@@ -3,9 +3,6 @@
 <ul id="navbar">
     <li><a href="@routes.Application.index">Home</a></li>
     <li><a href="@routes.Application.builder">Workflow Builder</a></li>
-    @if(session.get("uid") != null && session.get("uid").equals("0")) {
-        <li><a href="@routes.Application.admin">User Management</a></li>
-    }
     @if(session.get("uid") == null) {
         <li><a href="@routes.Application.register">Register</a></li>
         <li><a class="active" href="@routes.Application.login">Login</a></li>
@@ -18,13 +15,13 @@
 
 @if(form.hasGlobalErrors) {
 <p class="error">
-    form.globalError.message
+    @form.globalError.message
 </p>
 }
 
 @if(flash.containsKey("message")) {
 <p class="message">
-    flash.get("message")
+    @flash.get("message")
 </p>
 }
 
