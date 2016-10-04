@@ -1,0 +1,32 @@
+@(form: Form[ChangePass])
+
+@main(title = "The Kurator 'helloworld' application") {
+    <h1>Change Password</h1>
+
+    @if(form.hasGlobalErrors) {
+        <p class="error">
+        @form.globalError.message
+        </p>
+    }
+
+    @if(flash.containsKey("change_success")) {
+        <p class="success">
+        @flash.get("change_success")
+        </p>
+    }
+
+    @helper.form(routes.Application.changePassword()) {
+        <p>
+            <input type="password" placeholder="Password" name="oldPassword" required>
+        </p>
+        <p>
+            <input type="password" placeholder="New Password" name="password" required>
+        </p>
+        <p>
+            <input type="password" placeholder="Confirm New Password" name="confirmPassword" required>
+        </p>
+        <p>
+            <button type="submit">Change Password</button>
+        </p>
+    }
+}

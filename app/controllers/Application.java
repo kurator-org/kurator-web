@@ -16,7 +16,9 @@ import java.util.*;
 
 import util.ClasspathStreamHandler;
 import util.ConfigurableStreamHandlerFactory;
+
 import views.html.*;
+import views.html.admin.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -131,13 +133,23 @@ public class Application extends Controller {
         );
     }
 
-    /**
-     * The user management and admin page.
-     */
-    public Result admin() {
+    public Result changePass() {
+        return ok(
+                changepw.render(formFactory.form(ChangePass.class))
+        );
+    }
+
+    public Result viewUserRuns() {
         List<User> users = User.find.where().ne("id", 0).findList();
         return ok(
-                admin.render(formFactory.form(ChangePass.class), users)
+                viewruns.render(users)
+        );
+    }
+
+    public Result userManagement() {
+        List<User> users = User.find.where().ne("id", 0).findList();
+        return ok(
+                usermgmt.render(users)
         );
     }
 
@@ -166,7 +178,7 @@ public class Application extends Controller {
         flash("activate_success", "Updated user(s) active status!");
 
         return redirect(
-                routes.Application.admin()
+                routes.Application.userManagement()
         );
     }
 
@@ -176,7 +188,7 @@ public class Application extends Controller {
     public Result changePassword() {
         Form<ChangePass> changePassForm = formFactory.form(ChangePass.class).bindFromRequest();
         if (changePassForm.hasErrors()) {
-            return badRequest(admin.render(changePassForm, User.findNonAdminUsers()));
+            return badRequest(changepw.render(changePassForm));
         }
 
         User user = Application.getCurrentUser();
@@ -185,7 +197,7 @@ public class Application extends Controller {
 
         flash("change_success", "Password successfully changed!");
         return redirect(
-                routes.Application.admin()
+                routes.Application.changePass()
         );
     }
 

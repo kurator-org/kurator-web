@@ -1,19 +1,9 @@
 
-<ul id="navbar">
-    <li><a href="@routes.Application.index">Home</a></li>
-    <li><a class="active" href="@routes.Application.builder">Workflow Builder</a></li>
-    <li><a href="@routes.Application.admin">User Management</a></li>
-    @if(session.get("uid") == null) {
-        <li><a href="@routes.Application.register">Register</a></li>
-        <li><a href="@routes.Application.login">Login</a></li>
-    } else {
-        <li><a href="@routes.Application.logout">Logout</a></li>
-    }
-</ul>
-
 @main(title = "The Kurator 'helloworld' application") {
 
 <h1>Workflow Builder</h1>
+
+<script src="@routes.Assets.at("javascripts/jsPlumb-2.1.4.js")" type="text/javascript"></script>
 
 <script type="text/javascript">
     jsPlumb.ready(function() {

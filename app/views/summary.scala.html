@@ -1,17 +1,5 @@
 @(data: String)
 
-<ul id="navbar">
-    <li><a href="@routes.Application.index">Home</a></li>
-    <li><a href="@routes.Application.builder">Workflow Builder</a></li>
-    <li><a href="@routes.Application.index">User Management</a></li>
-    @if(session.get("uid") == null) {
-        <li><a href="@routes.Application.register">Register</a></li>
-    <li><a href="@routes.Application.login">Login</a></li>
-    } else {
-    <li><a href="@routes.Application.logout">Logout</a></li>
-    }
-</ul>
-
 @main(title = "The Kurator 'helloworld' application") {
 <h1>Coordinates must fall inside the country</h1>
 <canvas id="myChart" width="200" height="200"></canvas>

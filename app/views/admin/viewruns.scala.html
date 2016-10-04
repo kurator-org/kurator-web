@@ -1,0 +1,36 @@
+@(users : List[User])
+@main(title = "The Kurator 'helloworld' application") {
+
+    <h1>User Workflow Runs</h1>
+
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/workflow.js")"></script>
+    <script>
+            $(function () {
+                if ($("#user_workflows").val() != null) {
+                    var uid = $("#user_workflows").val();
+                    $.ajax({ url: "data/status/" + uid, success: updateWorkflowRuns});
+                }
+
+                $("#user_workflows").change(function () {
+                    $("#workflowRuns").empty();
+
+                    var uid = $(this).val();
+                    $.ajax({ url: "data/status/" + uid, success: updateWorkflowRuns});
+                });
+            })
+    </script>
+
+    @if(users.size > 0) {
+        Select user:
+        <select id="user_workflows">
+
+        @users.map { user =>
+            <option value="@user.id">@user.username</option>
+        }
+        </select>
+        <br />
+        <div id="workflowRuns"></div>
+    } else {
+        <p><i>No users registered.</i></p>
+    }
+}

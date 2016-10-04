@@ -18,7 +18,10 @@ POST    /register                   controllers.Application.registerSubmit()
 
 # Admin pages
 
-GET     /admin                      controllers.Application.admin()
+GET     /admin/changepw             controllers.Application.changePass()
+GET     /admin/viewruns                 controllers.Application.viewUserRuns()
+GET     /admin/usermgmt                controllers.Application.userManagement()
+
 POST    /admin/activate             controllers.Application.activateAccount()
 POST    /admin/change               controllers.Application.changePassword()
 

@@ -1,0 +1,43 @@
+@(users : List[User])
+
+@main(title = "The Kurator 'helloworld' application") {
+
+    <h1>User Management</h1>
+
+    @if(flash.containsKey("activate_success")) {
+        <p class="success">
+        @flash.get("activate_success")
+        </p>
+    }
+
+    <form id="usermanagment" action="@routes.Application.activateAccount()" method="post">
+        @if(users.size > 0) {
+            <table>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Active</th>
+                </tr>
+
+                @users.map { user =>
+                    <tr>
+                        <td>@user.username</td>
+                        <td>@user.email</td>
+                        <td>
+                            <select name="role_@user.username" value="@user.role">
+                                <option @if(user.role.equals("USER")) { selected="selected" }>USER</option>
+                                <option @if(user.role.equals("ADMIN")) { selected="selected" }>ADMIN</option>
+                            </select>
+                        </td>
+                        <td><input type="checkbox" name="active_@user.username" @if(user.active) { checked="checked" } value="@user.id"></td>
+                    </tr>
+                }
+            </table>
+        } else {
+            <p><i>No users registered.</i></p>
+        }
+        <input type="submit" />
+    </form>
+
+}
