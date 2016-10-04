@@ -69,11 +69,11 @@ public class AsyncWorkflowRunnable implements Runnable {
             result.outputText = new String(outStream.toByteArray());
             result.save();
 
+            createArchive(archive, run);
+
             run.result = result;
             run.endTime = new Date();
             run.save();
-
-            createArchive(archive, run);
         } catch (Exception e) {
             e.printStackTrace();
         }
