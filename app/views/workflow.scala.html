@@ -3,52 +3,78 @@
 
 @main(title = "The Kurator 'helloworld' application") {
 
-    <h1>@form.title</h1>
+    <div class="panel panel-default" style="width: 700px">
+        <div class="panel-heading">
+            <h3 class="panel-title">@form.title</h3>
+        </div>
+    <div class="panel-body">
+    <form id="runWorkflow" class="form-horizontal" action="@routes.Workflows.runWorkflow(form.name)" method="POST" enctype="multipart/form-data">
+            @for(field <- form.fields) {
 
-<form id="runWorkflow" action="@routes.Workflows.runWorkflow(form.name)" method="POST" enctype="multipart/form-data">
-    <table>
-        @for(field <- form.fields) {
-        <tr>
-            @field match {
-            case fileInput: input.FileInput => {
-            <td>@fileInput.label</td><td><input type="file" id="@fileInput.name" name="@fileInput.name"></td>
-            }
-            case textField: input.TextField => {
-            <td>@textField.label</td>
-
-            @if(textField.textArea) {
-            <td><textarea name="@textField.name"></textarea></td>
-            } else {
-            <td><input type="text" name="@textField.name"></td>
-            }
-            }
-            case radioGroup: input.RadioGroup => {
-            <td>@radioGroup.label</td>
-
-            <td>
-                @for((value, label)  <- radioGroup.options) {
-                <input type="radio" name="@radioGroup.name" value="@value" @if(radioGroup.selected == value) { checked="checked" }>@label</input>
-                }
-            </td>
-            }
-            case checkBox: input.CheckBox => {
-            <td colspan="2"><input type="checkbox" name="@checkBox.name">@checkBox.label</input></td>
-            }
-            case selectField: input.SelectField => {
-            <td>@selectField.label</td>
-
-            <td>
-                <select name="@selectField.name">
-                    @for((value, label) <- selectField.options) {
-                        <option value="@value">@label</option>
+                <div class="form-group">
+                @field match {
+                    case fileInput: input.FileInput => {
+                        <label for="@fileInput.name" class="col-sm-2 control-label">@fileInput.label</label>
+                        <div class="col-sm-10">
+                            <input type="file" id="@fileInput.name" name="@fileInput.name">
+                        </div>
                     }
-                </select>
-            </td>
-            }
-            }
-        </tr>
+
+                    case textField: input.TextField => {
+                        <label for="@textField.name" class="col-sm-2 control-label">@textField.label</label>
+
+                        <div class="col-sm-10">
+                            @if(textField.textArea) {
+                                <textarea class="form-control" name="@textField.name"></textarea>
+                            } else {
+                                <input class="form-control" type="text" name="@textField.name">
+                            }
+                        </div>
+                    }
+
+                    case radioGroup: input.RadioGroup => {
+                        <label for="@radioGroup.name" class="col-sm-2 control-label">@radioGroup.label</label>
+
+                        <div class="col-sm-10">
+                            @for((value, label)  <- radioGroup.options) {
+                                <input class="form-control" type="radio" name="@radioGroup.name" value="@value" @if(radioGroup.selected == value) { checked="checked" }>@label</input>
+                            }
+                        </div>
+                    }
+
+                    case checkBox: input.CheckBox => {
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="@checkBox.name"> @checkBox.label
+                                </label>
+                            </div>
+                        </div>
+                    }
+
+                    case selectField: input.SelectField => {
+                        <label for="@selectField.name" class="col-sm-2 control-label">@selectField.label</label>
+
+                        <div class="col-sm-10">
+                            <select name="@selectField.name">
+                                @for((value, label) <- selectField.options) {
+                                    <option value="@value">@label</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                }
+                </div>
         }
-        <tr><td colspan="2"><input id="runButton" type="submit" value="Run Workflow"/><input type="reset" /></td></tr>
-    </table>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input id="runButton" class="btn btn-primary" type="submit" value="Run Workflow"/> <input class="btn btn-default" type="reset" />
+            </div>
+        </div>
+
     </form>
+    </div>
+    </div>
 }

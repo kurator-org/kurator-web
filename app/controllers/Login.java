@@ -34,7 +34,9 @@ import java.util.List;
         public String validate() {
             User user = User.authenticate(username, password);
             if (user == null) {
-                return "Invalid user or password";
+                return "Invalid username or password";
+            } else if (!user.active) {
+                return "User account is currently inactive. An admin will activate your account shortly.";
             } else {
                 Http.Session session = Http.Context.current().session();
                 session.clear();

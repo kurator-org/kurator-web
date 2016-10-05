@@ -36,7 +36,7 @@ public class User extends Model {
 
     public static User authenticate(String username, String password) {
         User user = User.find.where().eq("username", username).findUnique();
-        if (user != null && user.active && BCrypt.checkpw(password, user.password)) {
+        if (user != null && BCrypt.checkpw(password, user.password)) {
             return user;
         } else {
             return null;

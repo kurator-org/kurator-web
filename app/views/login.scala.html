@@ -2,30 +2,29 @@
 
 @main(title = "The Kurator 'helloworld' application") {
 
-@if(form.hasGlobalErrors) {
-<p class="error">
-    @form.globalError.message
-</p>
-}
 
-@if(flash.containsKey("message")) {
-<p class="message">
-    @flash.get("message")
-</p>
-}
 
-@helper.form(routes.Application.authenticate) {
-<h1>Sign in</h1>
+    <h1>Sign in</h1>
 
-<p>
-    <input type="text" name="username" placeholder="Username" value="@form("username").value">
-</p>
-<p>
-    <input type="password" name="password" placeholder="Password">
-</p>
-<p>
-    <button type="submit">Login</button>
-</p>
-}
+    @if(flash.containsKey("message")) {
+        <div class="alert alert-info" role="alert">@flash.get("message")</div>
+    }
 
+    @if(form.hasGlobalErrors) {
+        <div class="alert alert-danger" role="alert">@form.globalError.message</div>
+    }
+
+    <div style="float: left">
+        @helper.form(routes.Application.authenticate) {
+            <div class="form-group">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        }
+    </div>
 }

@@ -3,30 +3,33 @@
 @main(title = "The Kurator 'helloworld' application") {
     <h1>Change Password</h1>
 
-    @if(form.hasGlobalErrors) {
-        <p class="error">
-        @form.globalError.message
-        </p>
+    @if(flash.containsKey("change_success")) {
+        <div class="alert alert-info" role="alert">@flash.get("change_success")</div>
     }
 
-    @if(flash.containsKey("change_success")) {
-        <p class="success">
-        @flash.get("change_success")
-        </p>
+    @if(form.hasGlobalErrors) {
+        <div class="alert alert-danger" role="alert">@form.globalError.message</div>
     }
 
     @helper.form(routes.Application.changePassword()) {
-        <p>
-            <input type="password" placeholder="Password" name="oldPassword" required>
-        </p>
-        <p>
-            <input type="password" placeholder="New Password" name="password" required>
-        </p>
-        <p>
-            <input type="password" placeholder="Confirm New Password" name="confirmPassword" required>
-        </p>
-        <p>
-            <button type="submit">Change Password</button>
-        </p>
+
+        <div style="float: left">
+        @helper.form(routes.Application.authenticate) {
+            <div class="form-group">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" placeholder="New Password" name="password" required>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" placeholder="Confirm New Password" name="confirmPassword" required>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Change password</button>
+            </div>
+        }
+        </div>
+
     }
 }

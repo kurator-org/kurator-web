@@ -289,6 +289,7 @@ public class Workflows extends Controller {
             runJson.put("workflow", run.workflow.title);
             runJson.put("startTime", dateFormat.format(run.startTime));
             runJson.put("endTime", run.endTime != null ? dateFormat.format(run.endTime) : null);
+            runJson.put("status", run.status);
             runJson.put("hasResult", run.result != null);
             if (run.result != null) {
                 runJson.put("hasOutput", !run.result.outputText.equals(""));

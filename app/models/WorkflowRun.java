@@ -12,6 +12,10 @@ import java.util.Date;
  */
 @Entity
 public class WorkflowRun extends Model {
+    public static String STATUS_SUCCESS = "SUCCESS";
+    public static String STATUS_RUNNING = "RUNNING";
+    public static String STATUS_ERROR = "ERROR";
+
     @Id
     public Long id;
 
@@ -19,6 +23,8 @@ public class WorkflowRun extends Model {
     public Workflow workflow;
     public Date startTime;
     public Date endTime;
+
+    public String status;
 
     @OneToOne(cascade=CascadeType.ALL)
     public WorkflowResult result;

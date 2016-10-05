@@ -35,6 +35,7 @@ public class AsyncWorkflowRunnable implements Runnable {
         run.user = Application.getCurrentUser();
         run.workflow = workflow;
         run.startTime = new Date();
+        run.status = WorkflowRun.STATUS_RUNNING;
         run.save();
     }
 
@@ -69,10 +70,13 @@ public class AsyncWorkflowRunnable implements Runnable {
             result.outputText = new String(outStream.toByteArray());
             result.save();
 
+            run.result = result;
+
             createArchive(archive, run);
 
-            run.result = result;
             run.endTime = new Date();
+            run.status = WorkflowRun.STATUS_SUCCESS;
+
             run.save();
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,8 +92,7 @@ public class AsyncWorkflowRunnable implements Runnable {
         }
     }
 
-    private void createArchive(File archive, WorkflowRun run) {
-        try {
+    private void createArchive(File archive, WorkflowRun run) throws IOException {
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(archive));
             List<ResultFile> resultFiles = run.result.resultFiles;
 
@@ -121,9 +124,6 @@ public class AsyncWorkflowRunnable implements Runnable {
             //writeFile(yamlFile, out);
 
             out.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private File createReadmeFile() throws IOException {
@@ -162,6 +162,7 @@ public class AsyncWorkflowRunnable implements Runnable {
 
         run.result = result;
         run.endTime = new Date();
+        run.status = WorkflowRun.STATUS_ERROR;
         run.save();
     }
 }

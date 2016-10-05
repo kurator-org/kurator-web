@@ -3,7 +3,7 @@
 
 @main(title = "The Kurator 'helloworld' application") {
 
-    <h1>Workflows</h1>
+    <h2>Workflows</h2>
 
     <script type="text/javascript" src="@routes.Assets.at("javascripts/workflow.js")"></script>
     <script type="text/javascript">
@@ -17,8 +17,7 @@
 
             /*;*/
     </script>
-
-    <table>
+    <table class="workflow-list">
         @workflows.map { workflow =>
             <tr>
                 <td>
@@ -36,7 +35,16 @@
         }
     </table>
 
-    <h1>Workflow runs (Most recent first)</h1>
-    <div id="workflowRuns"></div>
-    
+    <h1>Workflow runs</h1>
+
+    <script type="text/javascript">
+            $(document).ready(function() {
+                $('#workflow-runs').DataTable();
+            } );
+    </script>
+
+    <div id="workflow-runs" style="float: left">
+
+    </div>
+
 }

@@ -8,33 +8,44 @@
 </p>
 }
 
-@helper.form(routes.Application.registerSubmit()) {
-<h1>Create Account</h1>
+    <h1>Create Account</h1>
 
-<p>
-    <input type="email" name="email" placeholder="Email" value="@form("email").value">
-</p>
-<p>
-    <input type="text" name="firstName" placeholder="First Name" value="@form("firstName").value">
-</p>
-<p>
-    <input type="text" name="lastName" placeholder="Last Name" value="@form("lastName").value">
-</p>
-<p>
-    <input type="text" placeholder="Username" name="username" value="@form("username").value" required >
-</p>
-<p>
-    <input type="password" placeholder="Password" name="password" required>
-</p>
-<p>
-    <input type="password" placeholder="Confirm Password" name="confirmPassword" required>
-</p>
-<p>
-    <input type="text" placeholder="Affiliation" name="affiliation" value="@form("affiliation").value" required>
-</p>
-<p>
-    <button type="submit">Register</button>
-</p>
-}
+    @helper.form(routes.Application.registerSubmit()) {
+    <div style="float: left">
 
+        @if(flash.containsKey("message")) {
+            <div class="alert alert-info" role="alert">@flash.get("message")</div>
+        }
+
+        @if(form.hasGlobalErrors) {
+            <div class="alert alert-danger" role="alert">@form.globalError.message</div>
+        }
+
+        <div class="form-group">
+            <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="@form("email").value" />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" value="@form("firstName").value" />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" value="@form("lastName").value" />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="@form("username").value" required />
+        </div>
+        <div class="form-group">
+            <input type="password" class="form-control" id="password" placeholder="Password" name="password" required />
+        </div>
+        <div class="form-group">
+            <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword" required />
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" id="affiliation" placeholder="Affiliation" name="affiliation" value="@form("affiliation").value" required />
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+    }
+    </div>
 }
