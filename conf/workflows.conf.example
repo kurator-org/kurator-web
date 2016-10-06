@@ -2,11 +2,11 @@ workflows {
 
   dwca_term_values {
 
-    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/dwca_term_values.yaml"
+    yaml = "file:/home/lowery/packages/kurator-validation/kurator_dwca/workflows/dwca_term_values.yaml"
 
-    title = "Dwca Term Values"
+    title = "DwCA Field Value Counts"
     documentation = "https://github.com/kurator-org/kurator-validation/wiki/dwca_term_values"
-    summary = "A summary of what this workflow does"
+    summary = "Given a list of field names (e.g., country|stateProvince), creates reports of the distinct values of those fields and the number of times they occur in a Darwin Core archive found at a given URL."
 
     instructions = """Provide instructions about what will happen when you click “download” (i.e. a zipfile
                       will be downloaded. Click on the output excel file to open and view...)."""
@@ -14,8 +14,8 @@ workflows {
     parameters {
 
       dwca_url.type = "text"
-      dwca_url.label = "Url"
-      dwca_url.description = "A url that points to a darwin core archive"
+      dwca_url.label = "URL"
+      dwca_url.description = "A URL that points to a Darwin Core archive"
 
     }
 
@@ -31,11 +31,11 @@ workflows {
 
   dwca_assess_controlled_terms {
 
-    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/dwca_controlled_term_assessor.yaml"
+    yaml = "file:/home/lowery/packages/kurator-validation/kurator_dwca/workflows/dwca_controlled_term_assessor.yaml"
 
-    title = "Dwca Assess Controlled Terms"
+    title = "DwCA Controlled Field Assesment"
     documentation = "https://github.com/kurator-org/kurator-validation/wiki/dwca_assess_controlled_terms"
-    summary = "A summary of what this workflow does"
+    summary = "Creates reports for Darwin Core fields that are supposed to have controlled values. Reports include counts of distinct values and recommendations for those that can be found in the vocabulary files."
 
     instructions = """Provide instructions about what will happen when you click “download” (i.e. a zipfile
                               will be downloaded. Click on the output excel file to open and view...)."""
@@ -43,8 +43,8 @@ workflows {
     parameters {
 
       dwca_url.type = "text"
-      dwca_url.label = "Url"
-      dwca_url.description = "A url that points to a darwin core archive"
+      dwca_url.label = "URL"
+      dwca_url.description = "A URL that points to a Darwin Core archive"
 
     }
 
@@ -60,11 +60,11 @@ workflows {
 
   dwca_assess_geography {
 
-    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/dwca_geography_assessor.yaml"
+    yaml = "file:/home/lowery/packages/kurator-validation/kurator_dwca/workflows/dwca_geography_assessor.yaml"
 
-    title = "Dwca Assess Geography"
+    title = "DwCA Geography Assessment"
     documentation = "https://github.com/kurator-org/kurator-validation/wiki/dwca_assess_geography"
-    summary = "A summary of what this workflow does"
+    summary = "Creates reports for Darwin Core higher geography fields. Reports include counts of distinct values and recommendations for those that can be found in the vocabulary files."
 
     instructions = """Provide instructions about what will happen when you click “download” (i.e. a zipfile
                               will be downloaded. Click on the output excel file to open and view...)."""
@@ -72,8 +72,8 @@ workflows {
     parameters {
 
       dwca_url.type = "text"
-      dwca_url.label = "Url"
-      dwca_url.description = "A url that points to a darwin core archive"
+      dwca_url.label = "URK"
+      dwca_url.description = "A URL that points to a Darwin Core archive"
 
     }
 
@@ -89,11 +89,11 @@ workflows {
 
   dwca_clean_geography {
 
-    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/dwca_geography_cleaner.yaml"
+    yaml = "file:/home/lowery/packages/kurator-validation/kurator_dwca/workflows/dwca_geography_cleaner.yaml"
 
-    title = "Dwca Clean Geography"
+    title = "DwCA Geography Cleaner"
     documentation = "https://github.com/kurator-org/kurator-validation/wiki/dwca_clean_geography"
-    summary = "A summary of what this workflow does"
+    summary = "Creates reports for Darwin Core higher geography fields. Reports include counts of distinct values and recommendations for those that can be found in the vocabulary files. Also creates an output file that replaces values of Darwin Core geography fields with standardized values and adds fields to include the original field values."
 
     instructions = """Provide instructions about what will happen when you click “download” (i.e. a zipfile
                               will be downloaded. Click on the output excel file to open and view...)."""
@@ -101,8 +101,8 @@ workflows {
     parameters {
 
       dwca_url.type = "text"
-      dwca_url.label = "Url"
-      dwca_url.description = "A url that points to a darwin core archive"
+      dwca_url.label = "URL"
+      dwca_url.description = "A URL that points to a Darwin Core archive"
 
     }
 
@@ -157,33 +157,67 @@ workflows {
 
   }
 
-  geo_validator {
+  darwinize_workflow {
 
-    yaml = "classpath:org/kurator/akka/samples/geo_validator.yaml"
+    yaml = "classpath:org/kurator/validation/workflows/darwinize_file.yaml"
 
-    title = "Geo Validator"
-    documentation = "http://wiki.datakurator.net/web/FP-Akka_User_Documentation#Workflow_1_.28All-in-1:_SciName-Georef-Date_.28DwCa.29.29"
-    summary = "A summary of what this workflow does"
+    title = "Darwinize File"
+    documentation = "https://github.com/kurator-org/kurator-validation/wiki/darwinize_file"
+    summary = "Create a file that substitutes standard Darwin Core field names for the fields in an input file."
 
     instructions = """Provide instructions about what will happen when you click “download” (i.e. a zipfile
                               will be downloaded. Click on the output excel file to open and view...)."""
 
     parameters {
 
-      in.type = "upload"
-      in.label = "Upload file"
-      in.description = "Upload a darwin core csv file"
+      inputfile.type = "upload"
+      inputfile.label = "Upload file"
+      inputfile.description = "Upload a text file to Darwinize"
+
+      format.type = "select"
+      format.label = "Output Format"
+
+      format.options = {
+        "csv" : "csv",
+        "txt" : "txt"
+      }
+
+      namespace.type = "select"
+      namespace.label = "Output Format"
+
+      namespace.options = {
+        "no" : "no",
+        "yes" : "yes"
+      }
 
     }
-
-    #    artifacts {
-    #
-    #      output_file.label = "The human readable label of this artifact"
-    #      output_file.description = "A description of the contents of this file"
-    #      output_file.type = "text/csv"
-    #
-    #    }
-
-  }
+#   geo_validator {
+# 
+#     yaml = "classpath:org/kurator/akka/samples/geo_validator.yaml"
+# 
+#     title = "Geo Validator"
+#     documentation = "http://datakurator.net/wiki"
+#     summary = "A summary of what this workflow does"
+# 
+#     instructions = """Provide instructions about what will happen when you click “download” (i.e. a zipfile
+#                               will be downloaded. Click on the output excel file to open and view...)."""
+# 
+#     parameters {
+# 
+#       in.type = "upload"
+#       in.label = "Upload file"
+#       in.description = "Upload a darwin core csv file"
+# 
+#     }
+# 
+#     #    artifacts {
+#     #
+#     #      output_file.label = "The human readable label of this artifact"
+#     #      output_file.description = "A description of the contents of this file"
+#     #      output_file.type = "text/csv"
+#     #
+#     #    }
+# 
+#   }
 
 }
