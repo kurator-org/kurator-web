@@ -2,7 +2,7 @@ workflows {
 
   dwca_term_values {
 
-    yaml = "file:/home/lowery/packages/kurator-validation/kurator_dwca/workflows/dwca_term_values.yaml"
+    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/dwca_term_values.yaml"
 
     title = "DwCA Field Value Counts"
     documentation = "https://github.com/kurator-org/kurator-validation/wiki/dwca_term_values"
@@ -31,9 +31,9 @@ workflows {
 
   dwca_assess_controlled_terms {
 
-    yaml = "file:/home/lowery/packages/kurator-validation/kurator_dwca/workflows/dwca_controlled_term_assessor.yaml"
+    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/dwca_controlled_term_assessor.yaml"
 
-    title = "DwCA Controlled Field Assesment"
+    title = "DwCA Controlled Field Assessment"
     documentation = "https://github.com/kurator-org/kurator-validation/wiki/dwca_assess_controlled_terms"
     summary = "Creates reports for Darwin Core fields that are supposed to have controlled values. Reports include counts of distinct values and recommendations for those that can be found in the vocabulary files."
 
@@ -60,7 +60,7 @@ workflows {
 
   dwca_assess_geography {
 
-    yaml = "file:/home/lowery/packages/kurator-validation/kurator_dwca/workflows/dwca_geography_assessor.yaml"
+    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/dwca_geography_assessor.yaml"
 
     title = "DwCA Geography Assessment"
     documentation = "https://github.com/kurator-org/kurator-validation/wiki/dwca_assess_geography"
@@ -72,7 +72,7 @@ workflows {
     parameters {
 
       dwca_url.type = "text"
-      dwca_url.label = "URK"
+      dwca_url.label = "Url"
       dwca_url.description = "A URL that points to a Darwin Core archive"
 
     }
@@ -89,7 +89,7 @@ workflows {
 
   dwca_clean_geography {
 
-    yaml = "file:/home/lowery/packages/kurator-validation/kurator_dwca/workflows/dwca_geography_cleaner.yaml"
+    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/dwca_geography_cleaner.yaml"
 
     title = "DwCA Geography Cleaner"
     documentation = "https://github.com/kurator-org/kurator-validation/wiki/dwca_clean_geography"
@@ -120,7 +120,7 @@ workflows {
 
     yaml = "classpath:org/kurator/validation/workflows/dwca_workflow.yaml"
 
-    title = "Dwca Workflow"
+    title = "DwCA Workflow"
     documentation = "http://datakurator.net/wiki"
     summary = "A summary of what this workflow does"
 
@@ -159,7 +159,7 @@ workflows {
 
   darwinize_workflow {
 
-    yaml = "classpath:org/kurator/validation/workflows/darwinize_file.yaml"
+    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/darwinize_file.yaml"
 
     title = "Darwinize File"
     documentation = "https://github.com/kurator-org/kurator-validation/wiki/darwinize_file"
@@ -183,14 +183,16 @@ workflows {
       }
 
       namespace.type = "select"
-      namespace.label = "Output Format"
+      namespace.label = "Add namespace"
 
       namespace.options = {
-        "no" : "no",
-        "yes" : "yes"
+        "n" : "no",
+        "y" : "yes"
       }
 
     }
+  }
+
 #   geo_validator {
 # 
 #     yaml = "classpath:org/kurator/akka/samples/geo_validator.yaml"
