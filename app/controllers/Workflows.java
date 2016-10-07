@@ -8,9 +8,7 @@ import config.KuratorConfigFactory;
 import config.ParameterConfig;
 import forms.FormDefinition;
 import forms.input.*;
-import models.UserUpload;
-import models.Workflow;
-import models.WorkflowRun;
+import models.*;
 import org.apache.commons.io.FileUtils;
 import org.kurator.akka.WorkflowConfig;
 import org.kurator.akka.WorkflowRunner;
@@ -269,6 +267,25 @@ public class Workflows extends Controller {
         }
 
         return ok(uploads);
+    }
+
+    public Result removeRun(long workflowRunId) {
+        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
+
+        if (run != null && run.result != null) {
+            WorkflowResult result = run.result;
+            List<ResultFile> resultFiles = result.resultFiles;
+
+            run.delete();
+
+            for (ResultFile resultFile : resultFiles) {
+                resultFile.delete();
+            }
+
+            result.delete();
+        }
+
+        return ok();
     }
 
     /** REST endopint returns a json object with metadata about the status of all of a current users workflow runs.

@@ -8,6 +8,7 @@ function updateWorkflowRuns(data) {
 
             var html = "    <table class=\"table\">" +
                 "        <tr>" +
+                "            <th></th>" +
                 "            <th>Workflow</th>" +
                 "            <th>Start Time</th>" +
                 "            <th>End Time</th>" +
@@ -18,11 +19,12 @@ function updateWorkflowRuns(data) {
                 "        </tr>";
 
             $.each(data, function (i, val) {
-                html += "        <tr>" +
-                    "            <td>" + val.workflow + "</td>" +
-                    "            <td>" + val.startTime + "</td>";
-
                 if (val.status == "RUNNING") {
+                    html += "        <tr>" +
+                        "            <td></td>" +
+                        "            <td>" + val.workflow + "</td>" +
+                        "            <td>" + val.startTime + "</td>";
+
                     html +=  "<td class=\"loading\"></td>" +
                             "<td class=\"loading\"></td>" +
                             "<td class=\"loading\"></td>" +
@@ -30,6 +32,11 @@ function updateWorkflowRuns(data) {
                             "<td><span class=\"label label-primary\">Running</span></td>"
 
                 } else if (val.status == "SUCCESS") {
+                    html += "        <tr>" +
+                        "            <td><button type=\"button\" class=\"btn btn-default btn-xs\" onclick=\"removeRun(" + val.id + ")\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span></td>" +
+                        "            <td>" + val.workflow + "</td>" +
+                        "            <td>" + val.startTime + "</td>";
+
                     html += "<td>" + val.endTime + "</td>" +
                         "            <td>" + (val.hasResult ? "<a href=\"result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
                         "            <td>" + (val.hasOutput ? "<a href=\"output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
@@ -59,4 +66,8 @@ function updateWorkflowRuns(data) {
             $("#workflow-runs").html("<i>No workflow runs</i>");
         }
         console.log(data);
-    }
+}
+
+function removeRun(id) {
+    $.post("remove/" + id);
+}

@@ -39,6 +39,8 @@ GET     /result/*id                 controllers.Workflows.resultArchive(id : Lon
 GET     /error/*id                  controllers.Workflows.errorLog(id : Long)
 GET     /output/*id                 controllers.Workflows.outputLog(id : Long)
 
+POST     /remove/*id                 controllers.Workflows.removeRun(id : Long)
+
 # Workflow builder
 
 GET     /builder                    controllers.Application.builder()
