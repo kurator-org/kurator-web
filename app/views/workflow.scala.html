@@ -8,7 +8,9 @@
             <h3 class="panel-title">@form.title</h3>
         </div>
     <div class="panel-body">
-    <form id="runWorkflow" class="form-horizontal" action="@routes.Workflows.runWorkflow(form.name)" method="POST" enctype="multipart/form-data">
+        <p>@form.summary</p>
+
+    <form id="runWorkflow" style="width: 500px" class="form-horizontal" action="@routes.Workflows.runWorkflow(form.name)" method="POST" enctype="multipart/form-data">
             @for(field <- form.fields) {
 
                 <div class="form-group">
@@ -16,7 +18,7 @@
                     case fileInput: input.FileInput => {
                         <label for="@fileInput.name" class="col-sm-2 control-label">@fileInput.label</label>
                         <div class="col-sm-10">
-                            <input type="file" id="@fileInput.name" name="@fileInput.name">
+                            <input type="file" id="@fileInput.name" name="@fileInput.name" data-toggle="tooltip" data-placement="right" title="@fileInput.tooltip">
                         </div>
                     }
 
@@ -25,9 +27,9 @@
 
                         <div class="col-sm-10">
                             @if(textField.textArea) {
-                                <textarea class="form-control" name="@textField.name"></textarea>
+                                <textarea class="form-control" name="@textField.name" data-toggle="tooltip" data-placement="right" title="@textField.tooltip"></textarea>
                             } else {
-                                <input class="form-control" type="text" name="@textField.name">
+                                <input class="form-control" type="text" name="@textField.name" data-toggle="tooltip" data-placement="right" title="@textField.tooltip">
                             }
                         </div>
                     }
@@ -37,7 +39,7 @@
 
                         <div class="col-sm-10">
                             @for((value, label)  <- radioGroup.options) {
-                                <input class="form-control" type="radio" name="@radioGroup.name" value="@value" @if(radioGroup.selected == value) { checked="checked" }>@label</input>
+                                <input class="form-control" type="radio" name="@radioGroup.name" data-toggle="tooltip" data-placement="right" title="@radioGroup.tooltip" value="@value" @if(radioGroup.selected == value) { checked="checked" }>@label</input>
                             }
                         </div>
                     }
@@ -46,7 +48,7 @@
                         <div class="col-sm-offset-2 col-sm-10">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="@checkBox.name"> @checkBox.label
+                                    <input type="checkbox" name="@checkBox.name" data-toggle="tooltip" data-placement="right" title="@checkBox.tooltip"> @checkBox.label
                                 </label>
                             </div>
                         </div>
@@ -56,7 +58,7 @@
                         <label for="@selectField.name" class="col-sm-2 control-label">@selectField.label</label>
 
                         <div class="col-sm-10">
-                            <select name="@selectField.name">
+                            <select name="@selectField.name" data-toggle="tooltip" data-placement="right" title="@selectField.tooltip">
                                 @for((value, label) <- selectField.options) {
                                     <option value="@value">@label</option>
                                 }
@@ -68,13 +70,28 @@
                 </div>
         }
 
+        <script type="text/javascript">
+                $(function () {
+                    $('[data-toggle="tooltip"]').tooltip()
+                })
+        </script>
+
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <input id="runButton" class="btn btn-primary" type="submit" value="Run Workflow"/> <input class="btn btn-default" type="reset" />
+                <input id="runButton" class="btn btn-primary" onclick="$('.progress').show()" type="submit" value="Run Workflow"/> <input class="btn btn-default" type="reset" />
             </div>
         </div>
-
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="progress" style="display: none">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                        <span class="sr-only">Running...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
+
     </div>
     </div>
 }

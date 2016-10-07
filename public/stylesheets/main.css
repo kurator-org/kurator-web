@@ -40,3 +40,7 @@ section {
         width: 20px;
     }
 }
+
+.tooltip-inner {
+    width: 350px;
+}
