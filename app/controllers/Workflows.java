@@ -360,6 +360,8 @@ public class Workflows extends Controller {
             formDef.title = workflow.getTitle();
             formDef.yamlFile = workflow.getYaml();
             formDef.documentation = workflow.getDocumentation();
+            formDef.instructions = workflow.getInstructions();
+            formDef.summary = workflow.getSummary();
 
             for (ParameterConfig parameter : workflow.getParameters()) {
                 if (parameter.isTyped()) {
@@ -370,6 +372,7 @@ public class Workflows extends Controller {
                             TextField textField = new TextField();
                             textField.name = parameter.getName();
                             textField.label = parameter.getLabel();
+                            textField.tooltip = parameter.getDescription();
                             formDef.addField(textField);
                             break;
                         case "select":
@@ -377,12 +380,14 @@ public class Workflows extends Controller {
                             selectField.name = parameter.getName();
                             selectField.label = parameter.getLabel();
                             selectField.options = parameter.getOptions();
+                            selectField.tooltip = parameter.getDescription();
                             formDef.addField(selectField);
                             break;
                         case "upload":
                             FileInput fileInput = new FileInput();
                             fileInput.name = parameter.getName();
                             fileInput.label = parameter.getLabel();
+                            fileInput.tooltip = parameter.getDescription();
                             formDef.addField(fileInput);
                             break;
                     }

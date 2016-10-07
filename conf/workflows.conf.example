@@ -147,6 +147,7 @@ workflows {
 
       format.type = "select"
       format.label = "Output Format"
+      format.description = "Format for the output file"
 
       format.options = {
         "csv" : "csv",
@@ -155,6 +156,7 @@ workflows {
 
       namespace.type = "select"
       namespace.label = "Add namespace"
+      namespace.description = "Namespace to prepend to fields"
 
       namespace.options = {
         "n" : "no",
@@ -186,6 +188,7 @@ workflows {
 
       authority.type = "select"
       authority.label = "Taxon Authority"
+      authority.description = "The taxon authority to use for scientific name validation"
 
       authority.options = {
         "ipni" : "IPNI",

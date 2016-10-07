@@ -18,6 +18,8 @@ public class FormDefinition {
     public String outputFormat;
     public String documentation;  // A link to documentation for this workflow
     public String yamlFile;
+    public String instructions;
+    public String summary;
 
     public void addField(BasicField field) {
         fields.add(field);
