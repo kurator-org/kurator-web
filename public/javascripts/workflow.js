@@ -43,12 +43,22 @@ function updateWorkflowRuns(data) {
                         "            <td>" + (val.hasErrors ? "<a href=\"error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
                         "<td><span class=\"label label-success\">Complete</span></td>"
                 } else if (val.status == "ERROR") {
+                    html += "        <tr>" +
+                        "            <td><button type=\"button\" class=\"btn btn-default btn-xs\" onclick=\"removeRun(" + val.id + ")\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span></td>" +
+                        "            <td>" + val.workflow + "</td>" +
+                        "            <td>" + val.startTime + "</td>";
+
                     html += "<td>" + val.endTime + "</td>" +
                         "            <td>" + (val.hasResult ? "<a href=\"result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
                         "            <td>" + (val.hasOutput ? "<a href=\"output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
                         "            <td>" + (val.hasErrors ? "<a href=\"error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
                         "<td><span class=\"label label-danger\">Error</span></td>"
                 } else {
+                    html += "        <tr>" +
+                        "            <td><button type=\"button\" class=\"btn btn-default btn-xs\" onclick=\"removeRun(" + val.id + ")\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span></td>" +
+                        "            <td>" + val.workflow + "</td>" +
+                        "            <td>" + val.startTime + "</td>";
+                    
                     html += "            <td>" + (val.endTime != null ? val.endTime : "...") + "</td>" +
                         "            <td>" + (val.hasResult ? "<a href=\"result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
                         "            <td>" + (val.hasOutput ? "<a href=\"output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
