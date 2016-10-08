@@ -162,6 +162,40 @@ workflows {
         "n" : "no",
         "y" : "yes"
       }
+  }
+
+  vocabulary_maker_workflow {
+
+    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/vocabulary_maker.yaml"
+
+    title = "Vocabulary Maker"
+    documentation = "https://github.com/kurator-org/kurator-validation/wiki/Vocabulary-Maker"
+    summary = "Create a vocabulary file from the distinct values of a given list of fields in an input file."
+
+    instructions = """
+        Select a tab-delimited or CSV file to upload. This file will be processed in 
+        the workflow. Select the format (csv or txt) for the output file. Select 
+        whether to prepend the namespace (e.g., 'dwc:') to fields that could be 
+        interpreted as Darwin Core fields.
+        """
+
+    parameters {
+
+      inputfile.type = "upload"
+      inputfile.label = "Upload file"
+      inputfile.description = "Upload a text file to Darwinize"
+
+      vocabfile.type = "text"
+      vocabfile.label = "Vocabulary file name"
+      vocabfile.description = "A file name for the vocabulary file to create"
+
+      termlist.type = "text"
+      termlist.label = "Fields from input file"
+      termlist.description = "A list of fields in the input file to use as the key combination in the vocabulary file (e.g., recordedBy). To use a combination of fields, separate them with '|' (e.g., genus|specificEpithet)."
+
+      key.type = "text"
+      key.label = "Field name for vocabulary"
+      key.description = "The name to use for the vocabulary key field (e.g., collector)"
 
     }
   }
