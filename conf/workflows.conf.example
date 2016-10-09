@@ -200,6 +200,84 @@ workflows {
     }
   }
 
+  darwinize_workflow {
+
+    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/darwinize_file.yaml"
+
+    title = "File Darwinizer"
+    documentation = "https://github.com/kurator-org/kurator-validation/wiki/File-Darwinizer"
+    summary = "Create a file that substitutes standard Darwin Core field names for the fields in an input file."
+
+    instructions = """
+        Select a tab-delimited or CSV file to upload. This file will be processed in 
+        the workflow. Select the format (csv or txt) for the output file. Select 
+        whether to prepend the namespace (e.g., 'dwc:') to fields that could be 
+        interpreted as Darwin Core fields.
+        """
+
+    parameters {
+
+      inputfile.type = "upload"
+      inputfile.label = "Upload file"
+      inputfile.description = "Upload a text file to Darwinize"
+
+      format.type = "select"
+      format.label = "Output Format"
+      format.description = "Format for the output file"
+
+      format.options = {
+        "csv" : "csv",
+        "txt" : "txt"
+      }
+
+      namespace.type = "select"
+      namespace.label = "Add namespace"
+      namespace.description = "Namespace to prepend to fields"
+
+      namespace.options = {
+        "n" : "no",
+        "y" : "yes"
+      }
+  }
+
+  file_aggregator_workflow {
+
+    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/file_aggregator.yaml"
+
+    title = "File Aggregator"
+    documentation = "https://github.com/kurator-org/kurator-validation/wiki/File-Aggregator"
+    summary = "Create a file that combines two separate input files with the distinct columns and all records from both."
+
+    instructions = """
+        Select a two tab-delimited or CSV files to upload. These file will be processed in 
+        the workflow. Select the name and format (csv or txt) for the output file.
+        """
+
+    parameters {
+
+      inputfile1.type = "upload"
+      inputfile1.label = "Upload first file"
+      inputfile1.description = "Upload a text file to aggreagate"
+
+      inputfile2.type = "upload"
+      inputfile2.label = "Upload second file"
+      inputfile2.description = "Upload a text file to aggreagate"
+
+      outputfile.type = "text"
+      outputfile.label = "Output file name"
+      outputfile.description = "A name for the aggregated file to create"
+
+      format.type = "select"
+      format.label = "Output Format"
+      format.description = "Format for the output file"
+
+      format.options = {
+        "csv" : "csv",
+        "txt" : "txt"
+      }
+
+  }
+
   dwca_workflow {
 
     yaml = "classpath:org/kurator/validation/workflows/dwca_workflow.yaml"
