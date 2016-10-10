@@ -67,7 +67,7 @@ workflows {
     yaml = "file:/home/kurator/packages/kurator_dwca/workflows/dwca_geography_assessor.yaml"
 
     title = "Darwin Core Archive Geography Assessor"
-    documentation = "https://github.com/kurator-org/kurator-validation/wiki/dwca_assess_geography"
+    documentation = "https://github.com/kurator-org/kurator-validation/wiki/Darwin-Core-Archive-Geography-Assessor"
     summary = "Creates reports for Darwin Core higher geography fields. Reports include counts of distinct values and recommendations for those that can be found in the vocabulary files."
 
     instructions = """
