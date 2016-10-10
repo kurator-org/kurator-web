@@ -8,7 +8,7 @@
             <h3 class="panel-title">@form.title</h3>
         </div>
     <div class="panel-body">
-        <p>@form.summary</p>
+        <p>@form.instructions</p>
 
     <form id="runWorkflow" style="width: 500px" class="form-horizontal" action="@routes.Workflows.runWorkflow(form.name)" method="POST" enctype="multipart/form-data">
             @for(field <- form.fields) {
