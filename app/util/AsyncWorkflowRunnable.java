@@ -71,10 +71,10 @@ public class AsyncWorkflowRunnable implements Runnable {
             result.save();
 
             run.result = result;
+            run.endTime = new Date();
 
             createArchive(archive, run);
 
-            run.endTime = new Date();
             run.status = WorkflowRun.STATUS_SUCCESS;
 
             run.save();

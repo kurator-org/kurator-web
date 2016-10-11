@@ -5,6 +5,7 @@ import com.avaje.ebean.annotation.EnumMapping;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class User extends Model {
 
     public String affiliation;
 
+    @NotNull
     public String role;
 
     public boolean active;
