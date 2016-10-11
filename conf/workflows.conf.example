@@ -162,6 +162,7 @@ workflows {
         "n" : "no",
         "y" : "yes"
       }
+    }
   }
 
   vocabulary_maker_workflow {
@@ -238,6 +239,7 @@ workflows {
         "n" : "no",
         "y" : "yes"
       }
+    }
   }
 
   file_aggregator_workflow {
@@ -275,7 +277,7 @@ workflows {
         "csv" : "csv",
         "txt" : "txt"
       }
-
+    }
   }
 
   dwca_workflow {
