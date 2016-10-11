@@ -272,17 +272,20 @@ public class Workflows extends Controller {
     public Result removeRun(long workflowRunId) {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
-        if (run != null && run.result != null) {
-            WorkflowResult result = run.result;
-            List<ResultFile> resultFiles = result.resultFiles;
-
+        if (run != null) {
             run.delete();
 
-            for (ResultFile resultFile : resultFiles) {
-                resultFile.delete();
-            }
+            WorkflowResult result = run.result;
 
-            result.delete();
+            if (run.result != null) {
+                List<ResultFile> resultFiles = result.resultFiles;
+
+                for (ResultFile resultFile : resultFiles) {
+                    resultFile.delete();
+                }
+
+                result.delete();
+            }
         }
 
         return ok();
