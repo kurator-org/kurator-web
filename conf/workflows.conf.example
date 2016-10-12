@@ -124,6 +124,50 @@ workflows {
 
   }
 
+  file_clean_geography {
+
+    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/file_geography_cleaner.yaml"
+
+    title = "CSV File Geography Cleaner"
+    documentation = "https://github.com/kurator-org/kurator-validation/wiki/CSV-File-Geography-Cleaner"
+    summary = "Creates reports for Darwin Core higher geography fields. Reports include counts of distinct values and recommendations for those that can be found in the vocabulary files. Also creates an output file that replaces values of Darwin Core geography fields with standardized values and adds fields to include the original field values."
+
+    instructions = """
+        Select a tab-delimited or CSV file to upload. This file will be processed in 
+        the workflow. Select the format (csv or txt) for the output file.
+        """
+
+    parameters {
+
+      inputfile.type = "upload"
+      inputfile.label = "Upload file"
+      inputfile.description = "Upload a text file to Darwinize"
+
+      outputfile.type = "text"
+      outputfile.label = "Output file name"
+      outputfile.description = "A file name for the new file with cleaned geography to create"
+
+      format.type = "select"
+      format.label = "Output Format"
+      format.description = "Format for the output file"
+
+      format.options = {
+        "csv" : "csv",
+        "txt" : "txt"
+      }
+
+    }
+
+    artifacts {
+
+      output_file.label = "The human readable label of this artifact"
+      output_file.description = "A description of the contents of this file"
+      output_file.type = "text/csv"
+
+    }
+
+  }
+
   darwinize_workflow {
 
     yaml = "file:/home/kurator/packages/kurator_dwca/workflows/darwinize_file.yaml"
