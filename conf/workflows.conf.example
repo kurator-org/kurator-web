@@ -154,11 +154,11 @@ workflows {
         "txt" : "txt"
       }
 
-      namespace.type = "select"
-      namespace.label = "Add namespace"
-      namespace.description = "Namespace to prepend to fields"
+      dwcnamespace.type = "select"
+      dwcnamespace.label = "Add namespace"
+      dwcnamespace.description = "Namespace to prepend to fields"
 
-      namespace.options = {
+      dwcnamespace.options = {
         "n" : "no",
         "y" : "yes"
       }

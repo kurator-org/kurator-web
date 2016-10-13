@@ -38,9 +38,9 @@ function updateWorkflowRuns(data) {
                         "            <td>" + val.startTime + "</td>";
 
                     html += "<td>" + val.endTime + "</td>" +
-                        "            <td>" + (val.hasResult ? "<a href=\"result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
-                        "            <td>" + (val.hasOutput ? "<a href=\"output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
-                        "            <td>" + (val.hasErrors ? "<a href=\"error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
+                        "            <td>" + (val.hasResult ? "<a href=\"/result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
+                        "            <td>" + (val.hasOutput ? "<a href=\"/output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
+                        "            <td>" + (val.hasErrors ? "<a href=\"/error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
                         "<td><span class=\"label label-success\">Complete</span></td>"
                 } else if (val.status == "ERROR") {
                     html += "        <tr>" +
@@ -49,9 +49,9 @@ function updateWorkflowRuns(data) {
                         "            <td>" + val.startTime + "</td>";
 
                     html += "<td>" + val.endTime + "</td>" +
-                        "            <td>" + (val.hasResult ? "<a href=\"result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
-                        "            <td>" + (val.hasOutput ? "<a href=\"output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
-                        "            <td>" + (val.hasErrors ? "<a href=\"error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
+                        "            <td>" + (val.hasResult ? "<a href=\"/result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
+                        "            <td>" + (val.hasOutput ? "<a href=\"/output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
+                        "            <td>" + (val.hasErrors ? "<a href=\"/error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
                         "<td><span class=\"label label-danger\">Error</span></td>"
                 } else {
                     html += "        <tr>" +
@@ -60,9 +60,9 @@ function updateWorkflowRuns(data) {
                         "            <td>" + val.startTime + "</td>";
                     
                     html += "            <td>" + (val.endTime != null ? val.endTime : "...") + "</td>" +
-                        "            <td>" + (val.hasResult ? "<a href=\"result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
-                        "            <td>" + (val.hasOutput ? "<a href=\"output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
-                        "            <td>" + (val.hasErrors ? "<a href=\"error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
+                        "            <td>" + (val.hasResult ? "<a href=\"/result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
+                        "            <td>" + (val.hasOutput ? "<a href=\"/output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
+                        "            <td>" + (val.hasErrors ? "<a href=\"/error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
                         "<td>" + val.status + "</td>";
 
                 }

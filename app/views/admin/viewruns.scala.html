@@ -8,14 +8,14 @@
             $(function () {
                 if ($("#user_workflows").val() != null) {
                     var uid = $("#user_workflows").val();
-                    $.ajax({ url: "data/status/" + uid, success: updateWorkflowRuns});
+                    $.ajax({ url: "/data/status/" + uid, success: updateWorkflowRuns});
                 }
 
                 $("#user_workflows").change(function () {
                     $("#workflow-runs").empty();
 
                     var uid = $(this).val();
-                    $.ajax({ url: "data/status/" + uid, success: updateWorkflowRuns});
+                    $.ajax({ url: "/data/status/" + uid, success: updateWorkflowRuns});
                 });
             })
     </script>
