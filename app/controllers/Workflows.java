@@ -94,12 +94,13 @@ public class Workflows extends Controller {
 
         if (workflow == null) {
             workflow = new Workflow();
-            workflow.name = form.name;
-            workflow.title = form.title;
-            workflow.yamlFile = form.yamlFile;
-
-            workflow.save();
         }
+
+        workflow.name = form.name;
+        workflow.title = form.title;
+        workflow.yamlFile = form.yamlFile;
+
+        workflow.save();
 
         // Run the workflow
         ObjectNode response = runYamlWorkflow(form.yamlFile, workflow, settings);
@@ -303,7 +304,7 @@ public class Workflows extends Controller {
         for (WorkflowRun run : workflowRuns) {
             ObjectNode runJson = Json.newObject();
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
             runJson.put("id", run.id);
             runJson.put("workflow", run.workflow.title);
