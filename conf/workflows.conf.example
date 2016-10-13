@@ -253,7 +253,7 @@ workflows {
     yaml = "file:/home/kurator/packages/kurator_dwca/workflows/darwinize_file.yaml"
 
     title = "CSV File Darwinizer"
-    documentation = "https://github.com/kurator-org/kurator-validation/wiki/File-Darwinizer"
+    documentation = "https://github.com/kurator-org/kurator-validation/wiki/CSV-File-Darwinizer"
     summary = "Create a file that substitutes standard Darwin Core field names for the fields in an input file."
 
     instructions = """
@@ -322,47 +322,6 @@ workflows {
       key.label = "Field name for vocabulary"
       key.description = "The name to use for the vocabulary key field (e.g., collector)"
 
-    }
-  }
-
-  darwinize_workflow {
-
-    yaml = "file:/home/kurator/packages/kurator_dwca/workflows/darwinize_file.yaml"
-
-    title = "CSV File Darwinizer"
-    documentation = "https://github.com/kurator-org/kurator-validation/wiki/File-Darwinizer"
-    summary = "Create a file that substitutes standard Darwin Core field names for the fields in an input file."
-
-    instructions = """
-        Select a tab-delimited or CSV file to upload. This file will be processed in 
-        the workflow. Select the format (csv or txt) for the output file. Select 
-        whether to prepend the namespace (e.g., 'dwc:') to fields that could be 
-        interpreted as Darwin Core fields.
-        """
-
-    parameters {
-
-      inputfile.type = "upload"
-      inputfile.label = "Upload file"
-      inputfile.description = "Upload a text file to Darwinize"
-
-      format.type = "select"
-      format.label = "Output Format"
-      format.description = "Format for the output file"
-
-      format.options = {
-        "csv" : "csv",
-        "txt" : "txt"
-      }
-
-      namespace.type = "select"
-      namespace.label = "Add namespace"
-      namespace.description = "Namespace to prepend to fields"
-
-      namespace.options = {
-        "n" : "no",
-        "y" : "yes"
-      }
     }
   }
 
