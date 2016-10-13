@@ -2,6 +2,7 @@ package config;
 
 import com.typesafe.config.Config;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -10,14 +11,16 @@ import java.util.*;
 public class WorkflowConfig {
     private final Config config;
     private final String name;
+    private File workflowsDir;
 
-    protected WorkflowConfig(String name, Config config) {
+    protected WorkflowConfig(File workflowsDir, String name, Config config) {
         this.config = config;
         this.name = name;
+        this.workflowsDir = workflowsDir;
     }
 
     public String getYaml() {
-        return config.getString("yaml");
+        return workflowsDir.getAbsolutePath() + File.separator + config.getString("yaml");
     }
 
     public String getName() {

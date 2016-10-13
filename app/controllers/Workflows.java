@@ -3,8 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
-import config.KuratorConfig;
-import config.KuratorConfigFactory;
+import config.ConfigManager;
 import config.ParameterConfig;
 import forms.FormDefinition;
 import forms.input.*;
@@ -175,8 +174,8 @@ public class Workflows extends Controller {
     }
 
     private static InputStream loadYamlStream(String yamlFile) throws IOException {
-        URL url = new URL(yamlFile);
-        return url.openConnection().getInputStream();
+        File file = new File(yamlFile);
+        return new FileInputStream(file);
     }
 
     /**
@@ -372,8 +371,8 @@ public class Workflows extends Controller {
 
         List<FormDefinition> formDefs = new ArrayList<>();
 
-        KuratorConfig config = KuratorConfigFactory.load();
-        Collection<config.WorkflowConfig> workflows = config.getAllWorkflows();
+
+        Collection<config.WorkflowConfig> workflows = ConfigManager.getInstance().getWorkflowConfigs();
 
         for (config.WorkflowConfig workflow : workflows) {
             FormDefinition formDef = new FormDefinition();
