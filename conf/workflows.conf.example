@@ -19,6 +19,10 @@ workflows {
       dwca_url.label = "URL"
       dwca_url.description = "A URL that points to a valid Darwin Core archive"
 
+      fieldlist.type = "text"
+      fieldlist.label = "Field list"
+      fieldlist.description = "A list of field for which to count distinct values (e.g., 'country|stateProvince')"
+
     }
 
     artifacts {
@@ -49,6 +53,10 @@ workflows {
       inputfile.type = "upload"
       inputfile.label = "Upload file"
       inputfile.description = "Upload a text file to Darwinize"
+
+      fieldlist.type = "text"
+      fieldlist.label = "Field list"
+      fieldlist.description = "A list of field for which to count distinct values (e.g., 'country|stateProvince')"
 
       format.type = "select"
       format.label = "Output Format"
