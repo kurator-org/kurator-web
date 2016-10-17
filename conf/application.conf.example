@@ -36,6 +36,11 @@ play.evolutions.db.default.autoApply=true
 
 ebean.default = ["models.*"]
 
+# Max file upload size
+
+play.http.parser.maxDiskBuffer=500000K
+play.http.parser.maxMemoryBuffer=500000K
+
 # Mailer config
 
 play.mailer {
@@ -49,3 +54,5 @@ play.mailer {
 jython.home = "/home/kurator/jython2.7.1b3"
 jython.path = "/home/kurator/packages"
 jython.workspace = "/home/kurator/workspace"
+
+keystore.password = "password"

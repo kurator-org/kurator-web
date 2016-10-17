@@ -14,7 +14,8 @@ import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
 import org.restflow.yaml.spring.YamlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
-import play.Play;
+import play.api.mvc.MultipartFormData;
+import play.http.HttpErrorHandler;
 import play.libs.Json;
 import play.mvc.*;
 
@@ -30,7 +31,9 @@ import util.AsyncWorkflowRunnable;
 import util.ClasspathStreamHandler;
 import util.ConfigurableStreamHandlerFactory;
 import views.html.*;
+import views.html.admin.deploy;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -521,6 +524,35 @@ public class Workflows extends Controller {
             throw new RuntimeException("Error creating workspace directory.", e);
         } catch (Exception e) {
             throw new RuntimeException("Error reading yaml file for parameters.", e);
+        }
+    }
+
+    @Security.Authenticated(Secured.class)
+    public Result uploadWorkflow() {
+        return ok(
+                deploy.render()
+        );
+    }
+
+    @Security.Authenticated(Secured.class)
+    public Result deploy() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart filePart = body.getFile("filename");
+
+        if (filePart != null) {
+           ConfigManager configManager = ConfigManager.getInstance();
+            try {
+                configManager.unpack((File) filePart.getFile());
+            } catch (Exception e) {
+                flash("error", "Could not verify package.");
+                return redirect(routes.Workflows.uploadWorkflow());
+            }
+
+            flash("message", "Packages zip file was successfully deployed");
+            return redirect(routes.Workflows.uploadWorkflow());
+        } else {
+            flash("error", "Missing file");
+            return badRequest();
         }
     }
 }

@@ -41,6 +41,11 @@ GET     /output/*id                 controllers.Workflows.outputLog(id : Long)
 
 POST     /remove/*id                 controllers.Workflows.removeRun(id : Long)
 
+# Deploy workflow
+
+GET     /deploy                     controllers.Workflows.uploadWorkflow()
+POST    /deploy                     controllers.Workflows.deploy()
+
 # Workflow builder
 
 GET     /builder                    controllers.Application.builder()

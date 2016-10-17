@@ -3,13 +3,13 @@ package config;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import play.Logger;
-import play.libs.F;
+import play.api.Play;
+import util.WorkflowPackageVerifier;
 
 import java.io.*;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 /**
  *
@@ -35,6 +35,11 @@ public class ConfigManager {
 
         String[] packages = file.list();
 
+        if (packages == null) {
+            // No workflow packages deployed, return empty list
+            return workflows;
+        }
+
         for (String packageName : packages) {
             File packageDir = new File(file.getAbsolutePath() + File.separator + packageName);
 
@@ -58,18 +63,30 @@ public class ConfigManager {
         return workflows;
     }
 
-    public void unpack(String zipFile) {
-        try{
-            int BUFFER = 2048;
-            File file = new File(zipFile);
+    public void unpack(File zipFile) {
+        boolean verified = false;
 
-            ZipFile zip = new ZipFile(file);
+        char[] keystorePassword = ConfigFactory.defaultApplication().getString("keystore.password").toCharArray();
+
+        try {
+            WorkflowPackageVerifier verifier = new WorkflowPackageVerifier();
+           verified = verifier.checkIntegrity(zipFile, keystorePassword);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (!verified) {
+            throw new RuntimeException("Could not verify package zip file.");
+        }
+
+        try {
+            int BUFFER = 2048;
+            ZipFile zip = new ZipFile(zipFile);
 
             Enumeration zipFileEntries = zip.entries();
 
             // Process each entry
-            while (zipFileEntries.hasMoreElements())
-            {
+            while (zipFileEntries.hasMoreElements()) {
                 // grab a zip file entry
                 ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
 
@@ -77,7 +94,7 @@ public class ConfigManager {
                 File destFile = new File(jythonPath, currentEntry);
 
                 // Remove and replace top level package directories
-                if(entry.isDirectory() && !entry.getName().matches("\\S+/\\S+")){ // top level folder
+                if(destFile.exists() && entry.isDirectory() && !entry.getName().matches("\\S+/\\S+")){ // top level folder
                     System.out.println(destFile.getAbsolutePath());
                     delete(destFile);
                 }
@@ -123,7 +140,4 @@ public class ConfigManager {
             throw new FileNotFoundException("Failed to delete file: " + f);
     }
 
-    public static void main(String[] args) {
-        ConfigManager.getInstance().unpack("/home/lowery/IdeaProjects/kurator-validation/target/kurator-validation-0.5-SNAPSHOT-packages.zip");
-    }
 }
