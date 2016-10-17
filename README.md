@@ -147,3 +147,53 @@ Lastly, to detach from the screen and send it to the background, press Ctrl-A + 
 See https://www.gnu.org/software/screen/ for more info
 
 By default the Play server will listen on port 9000. Open http://localhost:9000/ in your browser after starting the server to test the web application.
+
+#### Deploying workflows
+
+Deploying workflows to the web app requires generation of a certificate and keystore that the jarsigner utility will use when signing packages. Create the keystore and certificate via the keytool utility provided by the JDK:
+
+    $ keytool -genkey -keystore keystore.ks -alias <certificate-alias> -storepass <keystore-password> -keypass <privatekey-password>
+
+The maven build requires a settings.xml file with the keystore alias and passwords configured. Create a settings.xml file in your .m2 directory:
+
+    $ vi /home/kurator/.m2/settings.xml
+
+Use the following template and replace the keystore properties with the values specified in the invocation of keytool:
+
+    <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+      <profiles>
+        <profile>
+          <id>inject-application-home</id>
+          <properties>
+        <keystore.location>/home/kurator/keystore.ks</keystore.location>
+        <keystore.alias>test</keystore.alias>
+        <keystore.storepass>password</keystore.storepass>
+        <keystore.keypass>password</keystore.keypass>
+             </properties>
+        </profile>
+      </profiles>
+
+      <activeProfiles>
+        <activeProfile>inject-application-home</activeProfile>
+      </activeProfiles>
+
+    </settings>
+
+With the maven settings.xml file in place build and sign a workflows projects (kurator-validation for example) via maven:
+
+    $ cd kurator-validation
+    $ mvn clean package jarsigner:sign
+
+This should produce a signed zip artifact in the target directory, kurator-validation-0.5-SNAPSHOT-packages.zip for example, that can be deployed to a web application instance once the certificate is added to it's keystore. To export the certificate for import remotely use the keytool:
+
+    $ keytool -exportcert -alias <certificate-alias> -file cert.crt -keystore keystore.ks -storepass <keystore-password>
+
+On the remote server that the web application is deployed create a new keystore or use an existing one and import the cert.crt file via:
+
+    $ keytool -importcert -alias <certificate-alias> -file cert.crt
+
+Once both remote and local keystores have been configured, deploy the signed packages zip file via the Admin > Deploy Workflows page.
