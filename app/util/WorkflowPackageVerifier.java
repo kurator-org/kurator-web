@@ -180,7 +180,7 @@ public class WorkflowPackageVerifier {
         return ret;
     }
 
-    public static final synchronized boolean checkIntegrity(File file, char[] keystorePass) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
+    public static final synchronized boolean checkIntegrity(File file, String keystoreLocation, char[] keystorePass) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
         // Provider's signing cert which is used to sign the jar.
         X509Certificate providerCert = null;
 
@@ -191,7 +191,7 @@ public class WorkflowPackageVerifier {
         JarVerifier jv = new JarVerifier(providerURL);
 
         KeyStore ks = KeyStore.getInstance("JKS");
-        InputStream readStream = new FileInputStream("/keystore.ks");
+        InputStream readStream = new FileInputStream(keystoreLocation);
         ks.load(readStream, keystorePass);
 
         Enumeration<String> aliases = ks.aliases();
