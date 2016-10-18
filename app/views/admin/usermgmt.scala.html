@@ -17,6 +17,9 @@
                     <tr>
                         <th>Username</th>
                         <th>Email</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Affiliation</th>
                         <th>Role</th>
                         <th>Active</th>
                     </tr>
@@ -31,6 +34,9 @@
                                     <option @if(user.role.equals("ADMIN")) { selected="selected" }>ADMIN</option>
                                 </select>
                             </td>
+                            <td>@user.firstname</td>
+                            <td>@user.lastname</td>
+                            <td>@user.affiliation</td>
                             <td><input type="checkbox" name="active_@user.username" @if(user.active) { checked="checked" } value="@user.id"></td>
                         </tr>
                     }
