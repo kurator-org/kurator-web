@@ -67,10 +67,11 @@ public class ConfigManager {
         boolean verified = false;
 
         char[] keystorePassword = ConfigFactory.defaultApplication().getString("keystore.password").toCharArray();
+        String keystoreLocation = ConfigFactory.defaultApplication().getString("keystore.location");
 
         try {
             WorkflowPackageVerifier verifier = new WorkflowPackageVerifier();
-           verified = verifier.checkIntegrity(zipFile, keystorePassword);
+           verified = verifier.checkIntegrity(zipFile, keystoreLocation, keystorePassword);
         } catch (Exception e) {
             e.printStackTrace();
         }
