@@ -1,3 +1,4 @@
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import models.WorkflowRun;
 import org.python.util.install.Installation;
@@ -32,32 +33,37 @@ public class Global extends GlobalSettings {
 
   @Override
   public void beforeStart(Application app) {
-    File packagesDir = new File("packages");
+    Config config = ConfigFactory.defaultApplication();
+    System.out.println();
 
-    if (!packagesDir.exists()) {
-      System.out.println("Creating packages directory: " + packagesDir.getAbsolutePath());
-      packagesDir.mkdir();
-    }
+    if (config.hasPath("kurator.autoinstall") && config.getBoolean("kurator.autoinstall")) {
+      File packagesDir = new File("packages");
 
-    File workspaceDir = new File("workspace");
+      if (!packagesDir.exists()) {
+        System.out.println("Creating packages directory: " + packagesDir.getAbsolutePath());
+        packagesDir.mkdir();
+      }
 
-    if (!workspaceDir.exists()) {
-      System.out.println("Creating workspace directory: " + workspaceDir.getAbsolutePath());
+      File workspaceDir = new File("workspace");
 
-      workspaceDir.mkdir();
-    }
+      if (!workspaceDir.exists()) {
+        System.out.println("Creating workspace directory: " + workspaceDir.getAbsolutePath());
 
-    File jythonDir = new File("jython");
-    if (!jythonDir.exists()) {
-      System.out.println("Jython not found, running installer now...");
-      jythonDir.mkdir();
+        workspaceDir.mkdir();
+      }
 
-      //Before running the external Command
-      MySecurityManager secManager = new MySecurityManager();
-      System.setSecurityManager(secManager);
+      File jythonDir = new File("jython");
+      if (!jythonDir.exists()) {
+        System.out.println("Jython not found, running installer now...");
+        jythonDir.mkdir();
 
-      String[] args = {"-s", "-d", "jython"};
-      Installation.driverMain(args, null, null);
+        //Before running the external Command
+        MySecurityManager secManager = new MySecurityManager();
+        System.setSecurityManager(secManager);
+
+        String[] args = {"-s", "-d", "jython"};
+        Installation.driverMain(args, null, null);
+      }
     }
   }
 

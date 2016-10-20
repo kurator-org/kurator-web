@@ -194,6 +194,6 @@ This should produce a signed zip artifact in the target directory, kurator-valid
 
 On the remote server that the web application is deployed create a new keystore or use an existing one and import the cert.crt file via:
 
-    $ keytool -importcert -alias <certificate-alias> -file cert.crt
+    $ keytool -keystore keystore.ks -importcert -alias <certificate-alias> -file cert.crt
 
 Once both remote and local keystores have been configured, deploy the signed packages zip file via the Admin > Deploy Workflows page.

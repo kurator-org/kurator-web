@@ -18,6 +18,10 @@
             /*;*/
     </script>
     <table class="workflow-list">
+        @if(workflows.size() == 0) {
+           <i>No workflows deployed</i>
+        }
+
         @workflows.map { workflow =>
             <tr>
                 <td>
@@ -38,7 +42,7 @@
         }
     </table>
 
-    <h1>Workflow runs</h1>
+    <h2>Workflow runs</h2>
 
     <div id="workflow-runs" style="float: left">
 

@@ -1,6 +1,7 @@
 package forms;
 
 import forms.input.BasicField;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.Map;
  * The form definition object contains a list of form fields and their values. It also contains metadata about the
  * workflow for display on the form.
  */
-public class FormDefinition {
+public class FormDefinition implements Comparable<FormDefinition> {
     public List<BasicField> fields = new ArrayList<>();
     public String title;
     public String name;
@@ -33,5 +34,10 @@ public class FormDefinition {
         }
 
         return null;
+    }
+
+    @Override
+    public int compareTo(@NotNull FormDefinition o) {
+        return title.compareTo(o.title);
     }
 }

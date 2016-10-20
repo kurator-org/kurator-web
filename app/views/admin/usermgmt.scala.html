@@ -28,15 +28,15 @@
                         <tr>
                             <td>@user.username</td>
                             <td>@user.email</td>
+                            <td>@user.firstname</td>
+                            <td>@user.lastname</td>
+                            <td>@user.affiliation</td>
                             <td>
                                 <select name="role_@user.username" value="@user.role">
                                     <option @if(user.role.equals("USER")) { selected="selected" }>USER</option>
                                     <option @if(user.role.equals("ADMIN")) { selected="selected" }>ADMIN</option>
                                 </select>
                             </td>
-                            <td>@user.firstname</td>
-                            <td>@user.lastname</td>
-                            <td>@user.affiliation</td>
                             <td><input type="checkbox" name="active_@user.username" @if(user.active) { checked="checked" } value="@user.id"></td>
                         </tr>
                     }

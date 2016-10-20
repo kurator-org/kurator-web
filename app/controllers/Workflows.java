@@ -54,6 +54,18 @@ public class Workflows extends Controller {
         }
     }
 
+    @Security.Authenticated
+    public Result deletePackage(String name) {
+        boolean success = ConfigManager.getInstance().deletePacakge(name);
+
+        if (success) {
+            flash("message", "Successfully deleted package " + name);
+        } else {
+            flash("error", "Unable to delete package " + name);
+        }
+        return redirect(routes.Workflows.deploy());
+    }
+
     /**
      * Start the workflow run asynchronously.
      *
@@ -529,8 +541,10 @@ public class Workflows extends Controller {
 
     @Security.Authenticated(Secured.class)
     public Result uploadWorkflow() {
+        List<PackageData> packages = ConfigManager.getInstance().listPackages();
+
         return ok(
-                deploy.render()
+                deploy.render(packages)
         );
     }
 

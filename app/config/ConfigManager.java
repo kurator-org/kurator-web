@@ -2,6 +2,7 @@ package config;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import models.PackageData;
 import play.Logger;
 import play.api.Play;
 import util.WorkflowPackageVerifier;
@@ -132,6 +133,22 @@ public class ConfigManager {
         }
     }
 
+    public List<PackageData> listPackages() {
+        List<PackageData> packagesList = new ArrayList<>();
+
+        File file = new File(jythonPath);
+        String[] packages = file.list();
+
+        for (String packageName : packages) {
+            File packageDir = new File(file.getAbsolutePath() + File.separator + packageName);
+            PackageData packageData = new PackageData(packageName, new Date(packageDir.lastModified()));
+
+            packagesList.add(packageData);
+        }
+
+        return packagesList;
+    }
+
     private void delete(File f) throws IOException {
         if (f.isDirectory()) {
             for (File c : f.listFiles())
@@ -141,4 +158,20 @@ public class ConfigManager {
             throw new FileNotFoundException("Failed to delete file: " + f);
     }
 
+    public boolean deletePacakge(String name) {
+        File file = new File(jythonPath + File.separator + name);
+
+        Logger.debug("Deleting package: " + file.getAbsolutePath());
+
+        if (file.exists()) {
+            try {
+                delete(file);
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
 }

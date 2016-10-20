@@ -46,6 +46,8 @@ POST     /remove/*id                 controllers.Workflows.removeRun(id : Long)
 GET     /deploy                     controllers.Workflows.uploadWorkflow()
 POST    /deploy                     controllers.Workflows.deploy()
 
+GET    /packages/delete      controllers.Workflows.deletePackage(name : String)
+
 # Workflow builder
 
 GET     /builder                    controllers.Application.builder()

@@ -39,6 +39,7 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public Result index() {
         List<FormDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
+        Collections.sort(workflows);
 
         String uid = session().get("uid");
         List<UserUpload> userUploads = UserUpload.find.where().eq("user.id", uid).findList();
