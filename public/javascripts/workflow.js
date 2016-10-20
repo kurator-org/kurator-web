@@ -1,4 +1,13 @@
 function updateWorkflowRuns(data) {
+        var base = document.getElementsByTagName('base')[0];
+        if (base && base.href && (base.href.length > 0)) {
+            base = base.href;
+        } else {
+            base = document.URL;
+        }
+        var context = base.substr(0,
+            base.indexOf("/", base.indexOf("/", base.indexOf("//") + 2) + 1));
+
         if (data.length != 0) {
             data.sort(function (a, b) {
                 var a = new Date(a.startTime).getTime();
@@ -38,9 +47,9 @@ function updateWorkflowRuns(data) {
                         "            <td>" + val.startTime + "</td>";
 
                     html += "<td>" + val.endTime + "</td>" +
-                        "            <td>" + (val.hasResult ? "<a href=\"/result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
-                        "            <td>" + (val.hasOutput ? "<a href=\"/output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
-                        "            <td>" + (val.hasErrors ? "<a href=\"/error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
+                        "            <td>" + (val.hasResult ? "<a href=\"" + context + "/result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
+                        "            <td>" + (val.hasOutput ? "<a href=\"" + context + "/output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
+                        "            <td>" + (val.hasErrors ? "<a href=\"" + context + "/error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
                         "<td><span class=\"label label-success\">Complete</span></td>"
                 } else if (val.status == "ERROR") {
                     html += "        <tr>" +
@@ -49,9 +58,9 @@ function updateWorkflowRuns(data) {
                         "            <td>" + val.startTime + "</td>";
 
                     html += "<td>" + val.endTime + "</td>" +
-                        "            <td>" + (val.hasResult ? "<a href=\"/result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
-                        "            <td>" + (val.hasOutput ? "<a href=\"/output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
-                        "            <td>" + (val.hasErrors ? "<a href=\"/error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
+                        "            <td>" + (val.hasResult ? "<a href=\"" + context + "/result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
+                        "            <td>" + (val.hasOutput ? "<a href=\"" + context + "/output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
+                        "            <td>" + (val.hasErrors ? "<a href=\"" + context + "/error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
                         "<td><span class=\"label label-danger\">Error</span></td>"
                 } else {
                     html += "        <tr>" +
@@ -60,9 +69,9 @@ function updateWorkflowRuns(data) {
                         "            <td>" + val.startTime + "</td>";
                     
                     html += "            <td>" + (val.endTime != null ? val.endTime : "...") + "</td>" +
-                        "            <td>" + (val.hasResult ? "<a href=\"/result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
-                        "            <td>" + (val.hasOutput ? "<a href=\"/output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
-                        "            <td>" + (val.hasErrors ? "<a href=\"/error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
+                        "            <td>" + (val.hasResult ? "<a href=\"" + context + "/result/" + val.id + "\">Download</a>" : "Unavailable") + "</td>" +
+                        "            <td>" + (val.hasOutput ? "<a href=\"" + context + "/output/" + val.id + "\">Output log</a>" : "No Output") + "</td>" +
+                        "            <td>" + (val.hasErrors ? "<a href=\"" + context + "/error/" + val.id + "\">Error log</a>" : "No Errors") + "</td>" +
                         "<td>" + val.status + "</td>";
 
                 }
@@ -79,5 +88,5 @@ function updateWorkflowRuns(data) {
 }
 
 function removeRun(id) {
-    $.post("remove/" + id);
+    $.post( + context + "/remove/" + id);
 }
