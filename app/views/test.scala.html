@@ -1,0 +1,256 @@
+@()
+
+@main(title = "The Kurator 'helloworld' application") {
+    <div id="workflow-runs">
+
+        <div style="font-weight: bold; padding-bottom: 15px">
+        <span style="padding-right: 30px; display: none" id="edit-controls">
+            <button id="save-btn" type="button" class="btn btn-primary btn-s">Save changes</button>
+            <button id="cancel-btn"  type="button" class="btn btn-primary btn-s">Cancel</button>
+            <button id="reset-btn"  type="button" class="btn btn-primary btn-s">Reset</button>
+        </span>
+
+            <span aria-label="...">
+        <button id="delete-run-btn"  type="button" class="btn btn-primary btn-s" disabled="disabled">Delete</button>
+        <button id="edit-run-btn" type="button" class="btn btn-primary btn-s" disabled="disabled">Rename</button>
+                </span>
+
+
+
+
+        <div style="float: right">
+            <span style="padding-right: 10px; vertical-align: middle">2 of 2</span>
+
+        <div class="btn-group" role="group" aria-label="...">
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-chevron-left"></span></button>
+            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-chevron-right"></span></button>
+        </div>
+
+            </div>
+        </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th><input id="toggle-select" type="checkbox" /></th>
+                <th>Workflow</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Result</th>
+                <th>Output Log</th>
+                <th>Error Log</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+    </div>
+
+    <script id="rowTpl" type="text/template">
+        <tr class="workflow-runs-row" id="{{runId}}">
+        <td><input class="selection-check-box" value="{{runId}}" type="checkbox" /></td>
+        <td><input class="run-name-editable" size="42" type="text" value="{{workflow}}" style="display:none;" /><span class="run-name">{{workflow}}</span></td>
+        <td>{{startTime}}</td>
+        <td>{{endTime}}</td>
+        <td><a href="http://localhost:9000/kurator-web/result/{{runId}}">Download</a></td>
+        <td><a href="http://localhost:9000/kurator-web/output/{{runId}}">Output log</a></td>
+        <td><a href="http://localhost:9000/kurator-web/error/{{runId}}">Error log</a></td>
+        <td><span class="label label-success">Complete</span></td>
+        </tr>
+    </script>
+
+    <script type="text/javascript">
+        $(function() {
+            var selected = [ ];
+
+            var data = [{
+                "runId": 1,
+                "workflow": "Darwin Core Archive Controlled Field Assessor",
+                "startTime": "2016-10-24T14:58:33", "endTime": "2016-10-24T14:58:57",
+                "status": "SUCCESS",
+                "hasResult": true,
+                "hasOutput": true,
+                "hasErrors": true,
+                "selected": false
+            },{
+                "runId": 2,
+                "workflow": "Darwin Core Archive Controlled Field Assessor",
+                "startTime": "2016-10-24T14:58:33", "endTime": "2016-10-24T14:58:57",
+                "status": "SUCCESS",
+                "hasResult": true,
+                "hasOutput": true,
+                "hasErrors": true,
+                "selected": false
+            }];
+
+
+            data.map(function(row) {
+                var template = $('#rowTpl').html();
+                var html = Mustache.to_html(template, row);
+
+                $("#workflow-runs tbody").append(html);
+            });
+
+            function setActionButtonsDisabled(val) {
+                $("#delete-run-btn").prop("disabled", val);
+                $("#edit-run-btn").prop("disabled", val);
+            }
+
+            function setAllChecked(checked) {
+                $(".selection-check-box").each(function (i, elem) {
+                    elem.checked = checked;
+
+                });
+            }
+
+            function setAllDisabled(disabled) {
+                $(".selection-check-box").each(function (i, elem) {
+                    elem.checked = false;
+                    $(elem).prop("disabled", disabled);
+
+                    $("#toggle-select").prop("disabled", disabled);
+
+                });
+            }
+
+            function resetEditableRunName(editable, id) {
+                data.forEach(function(item, i) {
+                    if (item.runId == id) {
+                        $(editable).val(item.workflow);
+                    }
+                });
+            }
+
+            $(".selection-check-box").click(function (event) {
+                var checked = $(this).is(':checked');
+                var runId = $(this).val();
+
+                var i = data.indexOf(runId);
+
+                if (!checked) {
+                    selected = selected.filter(function (id) {
+                        return id != runId;
+                    });
+
+                    if (selected.length == 0) {
+                        setActionButtonsDisabled(true);
+
+                        $("#toggle-select").prop("checked", false);
+                    }
+                } else if (checked) {
+                    selected.push(Number(runId));
+                    if (selected.length == 1) {
+                        setActionButtonsDisabled(false);
+                    }
+                }
+
+                console.log(selected);
+
+            });
+
+            $("#toggle-select").click(function (event) {
+                var checked = $(this).is(':checked');
+
+                if (checked) {
+                    selected = data.map(function (row) {
+                        return Number(row.runId);
+                    });
+
+                    setActionButtonsDisabled(false);
+                } else {
+                    selected = [];
+                    setActionButtonsDisabled(true);
+                }
+
+                setAllChecked(checked);
+
+                console.log(selected);
+            });
+
+            $("#delete-run-btn").click(function () {
+                // Ajax post the ids to delete and remove from table on success
+
+                selected.forEach(function (runId) {
+                    $("#" + runId).remove();
+                });
+
+                // Cleanup
+
+                $("#toggle-select").prop("checked", false);
+                setActionButtonsDisabled(true);
+                selected = [];
+
+            });
+
+            $("#edit-run-btn").click(function(event) {
+                
+                selected.forEach(function (runId) {
+                    $("#" + runId + "  .run-name-editable").show();
+                    $("#" + runId + "  .run-name").hide();
+                });
+
+                $("#edit-controls").show();
+                setActionButtonsDisabled(true);
+                setAllDisabled(true);
+
+                $("#toggle-select").prop("checked", false);
+            });
+
+            $("#cancel-btn").click(function () {
+                $("#edit-controls").hide();
+
+                setActionButtonsDisabled(false);
+                setAllDisabled(false);
+
+                $(".workflow-runs-row").each(function(i, elem) {
+                    var runId = $(elem).attr("id");
+
+                    resetEditableRunName($(elem).find(".run-name-editable"), runId);
+
+                    $(elem).find(".run-name-editable").hide();
+                    $(elem).find(".run-name").show();
+
+                    selected = [];
+                    setActionButtonsDisabled(true);
+                });
+            });
+
+            $("#reset-btn").click(function () {
+                $(".workflow-runs-row").each(function(i, elem) {
+                    var runId = $(elem).attr("id");
+                    resetEditableRunName($(elem).find(".run-name-editable"), runId);
+                });
+            });
+
+            $("#save-btn").click(function() {
+                var edits = selected.map(function(runId) {
+                    var name = $("#" + runId + " .run-name-editable").val();
+                    return { id: runId, newName: name }
+                });
+
+                // TODO: Ajax post to submit edits and do the following on success
+
+                // Update the datatable values and hide the editable text input
+                selected.forEach(function (runId, i) {
+                    var editable = $("#" + runId + " .run-name-editable");
+                    var label = $("#" + runId + " .run-name")
+
+                    $(label).html($(editable).val());
+
+                    editable.hide();
+                    label.show();
+
+                    // Cleanup
+                    $("#edit-controls").hide();
+                    setAllDisabled(false);
+
+                    selected = [];
+                });
+
+            });
+        });
+    </script>
+}
