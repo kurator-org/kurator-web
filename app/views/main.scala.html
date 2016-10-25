@@ -24,10 +24,11 @@
             <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
             <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
             <!--[if lt IE 9]>
+
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
+    <![endif]-->
     </head>
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
@@ -83,7 +84,9 @@
             <!-- Bootstrap -->
         <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" ></script>
 
-        <script src="@routes.Assets.at("javascripts/main.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/mustache.min.js")"></script>
+
+                <script src="@routes.Assets.at("javascripts/main.js")" type="text/javascript"></script>
 
         <section>
         @content

@@ -59,6 +59,12 @@ public class Application extends Controller {
         );
     }
 
+    public Result test() {
+        return ok(
+                test.render()
+        );
+    }
+
     /**
      * The login form page.
      */
