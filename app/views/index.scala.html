@@ -17,9 +17,39 @@
 
             /*;*/
     </script>
+    <br/>
+
+
     <table class="workflow-list">
         @if(workflows.size() == 0) {
            <i>No workflows deployed</i>
+        } else {
+
+            <thead>
+                <tr >
+                <th style="padding-bottom: 15px" colspan="2">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                        </span>
+
+                        <input type="text" class="form-control" placeholder="Search...">
+                    </div>
+                </th>
+                    <th></th>
+                <th style="padding-bottom: 15px">
+
+                    <div style="vertical-align: middle; float: right">
+                    <span style="padding-right: 10px">@workflows.size() of @workflows.size()</span>
+
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-chevron-left"></span></button>
+                        <button type="button" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-chevron-right"></span></button>
+                    </div>
+                    </div>
+                </th>
+                </tr>
+            </thead>
         }
 
         @workflows.map { workflow =>
