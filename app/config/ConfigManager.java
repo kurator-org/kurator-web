@@ -17,7 +17,7 @@ import java.util.zip.ZipFile;
  */
 public class ConfigManager {
     private static ConfigManager instance;
-    private String jythonPath = ConfigFactory.defaultApplication().getString("jython.path");
+    private String jythonPath = ConfigFactory.defaultApplication().getString("jython.packages");
 
     private ConfigManager() { /* Singleton */ }
 
