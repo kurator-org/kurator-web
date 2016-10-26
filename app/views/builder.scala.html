@@ -2,91 +2,127 @@
 @main(title = "The Kurator 'helloworld' application") {
 
 <h1>Workflow Builder</h1>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
 
-<script src="@routes.Assets.at("javascripts/jsPlumb-2.1.4.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("javascripts/jsPlumb-2.1.4.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("javascripts/dropzone.js")" type="text/javascript"></script>
+
+    <script src="@routes.Assets.at("javascripts/demo.js")" type="text/javascript"></script>
 
 <script type="text/javascript">
     jsPlumb.ready(function() {
         jsPlumb.setContainer($("#canvas"));
 
-        function addInput(name) {
-            var input = $("<div class='input'>" + name + "</div>").dblclick(function() {
-                jsPlumb.remove(this);
-            });
-            $("#canvas").append(input);
-            jsPlumb.draggable(input);
-
-            var endpoint = jsPlumb.addEndpoint(input, { anchor:"Right", isSource:true });
+        var base = document.getElementsByTagName('base')[0];
+        if (base && base.href && (base.href.length > 0)) {
+            base = base.href;
+        } else {
+            base = document.URL;
         }
+        var context = base.substr(0,
+                base.indexOf("/", base.indexOf("/", base.indexOf("//") + 2) + 1));
 
-        function addOutput(name) {
-            var output = $("<div class='output'>" + name + "</div>").dblclick(function() {
+        function addActor(name, type, strategies) {
+            if (!strategies) {
+                var actor = $("<div id='" + name +"'class='" + type + "'>" + name + "</div>");
+            } else {
+                var actor = $("<div id='" + name +"'class='" + type + "'><span>" + name + "<span> </div>");
+
+                var select = $("<select></select>").change(function() {
+                    var strategy = $(this).find(":selected").text();
+                    $.post(context + "/actor/set/" + name + "?strategy=" + strategy, function(data) {
+                        console.log(data);
+                    });
+                });
+
+                $.each(strategies, function(index, strategy) {
+                    select.append("<option>" + strategy + "</option>");
+                });
+
+                actor.append(select);
+            }
+
+            actor.dblclick(function () {
                 jsPlumb.remove(this);
-            });
-
-            $("#canvas").append(output);
-            jsPlumb.draggable(output);
-            var endpoint = jsPlumb.addEndpoint(output, { anchor:"Left", isTarget:true });
-        }
-
-        function addActor(name) {
-            var actor = $("<div class='actor'>" + name + "</div>").dblclick(function() {
-                jsPlumb.remove(this);
+                var actorName = name;
+                $.post(context + "/actor/remove/" + actorName, function (data) {
+                    console.log(data);
+                });
             });
 
             $("#canvas").append(actor);
-            jsPlumb.draggable(actor);
+            jsPlumb.draggable(name);
 
-            var inEnpoint = jsPlumb.addEndpoint(actor, { anchor:"Left", isTarget:true });
-            var outEnpoint = jsPlumb.addEndpoint(actor, { anchor:"Right", isSource:true });
+            if (type === "actor") {
+                var inEnpoint = jsPlumb.addEndpoint(actor, {
+                    anchor: "Left",
+                    isTarget: true,
+                });
+                var outEnpoint = jsPlumb.addEndpoint(actor, {
+                    anchor: "Right",
+                    isSource: true
+                });
+            } else if (type === "input") {
+                var outEnpoint = jsPlumb.addEndpoint(actor, {
+                    anchor: "Right",
+                    isSource: true
+                });
+            } else if (type === "output") {
+                initWebSocket();
+                var inEnpoint = jsPlumb.addEndpoint(actor, {
+                    anchor: "Left",
+                    isTarget: true,
+                });
+            }
+
+
         }
 
-        var actorConfig = [
-            {
-                name: "ReadInput",
-                type: "input"
-            },
-            {
-                name: "WriteDQReport",
-                type: "output"
-            },
-            {
-                name: "VertNetGeoValidator",
-                type: "actor"
-            },
-            {
-                name: "ScientificNameValidator",
-                type: "actor"
-            },
-            {
-                name: "BasisOfRecValidator",
-                type: "actor"
-            },
-            {
-                name: "DateValidator",
-                type: "actor"
-            },
-            {
-                name: "FP-GeoValidator",
-                type: "actor"
-            }
-        ];
+        jsPlumb.bind("beforeDrop", function(data) {
+            console.log("drop")
+            console.log("source: " + data.sourceId);
+            console.log("target: " + data.targetId);
 
-        $.each(actorConfig, function(i, obj) {
-            $("#actorSelect").append("<option value='" + i + "'>" + obj.name + " </option>");
+            $.post(context + "/actor/connect?source=" + data.sourceId + "&target=" + data.targetId, function (data) {
+                console.log(data);
+            })
+
+            return true;
         });
 
-        $("#addActorButton").click(function() {
-            var value = $("#actorSelect").val();
-            var actor = actorConfig[value];
+        jsPlumb.bind("beforeDetach", function(data) {
+            console.log("detach")
+            console.log("source: " + data.sourceId);
+            console.log("target: " + data.targetId);
 
-            if (actor.type === "input") {
-                addInput(actor.name);
-            } else if (actor.type === "actor") {
-                addActor(actor.name);
-            } else if (actor.type === "output") {
-                addOutput(actor.name);
-            }
+            $.post(context + "/actor/detach?source=" + data.sourceId + "&target=" + data.targetId, function (data) {
+                console.log(data);
+            })
+
+            return true;
+
+        });
+
+        $.get(context + "/builder/list", function (data) {
+            $.each(data, function (index, value) {
+                $("#actors").append("<option>"+ value + "</option>");
+            });
+        });
+
+        $("#add").click(function () {
+            var actorName = $("#actors").val();
+
+            $.post(context + "/actor/add/" + actorName, function (data) {
+                console.log(data);
+                addActor(data.actor, data.type, data.strategies);
+            })
+
+        });
+
+        $("#console").hide();
+
+        $("#showConsole").click(function() {
+            $("#console").toggle("slide");
         });
 
         // Selection box
@@ -172,16 +208,18 @@
     });
 </script>
 
-<div id="toolbox">
-    <span>Actor: </span>
-    <select id="actorSelect">
 
-    </select>
+    <form action="@routes.DemoController.upload" class="dropzone"></form>
 
-    <button id="addActorButton">Add Actor</button>
-</div>
+    <br />
 
-<div id="canvas" style="height: 100%; width: 100%">
+    <select name="actors" id="actors"></select>
+    <button id="add">Add Actor</button> <button id="showConsole">Toggle Console</button>
+    <div id="canvas"></div>
 
-</div>
+    <div id="console">
+        <div id="output"></div>
+        <div class="chart"></div>
+    </div>
+
 }

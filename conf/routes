@@ -58,4 +58,27 @@ GET     /data/uploads               controllers.Workflows.listUploads()
 GET     /data/status/*uid           controllers.Workflows.status(uid : String)
 
 # Map static resources from the /public folder to the /assets URL path
+
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+
+
+
+## Dynamic workflow builder demo
+# ~~~~
+
+GET     /builder/list                       controllers.DemoController.list()
+GET     /builder                            controllers.DemoController.demo()
+POST    /builder/upload                     controllers.DemoController.upload()
+GET     /builder/socket                     controllers.DemoController.socket()
+
+# Dynamically construct workflow
+
+POST    /actor/add/:name            controllers.DemoController.add(name : String)
+POST    /actor/remove/:name         controllers.DemoController.remove(name : String)
+POST    /actor/connect              controllers.DemoController.connect(source : String, target: String)
+POST    /actor/detach               controllers.DemoController.detach(source : String, target: String)
+
+# Set actor property
+
+POST    /actor/set/:name           controllers.DemoController.set(name : String, strategy : String)

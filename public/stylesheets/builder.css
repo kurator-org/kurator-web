@@ -1,9 +1,23 @@
+#output {
+    border: 1px solid blue;
+    height: 500px;
+    width: 500px;
+    overflow: hidden;
+    float: left;
+}
+
 #canvas{
     width:  1024px;
-    height: 1920px;
+    height: 700px;
     -moz-user-select: none;
     -webkit-user-select: none;
     user-select: none;
+}
+
+#console {
+    position: absolute;
+    bottom: 0;
+    left: 0;
 }
 
 .selection-box {
@@ -14,4 +28,35 @@
 
 .selected {
     border:    2px solid #000;
+}
+
+.input {
+    position:absolute;
+    padding: 20px;
+    background-color: lightblue;
+}
+
+.output {
+    position:absolute;
+    padding: 20px;
+    background-color: lightcoral;
+}
+
+.actor {
+    position:absolute;
+    padding: 20px;
+    background-color: lightgreen;
+}
+
+.chart {
+    float: left;
+}
+
+.chart div {
+    font: 10px sans-serif;
+    background-color: steelblue;
+    text-align: right;
+    padding: 3px;
+    margin: 1px;
+    color: white;
 }
