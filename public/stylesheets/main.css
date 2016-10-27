@@ -7,6 +7,10 @@ section {
     padding-right: 30px;
 }
 
+.workflow-list th {
+    padding-left: 15px;
+}
+
 .workflow-list td {
     padding: 10px 15px;
     border-bottom: 1px solid #DDD;

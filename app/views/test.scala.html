@@ -19,11 +19,11 @@
 
 
         <div style="float: right">
-            <span style="padding-right: 10px; vertical-align: middle">2 of 2</span>
+            <span id="current-page-num" style="padding-right: 10px; vertical-align: middle">2 of 2</span>
 
         <div class="btn-group" role="group" aria-label="...">
-            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-chevron-left"></span></button>
-            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-chevron-right"></span></button>
+            <button id="previous-page-btn" type="button" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-chevron-left"></span></button>
+            <button id="next-page-btn" type="button" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-chevron-right"></span></button>
         </div>
 
             </div>
@@ -64,35 +64,170 @@
 
     <script type="text/javascript">
         $(function() {
-            var selected = [ ];
-
-            var data = [{
+            var workflowRuns = [{
                 "runId": 1,
                 "workflow": "Darwin Core Archive Controlled Field Assessor",
                 "startTime": "2016-10-24T14:58:33", "endTime": "2016-10-24T14:58:57",
                 "status": "SUCCESS",
                 "hasResult": true,
                 "hasOutput": true,
-                "hasErrors": true,
-                "selected": false
-            },{
+                "hasErrors": true
+            }, {
                 "runId": 2,
                 "workflow": "Darwin Core Archive Controlled Field Assessor",
                 "startTime": "2016-10-24T14:58:33", "endTime": "2016-10-24T14:58:57",
                 "status": "SUCCESS",
                 "hasResult": true,
                 "hasOutput": true,
-                "hasErrors": true,
-                "selected": false
+                "hasErrors": true
+            }, {
+                "runId": 3,
+                "workflow": "Darwin Core Archive Controlled Field Assessor",
+                "startTime": "2016-10-24T14:58:33", "endTime": "2016-10-24T14:58:57",
+                "status": "SUCCESS",
+                "hasResult": true,
+                "hasOutput": true,
+                "hasErrors": true
+            }, {
+                "runId": 4,
+                "workflow": "Darwin Core Archive Controlled Field Assessor",
+                "startTime": "2016-10-24T14:58:33", "endTime": "2016-10-24T14:58:57",
+                "status": "SUCCESS",
+                "hasResult": true,
+                "hasOutput": true,
+                "hasErrors": true
+            }, {
+                "runId": 5,
+                "workflow": "Darwin Core Archive Controlled Field Assessor",
+                "startTime": "2016-10-24T14:58:33", "endTime": "2016-10-24T14:58:57",
+                "status": "SUCCESS",
+                "hasResult": true,
+                "hasOutput": true,
+                "hasErrors": true
+            }, {
+                "runId": 6,
+                "workflow": "Darwin Core Archive Controlled Field Assessor",
+                "startTime": "2016-10-24T14:58:33", "endTime": "2016-10-24T14:58:57",
+                "status": "SUCCESS",
+                "hasResult": true,
+                "hasOutput": true,
+                "hasErrors": true
+            }, {
+                "runId": 7,
+                "workflow": "Darwin Core Archive Controlled Field Assessor",
+                "startTime": "2016-10-24T14:58:33", "endTime": "2016-10-24T14:58:57",
+                "status": "SUCCESS",
+                "hasResult": true,
+                "hasOutput": true,
+                "hasErrors": true
             }];
 
+            function updateData() {
+                var offset = 5; // 5 runs per page
+                var result = [];
+                var currentPage;
 
-            data.map(function(row) {
-                var template = $('#rowTpl').html();
-                var html = Mustache.to_html(template, row);
+                workflowRuns.forEach(function (workflowRun, i, arr) {
+                    // Create pages of length equal to offset
+                    if (i % offset == 0) {
+                        var pageNum = i / offset;
 
-                $("#workflow-runs tbody").append(html);
+                        currentPage = {
+                            page: pageNum,
+                            items: []
+                        };
+
+                        result.push(currentPage);
+                    }
+
+                    // Add workflow run to current page
+                    currentPage.items.push(workflowRun);
+                });
+
+                return result;
+            }
+
+            // DataTable fields
+            var selected = [ ];
+            var data = updateData();
+            var totalPages = data.length;
+            var currPage = 0;
+
+            function updatePageCount() {
+                totalPages = data.length;
+                $("#current-page-num").html(currPage+1 + " of " + totalPages);
+                if (totalPages == 1) {
+                    $("#next-page-btn").prop("disabled", true);
+                    $("#previous-page-btn").prop("disabled", true);
+                } else {
+                    if (currPage == totalPages-1) {
+                        $("#next-page-btn").prop("disabled", true);
+                        $("#previous-page-btn").prop("disabled", false);
+                    } else if (currPage == 0) {
+                        $("#next-page-btn").prop("disabled", false);
+                        $("#previous-page-btn").prop("disabled", true);
+                    } else {
+                        $("#next-page-btn").prop("disabled", false);
+                        $("#previous-page-btn").prop("disabled", false);
+                    }
+                }
+
+                setAllChecked(false);
+                $("#toggle-select").prop("checked", false);
+                selected = [ ];
+            }
+
+            $("#next-page-btn").click(function() {
+                currPage++;
+                updatePageCount();
+
+                render();
             });
+
+            $("#previous-page-btn").click(function() {
+                currPage--;
+                updatePageCount();
+
+                render();
+            });
+
+            function render() {
+                console.log(selected);
+
+                $("#workflow-runs tbody").empty();
+
+                data[currPage].items.map(function(row) {
+                    var template = $('#rowTpl').html();
+                    var html = Mustache.to_html(template, row);
+
+                    $("#workflow-runs tbody").append(html);
+                });
+
+                $(".selection-check-box").click(function (event) {
+                    var checked = $(this).is(':checked');
+                    var runId = $(this).val();
+
+                    if (!checked) {
+                        selected = selected.filter(function (id) {
+                            return id != runId;
+                        });
+
+                        if (selected.length == 0) {
+                            setActionButtonsDisabled(true);
+
+                            $("#toggle-select").prop("checked", false);
+                        }
+                    } else if (checked) {
+                        selected.push(Number(runId));
+                        if (selected.length == 1) {
+                            setActionButtonsDisabled(false);
+                        }
+                    }
+
+                    console.log(selected);
+
+                });
+            }
 
             function setActionButtonsDisabled(val) {
                 $("#delete-run-btn").prop("disabled", val);
@@ -117,45 +252,20 @@
             }
 
             function resetEditableRunName(editable, id) {
-                data.forEach(function(item, i) {
+                data[currPage].items.forEach(function(item, i) {
                     if (item.runId == id) {
                         $(editable).val(item.workflow);
                     }
                 });
             }
 
-            $(".selection-check-box").click(function (event) {
-                var checked = $(this).is(':checked');
-                var runId = $(this).val();
-
-                var i = data.indexOf(runId);
-
-                if (!checked) {
-                    selected = selected.filter(function (id) {
-                        return id != runId;
-                    });
-
-                    if (selected.length == 0) {
-                        setActionButtonsDisabled(true);
-
-                        $("#toggle-select").prop("checked", false);
-                    }
-                } else if (checked) {
-                    selected.push(Number(runId));
-                    if (selected.length == 1) {
-                        setActionButtonsDisabled(false);
-                    }
-                }
-
-                console.log(selected);
-
-            });
+            // jQuery events
 
             $("#toggle-select").click(function (event) {
                 var checked = $(this).is(':checked');
 
                 if (checked) {
-                    selected = data.map(function (row) {
+                    selected = data[currPage].items.map(function (row) {
                         return Number(row.runId);
                     });
 
@@ -175,6 +285,17 @@
 
                 selected.forEach(function (runId) {
                     $("#" + runId).remove();
+
+                    // remove from data and re-create pages
+                    workflowRuns = workflowRuns.filter(function (item) {
+                        if (item.runId != runId) {
+                            return item;
+                        }
+                    });
+
+                    data = updateData();
+                    render();
+                    updatePageCount();
                 });
 
                 // Cleanup
@@ -186,7 +307,7 @@
             });
 
             $("#edit-run-btn").click(function(event) {
-                
+
                 selected.forEach(function (runId) {
                     $("#" + runId + "  .run-name-editable").show();
                     $("#" + runId + "  .run-name").hide();
@@ -234,23 +355,36 @@
                 // TODO: Ajax post to submit edits and do the following on success
 
                 // Update the datatable values and hide the editable text input
-                selected.forEach(function (runId, i) {
-                    var editable = $("#" + runId + " .run-name-editable");
-                    var label = $("#" + runId + " .run-name")
+                workflowRuns = workflowRuns.map(function (run) {
 
-                    $(label).html($(editable).val());
+                    edits.forEach(function (edit) {
+                        if (edit.id == run.runId) {
+                            run.workflow = edit.newName;
+                        }
+                    });
 
-                    editable.hide();
-                    label.show();
-
-                    // Cleanup
-                    $("#edit-controls").hide();
-                    setAllDisabled(false);
-
-                    selected = [];
+                    return run;
                 });
 
+                data = updateData();
+                render();
+                //var label = $("#" + runId + " .run-name")
+
+                //$(label).html($(editable).val());
+
+                //editable.hide();
+                //label.show();
+
+                // Cleanup
+                $("#edit-controls").hide();
+                setAllDisabled(false);
+
+                selected = [];
             });
+
+            // main
+            updatePageCount();
+            render();
         });
     </script>
 }
