@@ -56,6 +56,7 @@ play.mailer {
 
 # Session timeout in minutes
 sessionTimeout=30
+session.cookieName="KURATOR_WEB_SESSION"
 
 jython.home = "/home/kurator/jython2.7.1b3"
 jython.packages = "/home/kurator/packages"
