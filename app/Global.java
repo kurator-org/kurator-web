@@ -36,32 +36,65 @@ public class Global extends GlobalSettings {
     Config config = ConfigFactory.defaultApplication();
     System.out.println();
 
-    if (config.hasPath("kurator.autoinstall") && config.getBoolean("kurator.autoinstall")) {
-      File packagesDir = new File("packages");
+    if (config.hasPath("kurator.autoInstall") && config.getBoolean("kurator.autoInstall")) {
+      File packagesDir = new File(config.getString("jython.packages"));
 
       if (!packagesDir.exists()) {
         System.out.println("Creating packages directory: " + packagesDir.getAbsolutePath());
+
+        if (!packagesDir.getParentFile().exists()) {
+          System.out.println("Error: Parent directory " + packagesDir.getParent() + " does not exist!");
+          System.exit(-1);
+        }
+
+        if (!packagesDir.getParentFile().canWrite()) {
+          System.out.println("Error: Current user does not have write permissions for directory " + packagesDir.getParent());
+          System.exit(-1);
+        }
+
         packagesDir.mkdir();
       }
 
-      File workspaceDir = new File("workspace");
+      File workspaceDir = new File(config.getString("jython.workspace"));
 
       if (!workspaceDir.exists()) {
         System.out.println("Creating workspace directory: " + workspaceDir.getAbsolutePath());
 
+        if (!workspaceDir.getParentFile().exists()) {
+          System.out.println("Error: Parent directory " + workspaceDir.getParent() + " does not exist!");
+          System.exit(-1);
+        }
+
+        if (!workspaceDir.getParentFile().canWrite()) {
+          System.out.println("Error: Current user does not have write permissions in directory " + workspaceDir.getParent());
+          System.exit(-1);
+        }
+
         workspaceDir.mkdir();
       }
 
-      File jythonDir = new File("jython");
+      File jythonDir = new File(config.getString("jython.home"));
       if (!jythonDir.exists()) {
         System.out.println("Jython not found, running installer now...");
-        jythonDir.mkdir();
+        boolean success = jythonDir.mkdir();
+
+        System.out.println("Creating jython home directory: " + jythonDir.getAbsolutePath());
+
+        if (!jythonDir.getParentFile().exists()) {
+          System.out.println("Error: Parent directory " + jythonDir.getParent() + " does not exist!");
+          System.exit(-1);
+        }
+
+          if (!jythonDir.getParentFile().canWrite()) {
+            System.out.println("Error: Current user does not have write permissions in directory " + jythonDir.getParent());
+            System.exit(-1);
+          }
 
         //Before running the external Command
         MySecurityManager secManager = new MySecurityManager();
         System.setSecurityManager(secManager);
 
-        String[] args = {"-s", "-d", "jython"};
+        String[] args = {"-s", "-d", jythonDir.getAbsolutePath()};
         Installation.driverMain(args, null, null);
       }
     }

@@ -58,7 +58,7 @@ play.mailer {
 sessionTimeout=30
 
 jython.home = "/home/kurator/jython2.7.1b3"
-jython.path = "/home/kurator/packages"
+jython.packages = "/home/kurator/packages"
 jython.workspace = "/home/kurator/workspace"
 
 keystore.password = "password"

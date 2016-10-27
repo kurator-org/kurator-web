@@ -149,7 +149,7 @@ public class Workflows extends Controller {
         try {
 
             // Get jython home and path variables from application.conf and set them in workflow runner global config
-            String jythonPath = ConfigFactory.defaultApplication().getString("jython.path");
+            String jythonPath = ConfigFactory.defaultApplication().getString("jython.packages");
             String jythonHome = ConfigFactory.defaultApplication().getString("jython.home");
 
             Map<String, Object> config = new HashMap<String, Object>();
