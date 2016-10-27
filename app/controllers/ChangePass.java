@@ -3,6 +3,8 @@ package controllers;
 import models.User;
 import play.mvc.Http;
 
+import static play.mvc.Http.Context.Implicit.session;
+
 /**
      * The change password form object (user administration page)
      */
@@ -12,8 +14,7 @@ import play.mvc.Http;
         public String confirmPassword;
 
         public String validate() {
-            Http.Session session = Http.Context.current().session();
-            User user = User.authenticate(session.get("username"), oldPassword);
+            User user = User.authenticate(session().get("username"), oldPassword);
             if (user == null) {
                 return "Current password is invalid.";
             }
