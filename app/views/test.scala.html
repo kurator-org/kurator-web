@@ -49,17 +49,92 @@
 
     </div>
 
-    <script id="rowTpl" type="text/template">
+    <script id="statusSuccessTpl" type="text/template">
         <tr class="workflow-runs-row" id="{{runId}}">
         <td><input class="selection-check-box" value="{{runId}}" type="checkbox" /></td>
         <td><input class="run-name-editable" size="42" type="text" value="{{workflow}}" style="display:none;" /><span class="run-name">{{workflow}}</span></td>
         <td>{{startTime}}</td>
         <td>{{endTime}}</td>
-        <td><a href="http://localhost:9000/kurator-web/result/{{runId}}">Download</a></td>
-        <td><a href="http://localhost:9000/kurator-web/output/{{runId}}">Output log</a></td>
-        <td><a href="http://localhost:9000/kurator-web/error/{{runId}}">Error log</a></td>
+        <td>
+            {{#hasResult}}
+                <a href="http://localhost:9000/kurator-web/result/{{runId}}">Download</a>
+            {{/hasResult}}
+
+            {{^hasResult}}
+                Unavailable
+            {{/hasResult}}
+        </td>
+        <td>
+            {{#hasOutput}}
+                <a href="http://localhost:9000/kurator-web/output/{{runId}}">Output log</a>
+            {{/hasOutput}}
+
+            {{^hasOutput}}
+                No Output
+            {{/hasOutput}}
+        </td>
+        <td>
+            {{#hasErrors}}
+                <a href="http://localhost:9000/kurator-web/error/{{runId}}">Error log</a>
+            {{/hasErrors}}
+
+            {{^hasErrors}}
+                No Errors
+            {{/hasErrors}}
+        </td>
         <td><span class="label label-success">Complete</span></td>
         </tr>
+    </script>
+
+    <script id="statusRunningTpl" type="text/template">
+        <tr class="workflow-runs-row" id="{{runId}}">
+        <td><input type="checkbox" disabled="disabled"/></td>
+        <td><input class="run-name-editable" size="42" type="text" value="{{workflow}}" style="display:none;" /><span class="run-name">{{workflow}}</span></td>
+        <td>{{startTime}}</td>
+
+            <td class="loading"></td>
+            <td class="loading"></td>
+            <td class="loading"></td>
+            <td class="loading"></td>
+            <td><span class="label label-primary">Running</span></td>
+        </tr>
+    </script>
+
+    <script id="statusErrorTpl" type="text/template">
+    <tr class="workflow-runs-row" id="{{runId}}">
+    <td><input class="selection-check-box" value="{{runId}}" type="checkbox" /></td>
+    <td><input class="run-name-editable" size="42" type="text" value="{{workflow}}" style="display:none;" /><span class="run-name">{{workflow}}</span></td>
+    <td>{{startTime}}</td>
+    <td>{{endTime}}</td>
+    <td>
+        {{#hasResult}}
+            <a href="http://localhost:9000/kurator-web/result/{{runId}}">Download</a>
+        {{/hasResult}}
+
+        {{^hasResult}}
+            Unavailable
+        {{/hasResult}}
+    </td>
+    <td>
+        {{#hasOutput}}
+            <a href="http://localhost:9000/kurator-web/output/{{runId}}">Output log</a>
+        {{/hasOutput}}
+
+        {{^hasOutput}}
+            No Output
+        {{/hasOutput}}
+    </td>
+    <td>
+        {{#hasErrors}}
+            <a href="http://localhost:9000/kurator-web/error/{{runId}}">Error log</a>
+        {{/hasErrors}}
+
+        {{^hasErrors}}
+            No Errors
+        {{/hasErrors}}
+    </td>
+    <td><span class="label label-danger">Error</span></td>
+    </tr>
     </script>
 
     <script type="text/javascript">
@@ -67,11 +142,11 @@
             var workflowRuns = [{
                 "runId": 1,
                 "workflow": "Darwin Core Archive Controlled Field Assessor",
-                "startTime": "2016-10-24T14:58:33", "endTime": "2016-10-24T14:58:57",
-                "status": "SUCCESS",
-                "hasResult": true,
-                "hasOutput": true,
-                "hasErrors": true
+                "startTime": "2016-10-24T14:58:33",
+                "status": "RUNNING",
+                "hasResult": false,
+                "hasOutput": false,
+                "hasErrors": false
             }, {
                 "runId": 2,
                 "workflow": "Darwin Core Archive Controlled Field Assessor",
@@ -79,7 +154,7 @@
                 "status": "SUCCESS",
                 "hasResult": true,
                 "hasOutput": true,
-                "hasErrors": true
+                "hasErrors": false
             }, {
                 "runId": 3,
                 "workflow": "Darwin Core Archive Controlled Field Assessor",
@@ -91,9 +166,9 @@
             }, {
                 "runId": 4,
                 "workflow": "Darwin Core Archive Controlled Field Assessor",
-                "startTime": "2016-10-24T14:58:33", "endTime": "2016-10-24T14:58:57",
-                "status": "SUCCESS",
-                "hasResult": true,
+                "startTime": "2016-10-24T14:58:33",
+                "status": "ERROR",
+                "hasResult": false,
                 "hasOutput": true,
                 "hasErrors": true
             }, {
@@ -197,7 +272,16 @@
                 $("#workflow-runs tbody").empty();
 
                 data[currPage].items.map(function(row) {
-                    var template = $('#rowTpl').html();
+                    var template;
+
+                    if (row.status == "RUNNING") {
+                        template = $('#statusRunningTpl').html();
+                    } else if (row.status == "SUCCESS") {
+                        template = $('#statusSuccessTpl').html();
+                    } else if (row.status == "ERROR") {
+                        template = $('#statusErrorTpl').html();
+                    }
+
                     var html = Mustache.to_html(template, row);
 
                     $("#workflow-runs tbody").append(html);
@@ -265,8 +349,10 @@
                 var checked = $(this).is(':checked');
 
                 if (checked) {
-                    selected = data[currPage].items.map(function (row) {
-                        return Number(row.runId);
+                    $(".selection-check-box").each(function() {
+                        var selectedRunId = Number($(this).val());
+
+                        selected.push(selectedRunId);
                     });
 
                     setActionButtonsDisabled(false);
