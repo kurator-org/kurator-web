@@ -5,9 +5,12 @@ import com.typesafe.config.ConfigFactory;
 import forms.FormDefinition;
 import models.User;
 import models.UserUpload;
+import org.apache.commons.mail.EmailException;
 import org.kurator.util.SystemClasspathManager;
 import org.mindrot.jbcrypt.BCrypt;
 import play.api.Play;
+import play.libs.mailer.Email;
+import play.libs.mailer.MailerClient;
 import play.mvc.*;
 import play.data.*;
 
@@ -17,6 +20,7 @@ import java.util.*;
 import util.ClasspathStreamHandler;
 import util.ConfigurableStreamHandlerFactory;
 
+import util.RegistrationNotificationMailer;
 import views.html.*;
 import views.html.admin.*;
 
@@ -32,6 +36,8 @@ public class Application extends Controller {
     private static final String DEFAULT_USER_ROLE = User.ROLE_USER;
     @Inject
     FormFactory formFactory;
+    @Inject
+    MailerClient mailer;
 
     /**
      * Index page.
@@ -129,6 +135,29 @@ public class Application extends Controller {
 
         flash("message", "New user registration successful! The admin will send an email notification when your account has been activated.");
 
+        List<User> adminUsers = User.find.where().eq("role", "ADMIN").findList();
+
+        try {
+            Email email = new Email();
+            email.setSubject("New kurator-web user registration: " + user.username);
+            email.setFrom("Kurator Admin <from@email.com>");
+
+            for (User admin : adminUsers) {
+                if (admin.email != null) {
+                    email.addTo(admin.email);
+                }
+            }
+
+            email.setBodyText("A new user, " + user.firstname + " " + user.lastname + " with username: " +
+                    user.username + " and email: " + user.email + " has requested account " +
+                    "authorization for kurator-web.");
+
+            //mailer.send(email);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return redirect(
                 routes.Application.login()
         );
@@ -199,6 +228,38 @@ public class Application extends Controller {
         flash("change_success", "Password successfully changed!");
         return redirect(
                 routes.Application.changePass()
+        );
+    }
+
+    public Result resetPass() {
+        Form form = formFactory.form(ResetPass.class);
+        return ok(reset.render(form));
+    }
+
+    public Result resetPassword() {
+        Form<ResetPass> resetPassForm = formFactory.form(ResetPass.class).bindFromRequest();
+
+        if (resetPassForm.hasErrors()) {
+            return badRequest(reset.render(resetPassForm));
+        }
+
+        String username = resetPassForm.get().username;
+        String emailAddr = resetPassForm.get().email;
+
+        Email email = new Email();
+        email.setSubject("Kurator-web password reset: " + username);
+        email.setFrom("Kurator Admin <from@email.com>");
+        email.addTo(emailAddr);
+
+        email.setBodyText("Password reset request received for user account " + username + ". Click on the following " +
+                "link to reset your password: ...");
+
+        //mailer.send(email);
+
+        flash("message", "Password reset email sent to: " + emailAddr);
+
+        return redirect(
+                routes.Application.resetPass()
         );
     }
 
