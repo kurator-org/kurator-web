@@ -8,12 +8,14 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Web application user
  */
 @Entity
 public class User extends Model {
+    private static final int PASSWORD_LENGTH = 16; // Generated password length
 
     public static String ROLE_ADMIN = "ADMIN";
     public static String ROLE_USER = "USER";
@@ -52,68 +54,22 @@ public class User extends Model {
         return users;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public static String generatePassword() {
+            StringBuilder tmp = new StringBuilder();
+            for (char ch = '0'; ch <= '9'; ++ch)
+                tmp.append(ch);
+            for (char ch = 'a'; ch <= 'z'; ++ch)
+                tmp.append(ch);
+        char[] symbols = tmp.toString().toCharArray();
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+       Random random = new Random();
 
-    public String getFirstname() {
-        return firstname;
-    }
+        char[] buf = new char[PASSWORD_LENGTH];
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
+        for (int idx = 0; idx < buf.length; ++idx)
+            buf[idx] = symbols[random.nextInt(symbols.length)];
 
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getAffiliation() {
-        return affiliation;
-    }
-
-    public void setAffiliation(String affiliation) {
-        this.affiliation = affiliation;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
+        return new String(buf);
     }
 
     @Override

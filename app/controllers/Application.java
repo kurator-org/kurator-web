@@ -20,7 +20,6 @@ import java.util.*;
 import util.ClasspathStreamHandler;
 import util.ConfigurableStreamHandlerFactory;
 
-import util.RegistrationNotificationMailer;
 import views.html.*;
 import views.html.admin.*;
 
@@ -152,7 +151,9 @@ public class Application extends Controller {
                     user.username + " and email: " + user.email + " has requested account " +
                     "authorization for kurator-web.");
 
-            //mailer.send(email);
+            if (adminUsers.size() > 1) { // send only if there are admins registered
+                //mailer.send(email);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -195,9 +196,9 @@ public class Application extends Controller {
 
                     for (User user : users) {
                         if (form.data().containsValue(Long.toString(user.id))) {
-                            user.setActive(true);
+                            user.active = true;
                         } else {
-                            user.setActive(false);
+                            user.active = false;
                         }
 
                         user.role = form.data().get("role_" + user.username);
@@ -222,7 +223,7 @@ public class Application extends Controller {
         }
 
         User user = Application.getCurrentUser();
-        user.setPassword(BCrypt.hashpw(changePassForm.get().password, BCrypt.gensalt()));
+        user.password = BCrypt.hashpw(changePassForm.get().password, BCrypt.gensalt());
         user.save();
 
         flash("change_success", "Password successfully changed!");
@@ -243,18 +244,26 @@ public class Application extends Controller {
             return badRequest(reset.render(resetPassForm));
         }
 
+        String pw = User.generatePassword();
+
         String username = resetPassForm.get().username;
         String emailAddr = resetPassForm.get().email;
 
         Email email = new Email();
         email.setSubject("Kurator-web password reset: " + username);
-        email.setFrom("Kurator Admin <from@email.com>");
+        email.setFrom("Kurator Admin <datakurator@gmail.com>");
         email.addTo(emailAddr);
 
-        email.setBodyText("Password reset request received for user account " + username + ". Click on the following " +
-                "link to reset your password: ...");
+        email.setBodyText("Password reset request received for user account " + username + ". Temporary password " +
+                "assigned: " + pw);
 
-        //mailer.send(email);
+        /*mailer.send(email);
+
+        User user = User.find.where().eq("username", username).findUnique();
+        user.password = pw;
+        user.save();
+
+        */
 
         flash("message", "Password reset email sent to: " + emailAddr);
 
