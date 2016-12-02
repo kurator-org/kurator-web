@@ -30,6 +30,7 @@ import util.AsyncWorkflowRunnable;
 
 import util.ClasspathStreamHandler;
 import util.ConfigurableStreamHandlerFactory;
+import util.WorkflowPackageVerifier;
 import views.html.*;
 import views.html.admin.deploy;
 
@@ -149,8 +150,11 @@ public class Workflows extends Controller {
         try {
 
             // Get jython home and path variables from application.conf and set them in workflow runner global config
-            String jythonPath = ConfigFactory.defaultApplication().getString("jython.packages");
-            String jythonHome = ConfigFactory.defaultApplication().getString("jython.home");
+            //String jythonPath = ConfigFactory.defaultApplication().getString("jython.packages");
+            //String jythonHome = ConfigFactory.defaultApplication().getString("jython.home");
+
+            String jythonPath = new File("packages").getAbsolutePath();
+            String jythonHome = new File("jython").getAbsolutePath();
 
             Map<String, Object> config = new HashMap<String, Object>();
             config.put("jython_home", jythonHome);
@@ -512,7 +516,8 @@ public class Workflows extends Controller {
             Map<String, String> settings = new HashMap<String, String>();
 
             // Get the workspace basedir from application.conf
-            String workspace = ConfigFactory.defaultApplication().getString("jython.workspace");
+            //String workspace = ConfigFactory.defaultApplication().getString("jython.workspace");
+            String workspace = new File("workspace").getAbsolutePath();
 
             // Load workflow yaml file to check parameters
             GenericApplicationContext springContext = new GenericApplicationContext();
@@ -555,7 +560,15 @@ public class Workflows extends Controller {
 
         if (filePart != null) {
            ConfigManager configManager = ConfigManager.getInstance();
+
+            char[] keystorePassword = ConfigFactory.defaultApplication().getString("keystore.password").toCharArray();
+            String keystoreLocation = ConfigFactory.defaultApplication().getString("keystore.location");
+
             try {
+                File zipFile = (File) filePart.getFile();
+                WorkflowPackageVerifier verifier = new WorkflowPackageVerifier();
+                verifier.checkIntegrity(zipFile, keystoreLocation, keystorePassword);
+
                 configManager.unpack((File) filePart.getFile());
             } catch (Exception e) {
                 flash("error", "Could not verify package.");

@@ -47,7 +47,7 @@ db.default.logStatements=true
 # Mailer config
 
 play.mailer {
-    host = "smtp.gmail.com"
+    host = "smtp.gmail.com"cd
     port = 465
     ssl = true
     user = "user"
@@ -58,9 +58,7 @@ play.mailer {
 sessionTimeout=30
 session.cookieName="KURATOR_WEB_SESSION"
 
-jython.home = "/home/kurator/jython2.7.1b3"
-jython.packages = "/home/kurator/packages"
-jython.workspace = "/home/kurator/workspace"
-
 keystore.password = "password"
-keystore.location = "/home/kurator/keystore.ks"
+
+# Uncomment if you would like to enable autoinstall
+# kurator.autoInstall = true

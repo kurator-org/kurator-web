@@ -17,7 +17,7 @@ import java.util.zip.ZipFile;
  */
 public class ConfigManager {
     private static ConfigManager instance;
-    private String jythonPath = ConfigFactory.defaultApplication().getString("jython.packages");
+    private String jythonPath = new File("packages").getAbsolutePath();
 
     private ConfigManager() { /* Singleton */ }
 
@@ -66,20 +66,6 @@ public class ConfigManager {
 
     public void unpack(File zipFile) {
         boolean verified = false;
-
-        char[] keystorePassword = ConfigFactory.defaultApplication().getString("keystore.password").toCharArray();
-        String keystoreLocation = ConfigFactory.defaultApplication().getString("keystore.location");
-
-        try {
-            WorkflowPackageVerifier verifier = new WorkflowPackageVerifier();
-           verified = verifier.checkIntegrity(zipFile, keystoreLocation, keystorePassword);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (!verified) {
-            throw new RuntimeException("Could not verify package zip file.");
-        }
 
         try {
             int BUFFER = 2048;

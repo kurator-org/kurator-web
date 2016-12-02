@@ -1,5 +1,7 @@
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import config.ConfigManager;
+import models.PackageData;
 import models.WorkflowRun;
 import org.python.util.install.Installation;
 import play.*;
@@ -37,8 +39,8 @@ public class Global extends GlobalSettings {
     System.out.println();
 
     if (config.hasPath("kurator.autoInstall") && config.getBoolean("kurator.autoInstall")) {
-      File packagesDir = new File(config.getString("jython.packages"));
-
+      //File packagesDir = new File(config.getString("jython.packages"));
+      File packagesDir = new File("packages").getAbsoluteFile();
       if (!packagesDir.exists()) {
         System.out.println("Creating packages directory: " + packagesDir.getAbsolutePath());
 
@@ -55,7 +57,8 @@ public class Global extends GlobalSettings {
         packagesDir.mkdir();
       }
 
-      File workspaceDir = new File(config.getString("jython.workspace"));
+      //File workspaceDir = new File(config.getString("jython.workspace"));
+      File workspaceDir = new File("workspace").getAbsoluteFile();
 
       if (!workspaceDir.exists()) {
         System.out.println("Creating workspace directory: " + workspaceDir.getAbsolutePath());
@@ -73,7 +76,9 @@ public class Global extends GlobalSettings {
         workspaceDir.mkdir();
       }
 
-      File jythonDir = new File(config.getString("jython.home"));
+      //File jythonDir = new File(config.getString("jython.home"));
+      File jythonDir = new File("jython").getAbsoluteFile();
+
       if (!jythonDir.exists()) {
         System.out.println("Jython not found, running installer now...");
         boolean success = jythonDir.mkdir();
@@ -98,11 +103,33 @@ public class Global extends GlobalSettings {
         Installation.driverMain(args, null, null);
       }
     }
+
+    unzipPackages();
+  }
+
+  private void unzipPackages() {
+    Config config = ConfigFactory.defaultApplication();
+    File file = new File("packages");
+
+    if (file.exists()) {
+      String[] packages = file.list();
+
+      for (String packageName : packages) {
+        File packageFile = new File(file.getAbsolutePath() + File.separator + packageName);
+        if (!packageFile.isDirectory() && packageFile.getName().endsWith(".zip")) {
+          System.out.println("Auto unpacking packages zip file: " + packageFile.getName());
+          ConfigManager.getInstance().unpack(packageFile);
+          packageFile.delete();
+        }
+      }
+
+    }
   }
 
   class MySecurityManager extends SecurityManager {
     @Override public void checkExit(int status) {
-      System.out.println("Installation of kurator-web is complete. Rerun the startup script now to start the server.");
+      System.out.println("Installation of kurator-web is complete. Deploy package zip files to the packages " +
+              "directory and rerun the startup script to start the server.");
       File pid = new File("RUNNING_PID");
       if (pid.exists()) {
         pid.deleteOnExit();
