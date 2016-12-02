@@ -8,26 +8,24 @@ Quickstart
 
 The following quickstart describes the process of setting up a local instance of the web app for testing and demonstration of workflows.
 
-Download the latest distribution zip file from the releases page on GitHub, https://github.com/kurator-org/kurator-web/releases, and unzip:
+Download the latest distribution zip file from the releases page on GitHub https://github.com/kurator-org/kurator-web/releases, and unzip:
 
     unzip kurator-web-1.0.0.zip
 
-Rename the template config file at conf/application.conf.example to application.conf. Edit the file and uncomment the line "kurator.autoInstall = true" to enable the autoinstall.
+Rename the template config file at `conf/application.conf.example` to `application.conf`. Edit the file and uncomment the line ``kurator.autoInstall = true` to enable the autoinstall.
 
     cp conf/application.conf.example conf/application.conf
     nano application.conf
 
-Run bin/kurator-web to perform the initial auto installation of jython. This will also automatically create the packages and workspace directories.
+Run `bin/kurator-web` to perform the initial auto installation of jython. This will also automatically create the packages and workspace directories.
 
-    bin/kurator-web
-
-Obtain the latest release of the kurator-validation packages zip file from: https://github.com/kurator-org/kurator-validation/releases. This file contains the python actors, workflow yaml and web application descriptors. Copy the downloaded zip file to the packages directory.
+Obtain the latest release of the kurator-validation packages zip file from https://github.com/kurator-org/kurator-validation/releases. This file contains the python actors, workflow yaml and web application descriptors. Copy the downloaded zip file to the packages directory.
 
     cp ~/Downloads/kurator-validation-1.0.0-packages.zip packages
 
-Use the pip installer at jython/bin/pip to install any python dependencies (check documentation for python workflows).
+Use the pip installer at `jython/bin/pip` to install any python dependencies (check documentation for python workflows).
 
-Re-run bin/kurator-web to start the play server and auto unpack/deploy the workflows in packages. Once the server starts the web app should be accessible at http://localhost:9000. Login with the default "admin" account using password "admin".
+Re-run `bin/kurator-web` to start the play server and auto unpack/deploy the workflows in packages. Once the server starts the web app should be accessible at http://localhost:9000. Login with the default "admin" account using password "admin".
 
 Building and Testing Kurator-Web
 --------------------------------
