@@ -15,7 +15,7 @@ Download the latest distribution zip file from the releases page on GitHub https
 Rename the template config file at `conf/application.conf.example` to `application.conf`. Edit the file and uncomment the line ``kurator.autoInstall = true` to enable the autoinstall.
 
     cp conf/application.conf.example conf/application.conf
-    nano application.conf
+    nano conf/application.conf
 
 Run `bin/kurator-web` to perform the initial auto installation of jython. This will also automatically create the packages and workspace directories.
 
@@ -25,7 +25,7 @@ Obtain the latest release of the kurator-validation packages zip file from https
 
 Use the pip installer at `jython/bin/pip` to install any python dependencies (check documentation for python workflows).
 
-Re-run `bin/kurator-web` to start the play server and auto unpack/deploy the workflows in packages. Once the server starts the web app should be accessible at http://localhost:9000. Login with the default "admin" account using password "admin".
+Re-run `bin/kurator-web` to start the play server and auto unpack/deploy the workflows in packages. Once the server starts the web app should be accessible at http://localhost:9000/kurator-web/. Login with the default "admin" account using password "admin".
 
 Building and Testing Kurator-Web
 --------------------------------
