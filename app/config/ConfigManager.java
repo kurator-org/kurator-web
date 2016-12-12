@@ -125,11 +125,13 @@ public class ConfigManager {
         File file = new File(jythonPath);
         String[] packages = file.list();
 
-        for (String packageName : packages) {
-            File packageDir = new File(file.getAbsolutePath() + File.separator + packageName);
-            PackageData packageData = new PackageData(packageName, new Date(packageDir.lastModified()));
+        if (packages != null) {
+            for (String packageName : packages) {
+                File packageDir = new File(file.getAbsolutePath() + File.separator + packageName);
+                PackageData packageData = new PackageData(packageName, new Date(packageDir.lastModified()));
 
-            packagesList.add(packageData);
+                packagesList.add(packageData);
+            }
         }
 
         return packagesList;
