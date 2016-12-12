@@ -58,6 +58,10 @@ GET    /packages/delete      controllers.Workflows.deletePackage(name : String)
 
 GET     /builder                    controllers.Application.builder()
 
+# FFDQ summary
+
+GET     /summary                    controllers.Application.summary()
+
 # REST Api routes for data
 
 GET     /data/uploads               controllers.Workflows.listUploads()
