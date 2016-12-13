@@ -1,4 +1,114 @@
 $(document).ready(function() {
+
+    /*$('#container-eventdate-completeness').highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: 0,
+            plotShadow: false
+        },
+        title: {
+            text: ''
+        },
+        tooltip: {
+            headerFormat: '',
+            pointFormat: '<b>{point.percentage:.1f}%</b>'
+        },
+        pane: {
+            center: ['50%', '85%'],
+            size: '140%',
+            startAngle: -90,
+            endAngle: 90,
+            background: {
+                backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                innerRadius: '60%',
+                outerRadius: '100%',
+                shape: 'arc'
+            }
+        },
+        plotOptions: {
+            pie: {
+                startAngle: -90,
+                endAngle: 90,
+                center: ['50%', '85%'],
+                size: '140%',
+            }
+        },
+        yAxis: {
+            min: 0,
+            max: 100
+        },
+        series: [{
+            type: 'pie',
+            name: 'Completeness',
+            innerSize: '50%',
+            data: [
+                { name: 'Complete', color: '#55BF3B', y: 0 },
+                { name: 'Not Complete', color: '#DF5353', y: 0 },
+                { name: 'Untested', color: '#EEEEEE', y: 0 }
+            ]
+        }],
+        credits: {
+            enabled: false
+        },
+    });*/
+
+    $('#container-eventdate-completeness').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: ''
+        },
+        tooltip: {
+            headerFormat: '{point.x}: ',
+            pointFormat: '<b>{point.percentage:.1f}%</b>'
+        },
+        colors: ['#eeeeee', '#DF5353', '#55BF3B', '#2b621e'],
+            xAxis: {
+        categories: ['Before', 'After'],
+            lineWidth: 0,
+            minorGridLineWidth: 0,
+            lineColor: 'transparent',
+            minorTickLength: 0,
+            tickLength: 0
+    },
+        yAxis: {
+            min: 0,
+                title: {
+                text: ''
+            },
+            gridLineColor: 'transparent',
+                labels: {
+                enabled: false
+            }
+        },
+        legend: {
+            reversed: true
+        },
+        plotOptions: {
+            series: {
+                stacking: 'normal'
+            }
+        },
+        series: [{
+            name: 'Untested',
+            data: [5, 5]
+        }, {
+            name: 'Incomplete',
+            data: [2, 1]
+        }, {
+            name: 'Complete',
+            data: [3, 2]
+        },
+            {
+                name: 'Assurance',
+                data: [0, 2]
+            }],
+            credits: {
+        enabled: false
+    },
+    });
+
   var gaugeOptions = {
       chart: {
           type: 'solidgauge'
@@ -359,17 +469,32 @@ var notComplied = '<img height=30 src="http://icons.iconarchive.com/icons/graphi
   //COORDINATES
   // Completeness
 
-  $('#container-coordinates-completeness-validation').removeClass('alert alert-success alert-danger').addClass((data.validations.cc4.assertion=='Complied'?'alert alert-success':'alert alert-danger'));
+    var chart = $('#container-eventdate-completeness').highcharts(),
+        point,
+        assertion;
+
+   /* if (chart) {
+        point = chart.series[0].data[0];
+        point.update(15.00)
+        point = chart.series[0].data[1];
+        point.update(30.00)
+        point = chart.series[0].data[2];
+        point.update(55.00);
+    }*/
+
+
+    $('#container-coordinates-completeness-validation').removeClass('alert alert-success alert-danger').addClass((data.validations.cc4.assertion=='Complied'?'alert alert-success':'alert alert-danger'));
   $('#container-coordinates-consistency-validation').removeClass('alert alert-success alert-danger').addClass((data.validations.cc5.assertion=='Complied'?'alert alert-success':'alert alert-danger'));
   $('#container-coordinates-precision-validation').removeClass('alert alert-success alert-danger').addClass((data.validations.cc6.assertion=='Complied'?'alert alert-success':'alert alert-danger'));
-  var chart = $('#container-coordinates-completeness').highcharts(),
-      point,
-      assertion;
+
+    chart = $('#container-coordinates-completeness').highcharts();
   if (chart) {
       point = chart.series[0].points[0];
       assertion = Number(((data.measures.cd4.assertion*100)+"").substring(0,5));
       point.update(assertion);
   }
+
+
 
   // Consistency
   chart = $('#container-coordinates-consistency').highcharts();
@@ -443,21 +568,21 @@ var notComplied = '<img height=30 src="http://icons.iconarchive.com/icons/graphi
 //var host = "localhost";
 var host = "case.bdq.biocomp.org.br";
 function original(){
-var url = "/api/v1.0/DQReports/http%3A%2F%2Fcase.biocomp.org.br%3A3010%2Fapi%2Fv1.0%2FOrginalData%2F";
+var url = "http://case.bdq.biocomp.org.br:3010/api/v1.0/DQReports/http%3A%2F%2Fcase.biocomp.org.br%3A3010%2Fapi%2Fv1.0%2FOrginalData%2F";
 measure(url);
-url = "/api/v1.0/DQReports";
+url = "http://case.bdq.biocomp.org.br:3010/api/v1.0/DQReports";
 records(url);
 }
 function control(){
-var url = "/api/v1.0/DQReportControls/http%3A%2F%2Fcase.biocomp.org.br%3A3010%2Fapi%2Fv1.0%2FOrginalData";
+var url = "http://case.bdq.biocomp.org.br:3010/api/v1.0/DQReportControls/http%3A%2F%2Fcase.biocomp.org.br%3A3010%2Fapi%2Fv1.0%2FOrginalData";
 measure(url);
-url = "/api/v1.0/DQReportControls";
+url = "http://case.bdq.biocomp.org.br:3010/api/v1.0/DQReportControls";
 records(url);
 }
 function assurance(){
-var url = "/api/v1.0/DQReportAssurances/http%3A%2F%2Fcase.biocomp.org.br%3A3010%2Fapi%2Fv1.0%2FDQReportControls";
+var url = "http://case.bdq.biocomp.org.br:3010/api/v1.0/DQReportAssurances/http%3A%2F%2Fcase.biocomp.org.br%3A3010%2Fapi%2Fv1.0%2FDQReportControls";
 measure(url);
-url = "/api/v1.0/DQReportAssurances";
+url = "http://case.bdq.biocomp.org.br:3010/api/v1.0/DQReportAssurances";
 records(url);
 }
 /*
