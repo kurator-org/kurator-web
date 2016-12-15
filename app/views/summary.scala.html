@@ -1,183 +1,60 @@
 @(data: String)
 
 @main(title = "The Kurator 'helloworld' application") {
+    <script type="text/javascript">$(function () {
+        $('[data-toggle="popover"]').popover()
+    })</script>
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">DQ Report of Dataset</h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-md-12">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-tasks fa-5x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div id="count" class="huge">#</div>
-                                <div>Records</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel-body">
-                        <div class="col-md-4">
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
-                                    <div class="row">
-                                        <div class="col-xs-3">
-                                            <i class="fa fa-database fa-5x"></i>
-                                        </div>
-                                        <div class="col-xs-9 text-right">
-                                            <div class="huge">Original</div>
-                                            <span></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <a href="javascript:original();">
-                                    <div class="panel-footer">
-                                        <span class="pull-left">View Original Dataset</span>
-                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                        <div class="clearfix"></div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
-                                    <div class="row">
-                                        <div class="col-xs-3">
-                                            <i class="fa fa-gear fa-5x"></i>
-                                        </div>
-                                        <div class="col-xs-9 text-right">
-                                            <div class="huge">Control</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel-footer">
-                                    <a href="javascript:control();">
-                                        <span class="pull-left">View dataset after DQ Control</span>
-                                    </a>
-                                    <span class="pull-right">
-                                        <a href="javascript:showMessage('<h3>Accept all recommendations for each single record in dataset</h3>
-                        <p>Correct all records of dataset based on all recommendations available for each single record.</p>
-                        <strong>Specification: </strong>
-                        <p>For all records in dataset, change values of dwc:scientificName and dwc:scientificNameAuthorship for the most similar and valid dwc:scientificName and dwc:scientificNameAuthorship according to taxonomic authorities based on string similarity algorithms and in taxonomic rules and conventions; change value of dwc:eventDate for a ISO 8601 standardized value based on its own value when it is possible to parse it value into year, month and day or change dwc:eventDate for a date obtained from dwc:year, dwc:month, dwc:day and dwc:startDayOfYear values; and change values of dwc:decimalLatitude and dwc:decimalLongitude for their values with different signs (positive and negative) that is consistent with dwc:country or consistent with the georeference of dwc:country, dwc:stateProvince, dwc:county and dwc:locality.</p>
-                        <strong>Mechanism: </strong> <p>BDQ Toolkit</p>');">
-                                            <i class="fa fa-info-circle"></i>
-                                        </a>
-                                        <a href="javascript:control();">
-                                            <i class="fa fa-arrow-circle-right"></i></span>
-                                    </a>
-                                    <div class="clearfix"></div>
-                                </div>
-
-
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="panel panel-green">
-                                <div class="panel-heading">
-                                    <div class="row">
-                                        <div class="col-xs-3">
-                                            <i class="fa fa-filter fa-5x"></i>
-                                        </div>
-                                        <div class="col-xs-9 text-right">
-                                            <div class="huge">Assurance</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel-footer">
-                                    <a href="javascript:assurance();">
-                                        <span class="pull-left">View dataset after DQ Assurance</span>
-                                    </a>
-                                    <span class="pull-right">
-                                        <a href="javascript:showMessage('<h3>Disregard all records that is not complied with all DQ Criteria</h3>
-                        <p>Select a subset of dataset that is complied with all validations available for each record.</p>
-                        <strong>Specification: </strong>
-                        <p>Disregard records in dataset that dwc:decimalLatitude and dwc:decimalLongitude values are both equal of zero or one of them is equal empty or they are not consistent with coordinates range (latitudes range from -90 to 90 and longitudes range from -180 to 180) and are not consistent with the bounds of dwc:country or not close enough (currently defined as 200 km) from the georeference for dwc:country, dwc:stateProvince, dwc:county and dwc:locality; or dwc:eventDate value is equal empty or is not correctly formatted according to ISO 8601 standard or is not before  dwc:modified or is not between life span of dwc:colletedBy; or there is not an exact match with both dwc:scientificName and dwc:scientificNameAuthorship values with taxonomic authorities or one of their values is empty.</p>
-                        <strong>Mechanism: </strong><p>BDQ Toolkit</p>')"
-                                        <i class="fa fa-info-circle"></i>
-                                        </a>
-                                        <a href="javascript:assurance();">
-                                            <i class="fa fa-arrow-circle-right"></i></span>
-                                    </a>
-                                    <div class="clearfix"></div>
-                                </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <a target="_blank" href="/explorer/#!/DQReport">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Data Resource</span>
-                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Occurrence
-                </div>
-                <div class="panel-body">
-                    <div class="col-md-4 col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> Occurrence Completenes
-                            </div>
-                            <div class="panel-body">
-                                <div id="container-occurrence-completeness" style="width: 100%; height: 200px;"></div>
-                                <div id="container-occurrence-completeness-validation" class="alert alert-danger">
-                                    This measure is not acceptable. <a href="#" class="alert-link">View Details</a>.
-                                </div>
-                                <a href="#" class="btn btn-default btn-block">View Details</a>
-                            </div>
-                                <!-- /.panel-body -->
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> Occurrence Accuracy
-                            </div>
-                            <div class="panel-body">
-                                <div id="container-occurrence-accuracy" style="width: 100%; height: 200px;"></div>
-                                <div id="container-occurrence-accuracy-validation" class="alert alert-danger">
-                                    This measure is not acceptable. <a href="#" class="alert-link">View Details</a>.
-                                </div>
-                                <a href="#" class="btn btn-default btn-block">View Details</a>
-                            </div>
-                                <!-- /.panel-body -->
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
     <div class="row">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                Event Date
+                <div class="row">
+                    <div class="col-xs-3">
+                        <h2><i class="fa fa-tasks fa-fw"></i> Event Date</h2>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div id="count"><h3><strong id="eventdate-record-count">52412</strong></h3></div>
+                        <div>Records</div>
+                    </div>
+                </div>
             </div>
+
 
             <div class="panel-body">
                 <div class="col-md-4 col-md-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Event Date Completeness
+                            <i class="fa fa-bar-chart-o fa-fw"></i><span class="eventdate-completeness-title"></span>
                         </div>
                         <div class="panel-body">
                             <div id="container-eventdate-completeness" style="width: 100%; height: 200px;"></div>
-                            <div id="container-eventdate-completeness-validation" class="alert alert-danger">
-                                This measure is not acceptable. <a href="#" class="alert-link">View Details</a>.
+                            <!-- <div id="container-eventdate-completeness-validation" class="alert alert-danger">
+                                This measure is not acceptable.
                             </div>
-                            <a href="#" class="btn btn-default btn-block">View Details</a>
+                            -->
+
+                            <a href="#" class="btn btn-default btn-block" data-toggle="modal" data-target=".bs-example-modal-lg">View Details</a>
+
+                            <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="myModalLabel">DQ Dimension: <span class="eventdate-completeness-title"></span></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p><strong>Specification: </strong> <span id="eventdate-completeness-specification"></span></p>
+                                            <p><strong>Mechanism: </strong> <span id="eventdate-completeness-mechanism"></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                             <!-- /.panel-body -->
                     </div>
@@ -186,160 +63,11 @@
         </div>
     </div>
 
-        <div class="row">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    SciName
-                </div>
-                <div class="panel-body">
-                    <div class="col-md-4 col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> SciName Completenes
-                            </div>
-                            <div class="panel-body">
-                                <div id="container-sciName-completeness" style="width: 100%; height: 200px;"></div>
-                                <a href="javascript:showMessage('<h2>DQ Dimension: SciName Completenes</h2>
-                  <p>Correct all records of dataset based on all recommendations available for each single record.</p>
-                  <strong>Specification: </strong>
-                  <p>For all records in dataset, change values of dwc:scientificName and dwc:scientificNameAuthorship for the most similar and valid dwc:scientificName and dwc:scientificNameAuthorship according to taxonomic authorities based on string similarity algorithms and in taxonomic rules and conventions; change value of dwc:eventDate for a ISO 8601 standardized value based on its own value when it is possible to parse it value into year, month and day or change dwc:eventDate for a date obtained from dwc:year, dwc:month, dwc:day and dwc:startDayOfYear values; and change values of dwc:decimalLatitude and dwc:decimalLongitude for their values with different signs (positive and negative) that is consistent with dwc:country or consistent with the georeference of dwc:country, dwc:stateProvince, dwc:county and dwc:locality.</p>
-                  <strong>Mechanism: </strong> <p>BDQ Toolkit</p>')" class="btn btn-default btn-block">View Details</a>
-                                <br>
-                                <div id="container-sciName-completeness-validation" class="alert alert-danger">
-                                    This measure is not acceptable. <a href="javascript:showMessage('<h2>DQ Criterion</h2><h3>Accept all recommendations for each single record in dataset</h3>
-                    <p>Correct all records of dataset based on all recommendations available for each single record.</p>
-                    <strong>Specification: </strong>
-                    <p>For all records in dataset, change values of dwc:scientificName and dwc:scientificNameAuthorship for the most similar and valid dwc:scientificName and dwc:scientificNameAuthorship according to taxonomic authorities based on string similarity algorithms and in taxonomic rules and conventions; change value of dwc:eventDate for a ISO 8601 standardized value based on its own value when it is possible to parse it value into year, month and day or change dwc:eventDate for a date obtained from dwc:year, dwc:month, dwc:day and dwc:startDayOfYear values; and change values of dwc:decimalLatitude and dwc:decimalLongitude for their values with different signs (positive and negative) that is consistent with dwc:country or consistent with the georeference of dwc:country, dwc:stateProvince, dwc:county and dwc:locality.</p>
-                    <strong>Mechanism: </strong> <p>BDQ Toolkit</p>')" class="alert-link">View Details</a>.
-                                </div>
-                            </div>
-                                <!-- /.panel-body -->
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> SciName Accuracy
-                            </div>
-                            <div class="panel-body">
-                                <div id="container-sciName-accuracy" style="width: 100%; height: 200px;"></div>
-                                <div id="container-sciName-accuracy-validation" class="alert alert-danger">
-                                    This measure is not acceptable. <a href="#" class="alert-link">View Details</a>.
-                                </div>
-                                <a href="#" class="btn btn-default btn-block">View Details</a>
-                            </div>
-                                <!-- /.panel-body -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Coordinates
-                </div>
-                <div class="panel-body">
-                    <div class="col-md-4 col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> Coordinates Completenes
-                            </div>
-                            <div class="panel-body">
-                                <div id="container-coordinates-completeness" style="width: 100%; height: 200px;"></div>
-                                <div id="container-coordinates-completeness-validation" class="alert alert-success">
-                                    This measure is acceptable. <a href="#" class="alert-link">View Details</a>.
-                                </div>
-                                <a href="#" class="btn btn-default btn-block">View Details</a>
-                            </div>
-                                <!-- /.panel-body -->
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> Coordinates Consistency
-                            </div>
-                            <div class="panel-body">
-                                <div id="container-coordinates-consistency" style="width: 100%; height: 200px;"></div>
-                                <div id="container-coordinates-consistency-validation" class="alert alert-danger">
-                                    This measure is not acceptable. <a href="#" class="alert-link">View Details</a>.
-                                </div>
-                                <a href="#" class="btn btn-default btn-block">View Details</a>
-                            </div>
-                                <!-- /.panel-body -->
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> Coordinates Precision
-                            </div>
-                            <div class="panel-body">
-                                <div id="container-coordinates-precision" style="width: 100%; height: 200px;"></div>
-                                <div id="container-coordinates-precision-validation" class="alert alert-danger">
-                                    This measure is not acceptable. <a href="#" class="alert-link">View Details</a>.
-                                </div>
-                                <a href="#" class="btn btn-default btn-block">View Details</a>
-                            </div>
-                                <!-- /.panel-body -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Collected Date
-                </div>
-                <div class="panel-body">
-                    <div class="col-md-4 col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> Collected Date Completenes
-                            </div>
-                            <div class="panel-body">
-                                <div id="container-collectedDate-completeness" style="width: 100%; height: 200px;"></div>
-                                <div id="container-collectedDate-completeness-validation" class="alert alert-danger">
-                                    This measure is not acceptable. <a href="#" class="alert-link">View Details</a>.
-                                </div>
-                                <a href="#" class="btn btn-default btn-block">View Details</a>
-                            </div>
-                                <!-- /.panel-body -->
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bar-chart-o fa-fw"></i> Collected Date Consistency
-                            </div>
-                            <div class="panel-body">
-                                <div id="container-collectedDate-consistency" style="width: 100%; height: 200px;"></div>
-                                <div id="container-collectedDate-consistency-validation" class="alert alert-danger">
-                                    This measure is not acceptable. <a href="#" class="alert-link">View Details</a>.
-                                </div>
-                                <a href="#" class="btn btn-default btn-block">View Details</a>
-                            </div>
-                                <!-- /.panel-body -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-            <!-- /.row -->
-
-            <!-- /.row -->
-
     <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
     <script type="text/javascript" src="https://code.highcharts.com/highcharts-more.js"></script>
     <script type="text/javascript" src="https://code.highcharts.com/modules/solid-gauge.js"></script>
 
     <script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
-
-    <link rel="stylesheet" type="text/css" href="http://w2ui.com/src/w2ui-1.4.3.min.css" />
-    <script type="text/javascript" src="http://w2ui.com/src/w2ui-1.4.3.min.js"></script>
 
     <script type="text/javascript" src="@routes.Assets.at("javascripts/bdq.js")"></script>
 
