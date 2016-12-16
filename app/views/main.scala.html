@@ -48,7 +48,7 @@
 
                         <li><a href="@routes.Application.index">Home</a></li>
                         <li><a href="http://wiki.datakurator.net/Kurator-Web" target="_blank">About</a></li>
-                        <li><a href="@routes.Application.summary">Reports</a></li>
+                        <li><a href="@routes.Application.summary(1)">Reports</a></li>
                         <li><a href="@routes.Application.builder">Workflow Builder</a></li>
 
                         @if(session.get("uid") != null && session.get("user_role").equals("ADMIN")) {

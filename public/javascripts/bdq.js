@@ -52,7 +52,7 @@ $(document).ready(function() {
         },
     });*/
 
-    var measure = {
+    /*var measure = {
         "title" : "Event Date Completeness",
         "specification" : "Check that the value of dwc:eventDate is not empty.",
         "mechanism" : "Kurator: DateValidator",
@@ -66,7 +66,7 @@ $(document).ready(function() {
             "incomplete" : 6
         },
         "total" : 12
-    };
+    };*/
 
     $('#container-eventdate-completeness').highcharts({
         chart: {
@@ -126,32 +126,29 @@ $(document).ready(function() {
     },
     });
 
-var complied = '<img height=30 src="http://icons.iconarchive.com/icons/graphicloads/colorful-long-shadow/128/Hand-thumbs-up-like-2-icon.png"/>'
-var notComplied = '<img height=30 src="http://icons.iconarchive.com/icons/graphicloads/flat-finance/128/dislike-icon.png"/>'
+});
 
-  //COORDINATES
-  // Completeness
-
+function updateCharts(measure) {
     var chart = $('#container-eventdate-completeness').highcharts(),
         point,
         assertion;
 
-   if (chart) {
-       // Completeness before
+    if (chart) {
+        // Completeness before
         point = chart.series[2].data[0];
         point.update(measure.before.complete);
 
-       // Completeness after
+        // Completeness after
         point = chart.series[2].data[1];
         point.update(measure.after.complete)
 
-       // Incomplete before
+        // Incomplete before
         point = chart.series[1].data[0];
         point.update(measure.before.incomplete);
 
-       // Incomplete after
-       point = chart.series[1].data[1];
-       point.update(measure.after.incomplete);
+        // Incomplete after
+        point = chart.series[1].data[1];
+        point.update(measure.after.incomplete);
     }
 
     $('#eventdate-record-count').html(measure.total);
@@ -159,4 +156,4 @@ var notComplied = '<img height=30 src="http://icons.iconarchive.com/icons/graphi
     $('.eventdate-completeness-title').html(measure.title);
     $('#eventdate-completeness-specification').html(measure.specification);
     $('#eventdate-completeness-mechanism').html(measure.mechanism);
-});
+}

@@ -1,9 +1,6 @@
-@(data: String)
+@(runId: Long)
 
 @main(title = "The Kurator 'helloworld' application") {
-    <script type="text/javascript">$(function () {
-        $('[data-toggle="popover"]').popover()
-    })</script>
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">DQ Report of Dataset</h1>
@@ -70,6 +67,33 @@
     <script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
 
     <script type="text/javascript" src="@routes.Assets.at("javascripts/bdq.js")"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var measure = {
+                "title": "Event Date Completeness",
+                "specification": "Check that the value of dwc:eventDate is not empty.",
+                "mechanism": "Kurator: DateValidator",
+
+                "before": {
+                    "complete": 2,
+                    "incomplete": 10
+                },
+                "after": {
+                    "complete": 6,
+                    "incomplete": 6
+                },
+                "total": 12
+            };
+
+            $.ajax({ url: "@routes.Workflows.report(runId)", success: function(result) {
+                updateCharts(JSON.parse(result)[0]);
+                }
+            });
+
+            //updateCharts();
+        });
+    </script>
 
 
 }

@@ -7,6 +7,7 @@ import models.ResultFile;
 import models.Workflow;
 import models.WorkflowResult;
 import models.WorkflowRun;
+import org.datakurator.postprocess.FFDQPostProcessor;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.data.WorkflowProduct;
 import play.Logger;
@@ -52,11 +53,15 @@ public class AsyncWorkflowRunnable implements Runnable {
                 File file = new File(fileName);
 
                 if (file.exists()) {
-                    ResultFile resultFile = new ResultFile();
-                    resultFile.fileName = String.valueOf(product.value);
-                    resultFile.label = product.label;
+                    if (product.type.equals("DQ_REPORT")) {
+                        result.dqReport = String.valueOf(product.value);
+                    } else {
+                        ResultFile resultFile = new ResultFile();
+                        resultFile.fileName = String.valueOf(product.value);
+                        resultFile.label = product.label;
 
-                    result.resultFiles.add(resultFile);
+                        result.resultFiles.add(resultFile);
+                    }
                 } else {
                     Logger.error("artifact specified does not exist: " + fileName);
                 }

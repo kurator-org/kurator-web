@@ -38,9 +38,9 @@ public class Application extends Controller {
     @Inject
     MailerClient mailer;
 
-    public Result summary() {
+    public Result summary(long runId) {
         return ok(
-                summary.render(null)
+                summary.render(runId)
         );
     }
 
