@@ -15,11 +15,18 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/demo.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/builder.css")">
 
+            <!-- Custom CSS -->
+        <link href="@routes.Assets.at("stylesheets/sb-admin-2.css")" rel="stylesheet">
+
+            <!-- Custom Fonts -->
+        <link href="@routes.Assets.at("stylesheets/font-awesome.min.css")" rel="stylesheet" type="text/css">
+
             <!-- JQuery UI -->
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery-ui.min.css")">
 
             <!-- Bootstrap -->
         <link href="@routes.Assets.at("stylesheets/bootstrap.min.css")" rel="stylesheet">
+        <script href="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
 
             <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
             <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -40,7 +47,8 @@
                     <ul class="nav navbar-nav">
 
                         <li><a href="@routes.Application.index">Home</a></li>
-                        <li><a href="http://wiki.datakurator.net/web/Kurator-Web" target="_blank">About</a></li>
+                        <li><a href="http://wiki.datakurator.net/Kurator-Web" target="_blank">About</a></li>
+                        <li><a href="@routes.Application.summary(1)">Reports</a></li>
                         <li><a href="@routes.Application.builder">Workflow Builder</a></li>
 
                         @if(session.get("uid") != null && session.get("user_role").equals("ADMIN")) {

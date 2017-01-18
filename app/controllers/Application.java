@@ -38,6 +38,12 @@ public class Application extends Controller {
     @Inject
     MailerClient mailer;
 
+    public Result summary(long runId) {
+        return ok(
+                summary.render(runId)
+        );
+    }
+
     /**
      * Index page.
      */

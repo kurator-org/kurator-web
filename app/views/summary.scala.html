@@ -1,22 +1,99 @@
-@(data: String)
+@(runId: Long)
 
 @main(title = "The Kurator 'helloworld' application") {
-<h1>Coordinates must fall inside the country</h1>
-<canvas id="myChart" width="200" height="200"></canvas>
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">DQ Report of Dataset</h1>
+            </div>
+        </div>
 
-<script src="@routes.Assets.at("javascripts/Chart.js")" type="text/javascript"></script>
-<script type="text/javascript">
-    $(document).ready(function(){
-        var data = @{Html(data)}
+    <div class="row">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <h2><i class="fa fa-tasks fa-fw"></i> Event Date</h2>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div id="count"><h3><strong id="eventdate-record-count">52412</strong></h3></div>
+                        <div>Records</div>
+                    </div>
+                </div>
+            </div>
 
-        var ctx = $("#myChart").get(0).getContext("2d");
-        var myDoughnutChart = new Chart(ctx).Doughnut(data);
 
-        $("#myChart").click(function(evt){
-            var activePoints = myDoughnutChart.getSegmentsAtEvent(evt);
-            console.log(activePoints);
-            // => activePoints is an array of segments on the canvas that are at the same position as the click event.
+            <div class="panel-body">
+                <div class="col-md-4 col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i><span class="eventdate-completeness-title"></span>
+                        </div>
+                        <div class="panel-body">
+                            <div id="container-eventdate-completeness" style="width: 100%; height: 200px;"></div>
+                            <!-- <div id="container-eventdate-completeness-validation" class="alert alert-danger">
+                                This measure is not acceptable.
+                            </div>
+                            -->
+
+                            <a href="#" class="btn btn-default btn-block" data-toggle="modal" data-target=".bs-example-modal-lg">View Details</a>
+
+                            <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="myModalLabel">DQ Dimension: <span class="eventdate-completeness-title"></span></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p><strong>Specification: </strong> <span id="eventdate-completeness-specification"></span></p>
+                                            <p><strong>Mechanism: </strong> <span id="eventdate-completeness-mechanism"></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                            <!-- /.panel-body -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="http://code.highcharts.com/highcharts.js"></script>
+    <script type="text/javascript" src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script type="text/javascript" src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+
+    <script type="text/javascript" src="http://code.highcharts.com/modules/exporting.js"></script>
+
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/bdq.js")"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var measure = {
+                "title": "Event Date Completeness",
+                "specification": "Check that the value of dwc:eventDate is not empty.",
+                "mechanism": "Kurator: DateValidator",
+
+                "before": {
+                    "complete": 2,
+                    "incomplete": 10
+                },
+                "after": {
+                    "complete": 6,
+                    "incomplete": 6
+                },
+                "total": 12
+            };
+
+            $.ajax({ url: "@routes.Workflows.report(runId)", success: function(result) {
+                updateCharts(JSON.parse(result)[0]);
+                }
+            });
+
+            //updateCharts();
         });
-    });
-</script>
+    </script>
+
+
 }

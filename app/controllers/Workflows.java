@@ -9,6 +9,7 @@ import forms.FormDefinition;
 import forms.input.*;
 import models.*;
 import org.apache.commons.io.FileUtils;
+import org.datakurator.postprocess.FFDQPostProcessor;
 import org.kurator.akka.WorkflowConfig;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
@@ -332,10 +333,15 @@ public class Workflows extends Controller {
             runJson.put("endTime", run.endTime != null ? dateFormat.format(run.endTime) : null);
             runJson.put("status", run.status);
             runJson.put("hasResult", run.result != null);
+
+
+
             if (run.result != null) {
+                runJson.put("hasReport", !run.result.dqReport.equals(""));
                 runJson.put("hasOutput", !run.result.outputText.equals(""));
                 runJson.put("hasErrors", !run.result.errorText.equals(""));
             } else {
+                runJson.put("hasReport", false);
                 runJson.put("hasOutput", false);
                 runJson.put("hasErrors", false);
             }
@@ -583,5 +589,16 @@ public class Workflows extends Controller {
             flash("error", "Missing file");
             return badRequest();
         }
+    }
+
+    public Result report(long workflowRunId) throws IOException {
+        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
+
+        FFDQPostProcessor postProcessor = new FFDQPostProcessor(new FileInputStream(run.result.dqReport), AsyncWorkflowRunnable.class.getResourceAsStream("/ev-assertions.json"));
+        String json = postProcessor.measureSummary();
+
+        System.out.println(json);
+
+        return ok(json);
     }
 }

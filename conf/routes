@@ -45,6 +45,8 @@ GET     /result/*id                 controllers.Workflows.resultArchive(id : Lon
 GET     /error/*id                  controllers.Workflows.errorLog(id : Long)
 GET     /output/*id                 controllers.Workflows.outputLog(id : Long)
 
+GET     /report/*id                 controllers.Workflows.report(id : Long)
+
 POST     /remove/*id                 controllers.Workflows.removeRun(id : Long)
 
 # Deploy workflow
@@ -57,6 +59,10 @@ GET    /packages/delete      controllers.Workflows.deletePackage(name : String)
 # Workflow builder
 
 GET     /builder                    controllers.Application.builder()
+
+# FFDQ summary
+
+GET     /summary/*id                    controllers.Application.summary(id : Long)
 
 # REST Api routes for data
 
