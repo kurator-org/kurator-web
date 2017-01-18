@@ -14,6 +14,7 @@ import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
 import org.restflow.yaml.spring.YamlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
+import play.Routes;
 import play.api.mvc.MultipartFormData;
 import play.http.HttpErrorHandler;
 import play.libs.Json;
@@ -26,13 +27,14 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import play.routing.JavaScriptReverseRouter;
 import util.AsyncWorkflowRunnable;
 
 import util.ClasspathStreamHandler;
 import util.ConfigurableStreamHandlerFactory;
 import util.WorkflowPackageVerifier;
 import views.html.*;
-import views.html.admin.deploy;
+import views.html.admin.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

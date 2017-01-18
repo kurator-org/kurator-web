@@ -1,5 +1,12 @@
 @(users : List[User])
+
+@helper.javascriptRouter("jsRoutes")(
+    routes.javascript.Workflows.status
+)
+
 @main(title = "The Kurator 'helloworld' application") {
+
+
 
     <h1>User Workflow Runs</h1>
 
@@ -7,15 +14,19 @@
     <script>
             $(function () {
                 if ($("#user_workflows").val() != null) {
-                    var uid = $("#user_workflows").val();
-                    $.ajax({ url: "@routes.Workflows.status(session.get("uid"))", success: updateWorkflowRuns});
+                    var uid = $("#user_workflows option:selected").val();
+
+                    $.ajax(jsRoutes.controllers.Workflows.status(uid))
+                            .done(updateWorkflowRuns);
                 }
 
-                $("#user_workflows").change(function () {
+                $("#user_workflows").change(function (event) {
+
                     $("#workflow-runs").empty();
 
-                    var uid = $(this).val();
-                    $.ajax({ url: "@routes.Workflows.status(session.get("uid"))", success: updateWorkflowRuns});
+                    var uid = $("#user_workflows option:selected").val();
+                    $.ajax(jsRoutes.controllers.Workflows.status(uid))
+                            .done(updateWorkflowRuns);
                 });
             })
     </script>
