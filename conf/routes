@@ -31,6 +31,8 @@ GET     /admin/usermgmt                controllers.Application.userManagement()
 POST    /admin/activate             controllers.Application.activateAccount()
 POST    /admin/change               controllers.Application.changePassword()
 
+POST    /admin/workshop             controllers.Application.createWorkshop()
+
 # Workflow page
 
 GET     /workflow/*name             controllers.Workflows.workflow(name: String)

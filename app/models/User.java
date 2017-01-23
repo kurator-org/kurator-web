@@ -19,6 +19,7 @@ public class User extends Model {
 
     public static String ROLE_ADMIN = "ADMIN";
     public static String ROLE_USER = "USER";
+    public static String ROLE_GUEST = "GUEST";
 
     @Id
     public Long id;

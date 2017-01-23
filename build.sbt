@@ -2,7 +2,7 @@ import sbt.ExclusionRule
 
 name := "kurator-web"
 
-version := "1.0.0"
+version := "1.0.2-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 scalaVersion := "2.11.7"

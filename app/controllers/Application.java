@@ -238,6 +238,20 @@ public class Application extends Controller {
         );
     }
 
+    public Result createWorkshop() {
+        Map<String, String[]> form = request().body().asFormUrlEncoded();
+
+        // TODO: Create a workshop and temporary guest user accounts
+        String workshopName = form.get("name")[0];
+        int numUsers = Integer.parseInt(form.get("numUsers")[0]);
+
+        flash("activate_success", "Created \"" + workshopName + "\" and assigned " + numUsers + " guest accounts");
+
+        return redirect(
+                routes.Application.userManagement()
+        );
+    }
+
     public Result resetPass() {
         Form form = formFactory.form(ResetPass.class);
         return ok(reset.render(form));
