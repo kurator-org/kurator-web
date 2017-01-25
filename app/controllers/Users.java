@@ -151,7 +151,7 @@ public class Users extends Controller {
         );
     }
 
-    public Result userManagement() {
+    public Result manage() {
         List<User> users = userDao.findAllUsers();
         return ok(
                 usermgmt.render(users)
@@ -162,7 +162,7 @@ public class Users extends Controller {
      * Process the data submitted on the user management form (user administration page). Activate or
      * deactivate the user accounts specified and assign role.
      */
-    public Result manageUser() {
+    public Result manageUsers() {
         UserManagement[] request = Json.fromJson(request().body().asJson(), UserManagement[].class);
 
         for (UserManagement userMgmt : request) {
@@ -193,6 +193,10 @@ public class Users extends Controller {
         return redirect(
                 routes.Application.changePass()
         );
+    }
+
+    public Result workshop() {
+        return ok(workshop.render());
     }
 
     public Result createWorkshop() {

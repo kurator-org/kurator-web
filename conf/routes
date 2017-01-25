@@ -2,74 +2,60 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET     /                           controllers.Application.index()
+# Home page and misc actions for features currently in development (builder, ffdq)
+# ~~~~
+GET     /                                       controllers.Application.index()
 
-# Login and logout
+GET     /builder                                controllers.Application.builder()
+GET     /summary/*id                            controllers.Application.summary(id : Long)
 
-GET     /login                      controllers.Application.login()
-POST    /authenticate               controllers.Application.authenticate()
-GET     /logout                     controllers.Application.logout()
+# User authentication and user data routes, login, registration, password reset
+# ~~~~
+GET     /login                                  controllers.Users.login()
+GET     /logout                                 controllers.Users.logout()
 
-# User registration
+GET     /register                               controllers.Users.register()
+POST    /register                               controllers.Users.registerSubmit()
 
-GET     /register                   controllers.Application.register()
-POST    /register                   controllers.Application.registerSubmit()
+POST    /authenticate                           controllers.Users.authenticate()
 
+GET     /reset                                  controllers.Users.reset()
+POST    /reset                                  controllers.Users.resetPassword()
 
-# Reset password
+GET     /password                               controllers.Users.change()
+POST    /password                               controllers.Users.changePassword()
 
-GET     /reset                      controllers.Application.resetPass()
-POST    /reset                      controllers.Application.resetPassword()
+GET     /uploads                                controllers.Users.listUploads()
 
-# Admin pages
+# Admin and user management, user accounts and user groups
+# ~~~~
+GET     /admin/users                            controllers.Users.manage()
+POST    /admin/users                            controllers.Users.manageUsers()
 
-GET     /admin/changepw             controllers.Application.changePass()
-GET     /admin/viewruns                 controllers.Application.viewUserRuns()
-GET     /admin/usermgmt                controllers.Application.userManagement()
+GET     /admin/groups                           controllers.Users.workshop()
+POST    /admin/groups                           controllers.Users.createWorkshop()
 
-POST    /admin/activate             controllers.Application.activateAccount()
-POST    /admin/change               controllers.Application.changePassword()
+# Workflow management routes, package deployment and workflow metadata
+# ~~~~
+GET     /workflow/*name                         controllers.Workflows.workflow(name: String)
+POST    /workflow/*name                         controllers.Workflows.runWorkflow(name: String)
 
-POST    /admin/workshop             controllers.Application.createWorkshop()
+GET     /workflow/deploy                        controllers.Workflows.deploy()
+POST    /workflow/deploy                        controllers.Workflows.deployWorkflows()
 
-# Workflow page
+POST    /workflow/delete                        controllers.Workflows.deletePackage(name : String)
 
-GET     /workflow/*name             controllers.Workflows.workflow(name: String)
+# Workflow run routes for managing user runs and artifacts (result, report, logs)
+# ~~~~
+GET     /run/status/*uid                        controllers.Workflows.status(uid : String)
 
-# Run workflow
+GET     /run/result/*id                         controllers.Workflows.resultArchive(id : Long)
+GET     /run/report/*id                         controllers.Workflows.report(id : Long)
 
-POST    /workflow/*name             controllers.Workflows.runWorkflow(name: String)
+GET     /run/error/*id                          controllers.Workflows.errorLog(id : Long)
+GET     /run/output/*id                         controllers.Workflows.outputLog(id : Long)
 
-# Workflow results
-
-GET     /result/*id                 controllers.Workflows.resultArchive(id : Long)
-GET     /error/*id                  controllers.Workflows.errorLog(id : Long)
-GET     /output/*id                 controllers.Workflows.outputLog(id : Long)
-
-GET     /report/*id                 controllers.Workflows.report(id : Long)
-
-POST     /remove/*id                 controllers.Workflows.removeRun(id : Long)
-
-# Deploy workflow
-
-GET     /deploy                     controllers.Workflows.uploadWorkflow()
-POST    /deploy                     controllers.Workflows.deploy()
-
-GET    /packages/delete      controllers.Workflows.deletePackage(name : String)
-
-# Workflow builder
-
-GET     /builder                    controllers.Application.builder()
-
-# FFDQ summary
-
-GET     /summary/*id                    controllers.Application.summary(id : Long)
-
-# REST Api routes for data
-
-GET     /data/uploads               controllers.Workflows.listUploads()
-GET     /data/status/*uid           controllers.Workflows.status(uid : String)
+POST    /run/remove/*id                         controllers.Workflows.removeRun(id : Long)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /assets/*file                           controllers.Assets.at(path="/public", file)

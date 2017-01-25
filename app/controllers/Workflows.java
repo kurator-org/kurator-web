@@ -379,7 +379,7 @@ public class Workflows extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
-    public Result uploadWorkflow() {
+    public Result deploy() {
         List<PackageData> packages = ConfigManager.getInstance().listPackages();
 
         return ok(
@@ -388,7 +388,7 @@ public class Workflows extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
-    public Result deploy() {
+    public Result deployWorkflows() {
         Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart filePart = body.getFile("filename");
 
