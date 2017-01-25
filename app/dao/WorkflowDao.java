@@ -4,7 +4,6 @@ import com.avaje.ebean.annotation.Transactional;
 import models.db.user.User;
 import models.db.workflow.*;
 
-import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +52,10 @@ public class WorkflowDao {
 
     public List<WorkflowRun> findUserWorkflowRuns(String uid) {
         return WorkflowRun.find.where().eq("user.uid", uid).findList();
+    }
+
+    public List<WorkflowRun> findWorkflowRunsByStatus(Status status) {
+        return WorkflowRun.find.where().eq("status", status).findList();
     }
 
     @Transactional

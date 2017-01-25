@@ -1,22 +1,21 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
 import config.ConfigManager;
 import config.ParameterConfig;
-import dao.UserDao;
 import dao.WorkflowDao;
-import forms.input.*;
-import models.*;
+import forms.input.BasicField;
+import forms.input.FileInput;
+import forms.input.SelectField;
+import forms.input.TextField;
+import models.PackageData;
 import models.db.user.User;
-import models.db.user.UserUpload;
 import models.db.workflow.Workflow;
 import models.db.workflow.WorkflowResult;
 import models.db.workflow.WorkflowRun;
 import models.json.RunResult;
 import models.json.WorkflowDefinition;
-import org.apache.commons.io.FileUtils;
 import org.datakurator.postprocess.FFDQPostProcessor;
 import org.kurator.akka.WorkflowConfig;
 import org.kurator.akka.WorkflowRunner;
@@ -24,23 +23,23 @@ import org.kurator.akka.YamlStreamWorkflowRunner;
 import org.restflow.yaml.spring.YamlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import play.libs.Json;
-import play.mvc.*;
+import play.mvc.Controller;
+import play.mvc.Http;
+import play.mvc.Result;
+import play.mvc.Security;
+import util.AsyncWorkflowRunnable;
+import util.ClasspathStreamHandler;
+import util.ConfigurableStreamHandlerFactory;
+import util.WorkflowPackageVerifier;
 
+import javax.inject.Singleton;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import util.AsyncWorkflowRunnable;
-
-import util.ClasspathStreamHandler;
-import util.ConfigurableStreamHandlerFactory;
-import util.WorkflowPackageVerifier;
 import views.html.*;
-import views.html.admin.*;
-
-import javax.inject.Singleton;
 
 /**
  * This controller deals with actions related to running a workflow, uploading files, checking the status of a run, and
@@ -49,15 +48,14 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class Workflows extends Controller {
-    private static final WorkflowDao workflowDao = new WorkflowDao();
-    private static final UserDao userDao = new UserDao();
-
     // Get jython home and path directories relative to the current directory
     private static final String JYTHON_HOME = new File("jython").getAbsolutePath();
     private static final String JYTHON_PATH = new File("packages").getAbsolutePath();
 
     // Get the workspace basedir relative to the current directory
     private static final String WORKSPACE_DIR = new File("workspace").getAbsolutePath();
+
+    private final WorkflowDao workflowDao = new WorkflowDao();
 
     // For handling classpath url scheme in workflows.conf files
     static {
@@ -69,7 +67,7 @@ public class Workflows extends Controller {
         }
     }
 
-    @Security.Authenticated
+    @Security.Authenticated(Secured.class)
     public Result deletePackage(String name) {
         boolean success = ConfigManager.getInstance().deletePacakge(name);
 
@@ -91,16 +89,8 @@ public class Workflows extends Controller {
     public Result runWorkflow(String name) {
         WorkflowDefinition workflowDef = formDefinitionForWorkflow(name);
 
-        // Process file upload first if present in form data
+        // Process form submission as multipart form data
         Http.MultipartFormData body = request().body().asMultipartFormData();
-
-        for (Object obj : body.getFiles()) {
-            Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
-            UserUpload userUpload = uploadFile(filePart);
-
-            BasicField fileInputField = workflowDef.getField(filePart.getKey());
-            fileInputField.setValue(userUpload);
-        }
 
         //  Set the form definition field values from the request data
         Map<String, String[]> data = body.asFormUrlEncoded();
@@ -248,27 +238,6 @@ public class Workflows extends Controller {
         }
     }
 
-    /**
-     * REST endpoint returns a json array containing metadata about the currently logged in user's uploaded files.
-     *
-     * @return json containing file upload ids and filenames
-     */
-    public Result listUploads() {
-        List<UserUpload> uploadList = userDao.findUserUploads(request().username());
-
-        ObjectNode response = Json.newObject();
-        ArrayNode uploads = response.putArray("uploads");
-
-        for (UserUpload userUpload : uploadList) {
-            ObjectNode upload = Json.newObject();
-            upload.put("id", userUpload.getId());
-            upload.put("filename", userUpload.getFileName());
-            uploads.add(upload);
-        }
-
-        return ok(uploads);
-    }
-
     public Result removeRun(long workflowRunId) {
         workflowDao.removeWorkflowRun(workflowRunId);
         return ok();
@@ -303,7 +272,7 @@ public class Workflows extends Controller {
      * @param name workflow name
      * @return the form definition object
      */
-    private static WorkflowDefinition formDefinitionForWorkflow(String name) {
+    private WorkflowDefinition formDefinitionForWorkflow(String name) {
         List<WorkflowDefinition> workflowDefs = loadWorkflowFormDefinitions();
 
         for (WorkflowDefinition workflowDef : workflowDefs) {
@@ -321,7 +290,7 @@ public class Workflows extends Controller {
      *
      * @return
      */
-    public static List<WorkflowDefinition> loadWorkflowFormDefinitions() {
+    public List<WorkflowDefinition> loadWorkflowFormDefinitions() {
         List<WorkflowDefinition> workflowDefs = new ArrayList<>();
 
         Collection<config.WorkflowConfig> workflows = ConfigManager.getInstance().getWorkflowConfigs();
@@ -365,54 +334,12 @@ public class Workflows extends Controller {
         return workflowDefs;
     }
 
-    /**
-     * Helper method creates a temp file from the multipart form data and persists the upload file metadata to the
-     * database
-     *
-     * @param filePart data from the form submission
-     * @return an instance of UploadFile that has been persisted to the db
-     */
-    private static UserUpload uploadFile(Http.MultipartFormData.FilePart filePart) {
-        File src = (File) filePart.getFile();
-
-        File file = null;
-        try {
-            file = File.createTempFile(filePart.getFilename() + "-", ".csv");
-            FileUtils.copyFile(src, file);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not create temp file for upload", e);
-        }
-
-        UserUpload uploadFile = userDao.createUserUpload(request().username(), filePart.getFilename(),
-                file.getAbsolutePath());
-
-        return uploadFile;
-    }
-
-    private static InputStream loadYamlStream(String yamlFile) {
+    private InputStream loadYamlStream(String yamlFile) {
         try {
             return new FileInputStream(yamlFile);
         } catch (Exception e) {
             throw new RuntimeException("Could not load workflow from yaml file.", e);
         }
-    }
-
-    /**
-     * Obtains the currently uploaded file from the session variable.
-     *
-     * @return uploaded file
-     * @throws FileNotFoundException
-     */
-    private static File getCurrentUpload() throws FileNotFoundException {
-        String uploadFileId = session().get("uploadFileId");
-        UserUpload uploadFile = userDao.findUserUploadById(Long.parseLong(uploadFileId));
-        File file = new File(uploadFile.getAbsolutePath());
-
-        if (!file.exists()) {
-            throw new FileNotFoundException("Could not load input from file.");
-        }
-
-        return file;
     }
 
     /**
@@ -422,7 +349,7 @@ public class Workflows extends Controller {
      * @param form form definition of the workflow being run
      * @return a map of the settings
      */
-    private static Map<String, String> settingsFromConfig(WorkflowDefinition form) {
+    private Map<String, String> settingsFromConfig(WorkflowDefinition form) {
         try {
             Map<String, String> settings = new HashMap<String, String>();
 

@@ -1,9 +1,9 @@
 package dao;
 
 import com.avaje.ebean.annotation.Transactional;
+import models.db.user.Role;
 import models.db.user.User;
 import models.db.user.UserUpload;
-import models.db.user.Role;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Date;
@@ -81,16 +81,17 @@ public class UserDao {
     }
 
     @Transactional
-    public void updateActiveStatus(String username, boolean active) {
+    public void updateLastActive(String username) {
         User user = findUserByUsername(username);
-        user.setActive(active);
+        user.setLastActive(new Date());
         user.save();
     }
 
     @Transactional
-    public void updateLastActive(String username) {
+    public void updateUserAccess(String username, boolean active, Role role) {
         User user = findUserByUsername(username);
-        user.setLastActive(new Date());
+        user.setActive(active);
+        user.setRole(role);
         user.save();
     }
 }

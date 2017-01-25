@@ -2,8 +2,6 @@ package config;
 
 import com.typesafe.config.Config;
 
-import java.util.Map;
-
 /**
  * Created by lowery on 8/4/16.
  */

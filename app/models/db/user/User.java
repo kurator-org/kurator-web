@@ -2,7 +2,8 @@ package models.db.user;
 
 import com.avaje.ebean.Model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 

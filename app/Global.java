@@ -1,28 +1,32 @@
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import config.ConfigManager;
+import dao.WorkflowDao;
+import models.db.workflow.Status;
 import models.db.workflow.WorkflowRun;
 import org.python.util.install.Installation;
-import play.*;
+import play.Application;
+import play.GlobalSettings;
+import play.Logger;
 
-import java.io.*;
+import java.io.File;
 import java.security.Permission;
 import java.util.Date;
 import java.util.List;
 
 public class Global extends GlobalSettings {
+  private WorkflowDao workflowDao = new WorkflowDao();
 
   @Override
   public void onStart(Application app) {
     Logger.info("Application has started");
 
     // Clean up stalled workflows
-
-    List<WorkflowRun> stalled = WorkflowRun.find.where().eq("status", WorkflowRun.STATUS_RUNNING).findList();
+    List<WorkflowRun> stalled = workflowDao.findWorkflowRunsByStatus(Status.RUNNING);
 
     for (WorkflowRun run : stalled) {
-      run.endTime = new Date();
-      run.status = WorkflowRun.STATUS_ERROR;
+      run.setEndTime(new Date());
+      run.setStatus(Status.ERROR);
       run.save();
     }
   }  

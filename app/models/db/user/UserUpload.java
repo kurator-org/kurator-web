@@ -2,7 +2,9 @@ package models.db.user;
 
 import com.avaje.ebean.Model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  * File uploaded by a user

@@ -2,7 +2,6 @@ package models.json;
 
 import config.WorkflowConfig;
 import forms.input.BasicField;
-import models.db.workflow.Workflow;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.List;
  * workflow for display on the form.
  */
 public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
-    // TODO: this morphed into a workflow definition, should refactor
     private List<BasicField> fields = new ArrayList<>();
     private String title;
     private String name;

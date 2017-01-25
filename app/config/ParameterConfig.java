@@ -2,7 +2,6 @@ package config;
 
 import com.typesafe.config.Config;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 

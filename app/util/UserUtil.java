@@ -1,22 +1,17 @@
-package service;
+package util;
 
-import dao.UserDao;
 import models.db.user.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Random;
 
 /**
- * Created by lowery on 1/24/2017.
+ * Created by lowery on 1/25/2017.
  */
-public class UserService {
-    private static UserDao userDao = new UserDao();
-
+public class UserUtil {
     private static final int GEN_PASS_LEN = 16; // Generated password length
 
-    public User authenticate(String username, String password) {
-        User user = userDao.findUserByUsername(username);
-
+    public static User authenticate(User user, String password) {
         if (user != null && BCrypt.checkpw(password, user.getPassword())) {
             return user;
         } else {
@@ -24,7 +19,7 @@ public class UserService {
         }
     }
 
-    public String generatePassword() {
+    public static String generatePassword() {
         StringBuilder tmp = new StringBuilder();
         for (char ch = '0'; ch <= '9'; ++ch)
             tmp.append(ch);
