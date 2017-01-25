@@ -1,9 +1,7 @@
 package forms.input;
 
-import forms.handlers.FileObjectHandler;
 import forms.handlers.FilePathHandler;
-import models.UserUpload;
-import play.mvc.Http.MultipartFormData.FilePart;
+import models.db.user.UserUpload;
 
 /**
  * File input field abstraction class

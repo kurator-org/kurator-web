@@ -1,16 +1,14 @@
-package controllers;
+package models.forms;
 
-import models.User;
-import play.data.validation.ValidationError;
+import models.db.user.User;
 import play.mvc.Http;
-
-import java.util.ArrayList;
-import java.util.List;
+import service.UserService;
 
 /**
      * The login form object.
      */
     public class Login {
+        private UserService userService = new UserService();
 
         protected String username;
         protected String password;
@@ -32,19 +30,19 @@ import java.util.List;
         }
 
         public String validate() {
-            User user = User.authenticate(username, password);
+            User user = userService.authenticate(username, password);
             if (user == null) {
                 return "Invalid username or password";
-            } else if (!user.active) {
+            } else if (!user.isActive()) {
                 return "User account is currently inactive. An admin will activate your account shortly.";
             } else {
                 Http.Session session = Http.Context.current().session();
                 session.clear();
-                session.put("uid", Long.toString(user.id));
-                session.put("user_role", user.role);
-                session.put("username", user.username);
+                session.put("uid", Long.toString(user.getId()));
+                session.put("user_role", user.getRole().name());
+                session.put("username", user.getUsername());
 
-                // TODO: session timeout
+                // TODO: token based auth and session timeout
             }
             return null;
         }

@@ -1,8 +1,7 @@
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import config.ConfigManager;
-import models.PackageData;
-import models.WorkflowRun;
+import models.db.workflow.WorkflowRun;
 import org.python.util.install.Installation;
 import play.*;
 

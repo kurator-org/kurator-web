@@ -1,7 +1,6 @@
 package forms.handlers;
 
-import models.UserUpload;
-import play.mvc.Http.MultipartFormData.FilePart;
+import models.db.user.UserUpload;
 
 /**
  * Transform a file input object to its absolute path.
@@ -11,7 +10,7 @@ public class FilePathHandler implements FieldHandler<String> {
         if (obj instanceof UserUpload) {
             UserUpload file = (UserUpload) obj;
 
-            return file.absolutePath;
+            return file.getAbsolutePath();
         } else {
             throw new UnsupportedOperationException("Could not transfrom instance of " + obj.getClass());
         }

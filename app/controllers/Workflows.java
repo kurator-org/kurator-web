@@ -5,9 +5,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
 import config.ConfigManager;
 import config.ParameterConfig;
+import dao.UserDao;
+import dao.WorkflowDao;
 import forms.FormDefinition;
 import forms.input.*;
 import models.*;
+import models.db.user.UserUpload;
+import models.db.workflow.Workflow;
+import models.db.workflow.WorkflowResult;
+import models.db.workflow.WorkflowRun;
 import org.apache.commons.io.FileUtils;
 import org.datakurator.postprocess.FFDQPostProcessor;
 import org.kurator.akka.WorkflowConfig;
@@ -15,9 +21,6 @@ import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
 import org.restflow.yaml.spring.YamlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
-import play.Routes;
-import play.api.mvc.MultipartFormData;
-import play.http.HttpErrorHandler;
 import play.libs.Json;
 import play.mvc.*;
 
@@ -28,7 +31,6 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import play.routing.JavaScriptReverseRouter;
 import util.AsyncWorkflowRunnable;
 
 import util.ClasspathStreamHandler;
@@ -37,7 +39,6 @@ import util.WorkflowPackageVerifier;
 import views.html.*;
 import views.html.admin.*;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -47,7 +48,8 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class Workflows extends Controller {
-    private static final String WORKFLOWS_PATH = "workflows";
+    private static final WorkflowDao workflowDao = new WorkflowDao();
+    private static final UserDao userDao = new UserDao();
 
     static {
         try {
@@ -105,23 +107,13 @@ public class Workflows extends Controller {
             settings.put(field.name, field.value());
         }
 
-            settings.putAll(settingsFromConfig( form));
+        settings.putAll(settingsFromConfig( form));
 
         // Update the workflow model object and persist to the db
-        Workflow workflow = Workflow.find.where().eq("name", form.name).findUnique();
-
-        if (workflow == null) {
-            workflow = new Workflow();
-        }
-
-        workflow.name = form.name;
-        workflow.title = form.title;
-        workflow.yamlFile = form.yamlFile;
-
-        workflow.save();
+        Workflow workflow = workflowDao.updateWorkflow(form.name, form.title, form.yamlFile);
 
         // Run the workflow
-        ObjectNode response = runYamlWorkflow(form.yamlFile, workflow, settings);
+        ObjectNode response = runYamlWorkflow(workflow, settings);
 
         return redirect(
                 routes.Application.index()
@@ -131,15 +123,14 @@ public class Workflows extends Controller {
     /**
      * Helper method for running yaml workflows using an instance of WorkflowRunner.
      *
-     * @param yamlFile The workflow yaml file
      * @param workflow Workflow definition object
      * @param settings A map of the settings provided as input to the runner
      * @return json containing the id of this run
      */
-    private static ObjectNode runYamlWorkflow(String yamlFile, Workflow workflow, Map<String, Object> settings) {
+    private static ObjectNode runYamlWorkflow(Workflow workflow, Map<String, Object> settings) {
         InputStream yamlStream = null;
         try {
-            yamlStream = loadYamlStream(yamlFile);
+            yamlStream = loadYamlStream(workflow.yamlFile);
         } catch (Exception e) {
             throw new RuntimeException("Could not load workflow from yaml file.", e);
         }
@@ -152,16 +143,15 @@ public class Workflows extends Controller {
 
         try {
 
-            // Get jython home and path variables from application.conf and set them in workflow runner global config
-            //String jythonPath = ConfigFactory.defaultApplication().getString("jython.packages");
-            //String jythonHome = ConfigFactory.defaultApplication().getString("jython.home");
-
+            // Get jython home and path directories
             String jythonPath = new File("packages").getAbsolutePath();
             String jythonHome = new File("jython").getAbsolutePath();
 
             Map<String, Object> config = new HashMap<String, Object>();
             config.put("jython_home", jythonHome);
             config.put("jython_path", jythonPath);
+
+            // TODO: return promise instead of using a callable?
 
             // Initialize and run the yaml workflow
             WorkflowRunner runner = new YamlStreamWorkflowRunner()
@@ -190,7 +180,7 @@ public class Workflows extends Controller {
         ObjectNode response = Json.newObject();
 
         WorkflowRun run = runnable.getWorkflowRun();
-        response.put("runId", run.id);
+        response.put("runId", run.getId());
 
         return response;
     }
@@ -221,52 +211,52 @@ public class Workflows extends Controller {
     /**
      * Return the result archive containing artifacts produced by the workflow run.
      *
-     * @param workflowRunId identifies the workflow run by id
+     * @param runId identifies the workflow run by id
      * @return the zip archive
      */
     @Security.Authenticated(Secured.class)
-    public Result resultArchive(long workflowRunId) {
-        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
-        return ok(new File(run.result.archivePath));
+    public Result resultArchive(long runId) {
+        WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
+        return ok(new File(result.getArchivePath()));
     }
 
     /**
      * Return the workflow run error log as a text file.
      *
-     * @param workflowRunId identifies the workflow run by id
+     * @param runId identifies the workflow run by id
      * @return error log as text file
      */
     @Security.Authenticated(Secured.class)
-    public Result errorLog(long workflowRunId) {
+    public Result errorLog(long runId) {
         response().setHeader("Content-Disposition", "attachment; filename=error_log.txt");
         response().setContentType("text/plain");
 
-        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
+        WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
 
-        if (run != null) {
-            return ok(run.result.errorText);
+        if (result != null) {
+            return ok(result.getErrorText());
         } else {
-            return notFound("No error log found for workflow run with id " + workflowRunId);
+            return notFound("No error log found for workflow run with id " + runId);
         }
     }
 
     /**
      * Return the workflow output log as a text file.
      *
-     * @param workflowRunId identifies the workflow run by id
+     * @param runId identifies the workflow run by id
      * @return output log as text file
      */
     @Security.Authenticated(Secured.class)
-    public Result outputLog(long workflowRunId) {
+    public Result outputLog(long runId) {
         response().setHeader("Content-Disposition", "attachment; filename=output_log.txt");
         response().setContentType("text/plain");
 
-        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
+        WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
 
-        if (run != null) {
-            return ok(run.result.outputText);
+        if (result != null) {
+            return ok(result.getOutputText());
         } else {
-            return notFound("No output log found for workflow run with id " + workflowRunId);
+            return notFound("No output log found for workflow run with id " + runId);
         }
     }
 
@@ -276,15 +266,15 @@ public class Workflows extends Controller {
      * @return json containing file upload ids and filenames
      */
     public Result listUploads() {
-        List<UserUpload> uploadList = UserUpload.findUploadsByUserId(Application.getCurrentUserId());
+        List<UserUpload> uploadList = userDao.findUserUploads(request().username());
 
         ObjectNode response = Json.newObject();
         ArrayNode uploads = response.putArray("uploads");
 
         for (UserUpload userUpload : uploadList) {
             ObjectNode upload = Json.newObject();
-            upload.put("id", userUpload.id);
-            upload.put("filename", userUpload.fileName);
+            upload.put("id", userUpload.getId());
+            upload.put("filename", userUpload.getFileName());
             uploads.add(upload);
         }
 
@@ -292,24 +282,8 @@ public class Workflows extends Controller {
     }
 
     public Result removeRun(long workflowRunId) {
-        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
-        if (run != null) {
-            run.delete();
-
-            WorkflowResult result = run.result;
-
-            if (run.result != null) {
-                List<ResultFile> resultFiles = result.resultFiles;
-
-                for (ResultFile resultFile : resultFiles) {
-                    resultFile.delete();
-                }
-
-                result.delete();
-            }
-        }
-
+        workflowDao.removeWorkflowRun(workflowRunId);
         return ok();
     }
 
@@ -319,27 +293,27 @@ public class Workflows extends Controller {
      * @return
      */
     public Result status(String uid) {
-        List<WorkflowRun> workflowRuns = WorkflowRun.find.where().eq("user.id", uid).findList();
-
+        List<WorkflowRun> workflowRuns = workflowDao.findUserWorkflowRuns(uid);
         ArrayNode response = Json.newArray();
+
         for (WorkflowRun run : workflowRuns) {
+            // TODO: implement the following response json as a Java class serialized via Jackson
+
             ObjectNode runJson = Json.newObject();
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-            runJson.put("id", run.id);
-            runJson.put("workflow", run.workflow.title);
-            runJson.put("startTime", dateFormat.format(run.startTime));
-            runJson.put("endTime", run.endTime != null ? dateFormat.format(run.endTime) : null);
-            runJson.put("status", run.status);
-            runJson.put("hasResult", run.result != null);
+            runJson.put("id", run.getId());
+            runJson.put("workflow", run.getWorkflow().title);
+            runJson.put("startTime", dateFormat.format(run.getStartTime()));
+            runJson.put("endTime", run.getEndTime() != null ? dateFormat.format(run.getEndTime()) : null);
+            runJson.put("status", run.getStatus().name());
+            runJson.put("hasResult", run.getResult() != null);
 
-
-
-            if (run.result != null) {
-                runJson.put("hasReport", !run.result.dqReport.equals(""));
-                runJson.put("hasOutput", !run.result.outputText.equals(""));
-                runJson.put("hasErrors", !run.result.errorText.equals(""));
+            if (run.getResult() != null) {
+                runJson.put("hasReport", !run.getResult().getDqReport().equals(""));
+                runJson.put("hasOutput", !run.getResult().getOutputText().equals(""));
+                runJson.put("hasErrors", !run.getResult().getErrorText().equals(""));
             } else {
                 runJson.put("hasReport", false);
                 runJson.put("hasOutput", false);
@@ -447,28 +421,6 @@ public class Workflows extends Controller {
     }
 
     /**
-     * Private helper method loads data from the yaml file specified and creates an instance of FormDefinition
-     *
-     * @param yamlFile
-     * @return
-     */
-//    private static FormDefinition loadFormDefinition(String yamlFile) {
-//        try {
-//            GenericApplicationContext springContext = new GenericApplicationContext();
-//            YamlBeanDefinitionReader yamlBeanReader = new YamlBeanDefinitionReader(springContext);
-//            yamlBeanReader.loadBeanDefinitions(new FileInputStream(yamlFile), "-");
-//            springContext.refresh();
-//
-//            FormDefinition formDefinition = springContext.getBean(FormDefinition.class);
-//            formDefinition.yamlFile = yamlFile;
-//
-//            return formDefinition;
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-    /**
      * Helper method creates a temp file from the multipart form data and persists the upload file metadata to the
      * database
      *
@@ -486,9 +438,9 @@ public class Workflows extends Controller {
         }
 
         UserUpload uploadFile = new UserUpload();
-        uploadFile.absolutePath = file.getAbsolutePath();
-        uploadFile.fileName = filePart.getFilename();
-        uploadFile.user = Application.getCurrentUser();
+        uploadFile.setAbsolutePath(file.getAbsolutePath());
+        uploadFile.setFileName(filePart.getFilename());
+        uploadFile.setUser(userDao.findByUsername(request().username()));
         uploadFile.save();
 
         return uploadFile;
@@ -503,7 +455,7 @@ public class Workflows extends Controller {
     private static File getCurrentUpload() throws FileNotFoundException {
         String uploadFileId = session().get("uploadFileId");
         UserUpload uploadFile = UserUpload.find.byId(Long.parseLong(uploadFileId));
-        File file = new File(uploadFile.absolutePath);
+        File file = new File(uploadFile.getAbsolutePath());
 
         if (!file.exists()) {
             throw new FileNotFoundException("Could not load input from file.");
@@ -594,9 +546,10 @@ public class Workflows extends Controller {
     public Result report(long workflowRunId) throws IOException {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
-        FFDQPostProcessor postProcessor = new FFDQPostProcessor(new FileInputStream(run.result.dqReport), AsyncWorkflowRunnable.class.getResourceAsStream("/ev-assertions.json"));
-        String json = postProcessor.measureSummary();
+        FFDQPostProcessor postProcessor = new FFDQPostProcessor(new FileInputStream(run.getResult().getDqReport()),
+                AsyncWorkflowRunnable.class.getResourceAsStream("/ev-assertions.json"));
 
+        String json = postProcessor.measureSummary();
         System.out.println(json);
 
         return ok(json);

@@ -1,25 +1,22 @@
 package controllers;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
+import dao.UserDao;
 import forms.FormDefinition;
-import models.User;
-import models.UserUpload;
-import org.apache.commons.mail.EmailException;
-import org.kurator.util.SystemClasspathManager;
-import org.mindrot.jbcrypt.BCrypt;
-import play.api.Play;
+import models.db.user.Role;
+import models.db.user.User;
+import models.db.user.UserUpload;
+import models.forms.ChangePass;
+import models.forms.Login;
+import models.forms.Register;
+import models.forms.ResetPass;
 import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
 import play.mvc.*;
 import play.data.*;
 
-import java.net.URL;
 import java.util.*;
 
-import util.ClasspathStreamHandler;
-import util.ConfigurableStreamHandlerFactory;
-
+import service.UserService;
 import views.html.*;
 import views.html.admin.*;
 
@@ -31,12 +28,14 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class Application extends Controller {
-
-    private static final String DEFAULT_USER_ROLE = User.ROLE_USER;
     @Inject
     FormFactory formFactory;
     @Inject
     MailerClient mailer;
+
+    // TODO: service and dao at same level? rethink this architecture
+    UserDao userDao = new UserDao();
+    UserService userService = new UserService();
 
     public Result summary(long runId) {
         return ok(
@@ -128,33 +127,29 @@ public class Application extends Controller {
             return badRequest(register.render(registerForm));
         }
 
-        User user = new User();
-        user.username = registerForm.get().username;
-        user.firstname = registerForm.get().firstName;
-        user.lastname = registerForm.get().lastName;
-        user.email = registerForm.get().email;
-        user.password = BCrypt.hashpw(registerForm.get().password, BCrypt.gensalt());
-        user.role = DEFAULT_USER_ROLE;
-        user.affiliation = registerForm.get().affiliation;
-        user.save();
+        Register registration = registerForm.get();
+
+        User user = userDao.createUser(registration.username, registration.firstName, registration.lastName, registration.email,
+                registration.password, registration.affiliation);
 
         flash("message", "New user registration successful! The admin will send an email notification when your account has been activated.");
 
-        List<User> adminUsers = User.find.where().eq("role", "ADMIN").findList();
+        List<User> adminUsers = userDao.findByRole(Role.ADMIN);
 
         try {
+            // TODO: make this work and perhaps factor it out into a service for mailer tasks
             Email email = new Email();
-            email.setSubject("New kurator-web user registration: " + user.username);
+            email.setSubject("New kurator-web user registration: " + user.getUsername());
             email.setFrom("Kurator Admin <from@email.com>");
 
             for (User admin : adminUsers) {
-                if (admin.email != null) {
-                    email.addTo(admin.email);
+                if (admin.getEmail() != null) {
+                    email.addTo(admin.getEmail());
                 }
             }
 
-            email.setBodyText("A new user, " + user.firstname + " " + user.lastname + " with username: " +
-                    user.username + " and email: " + user.email + " has requested account " +
+            email.setBodyText("A new user, " + user.getFirstname() + " " + user.getLastname() + " with username: " +
+                    user.getUsername() + " and email: " + user.getEmail() + " has requested account " +
                     "authorization for kurator-web.");
 
             if (adminUsers.size() > 1) { // send only if there are admins registered
@@ -177,14 +172,14 @@ public class Application extends Controller {
     }
 
     public Result viewUserRuns() {
-        List<User> users = User.find.where().ne("id", 0).findList();
+        List<User> users = userDao.findAll();
         return ok(
                 viewruns.render(users)
         );
     }
 
     public Result userManagement() {
-        List<User> users = User.find.where().ne("id", 0).findList();
+        List<User> users = userDao.findAll();
         return ok(
                 usermgmt.render(users)
         );
@@ -198,6 +193,7 @@ public class Application extends Controller {
 
         DynamicForm form = formFactory.form().bindFromRequest();
 
+        // TODO: this is very messy, fix this
                     List<User> users = User.find.where().ne("id", 0).findList();
 
                     for (User user : users) {
@@ -228,9 +224,8 @@ public class Application extends Controller {
             return badRequest(changepw.render(changePassForm));
         }
 
-        User user = Application.getCurrentUser();
-        user.password = BCrypt.hashpw(changePassForm.get().password, BCrypt.gensalt());
-        user.save();
+        User user = userDao.findByUsername(request().username());
+        userDao.updatePassword(request().username(), changePassForm.get().password);
 
         flash("change_success", "Password successfully changed!");
         return redirect(
@@ -264,7 +259,8 @@ public class Application extends Controller {
             return badRequest(reset.render(resetPassForm));
         }
 
-        String pw = User.generatePassword();
+        // TODO: more email tasks to make work and factor out into mailer service
+        String pw = userService.generatePassword();
 
         String username = resetPassForm.get().username;
         String emailAddr = resetPassForm.get().email;
@@ -290,14 +286,5 @@ public class Application extends Controller {
         return redirect(
                 routes.Application.resetPass()
         );
-    }
-
-    public static User getCurrentUser() {
-        String uid = session().get("uid");
-        return User.find.byId(Long.parseLong(uid));
-    }
-
-    public static Long getCurrentUserId() {
-        return Long.valueOf(session().get("uid"));
     }
 }

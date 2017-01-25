@@ -180,7 +180,9 @@ public class WorkflowPackageVerifier {
         return ret;
     }
 
-    public static final synchronized boolean checkIntegrity(File file, String keystoreLocation, char[] keystorePass) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
+    public static final synchronized boolean checkIntegrity(File file, String keystoreLocation, char[] keystorePass)
+            throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
+
         // Provider's signing cert which is used to sign the jar.
         X509Certificate providerCert = null;
 

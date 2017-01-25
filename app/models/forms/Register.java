@@ -1,11 +1,13 @@
-package controllers;
+package models.forms;
 
-import models.User;
+import dao.UserDao;
+import models.db.user.User;
 
 /**
      * The register form object
      */
     public class Register {
+        private UserDao userDao = new UserDao();
 
         public String email;
         public String firstName;
@@ -20,11 +22,11 @@ import models.User;
                 return "Passwords do not match";
             }
 
-            if (User.find.where().eq("username", username).findUnique() != null) {
+            if (userDao.findByUsername(username) != null) {
                 return "A user with that name already exists!";
             }
 
-            if (User.find.where().eq("email", email).findUnique() != null) {
+            if (userDao.findByEmail(email) != null) {
                 return "A user with that email already exists!";
             }
             return null;

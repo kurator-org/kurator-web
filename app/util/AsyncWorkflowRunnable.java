@@ -1,29 +1,40 @@
 package util;
 
 import controllers.Application;
-import org.apache.commons.mail.EmailException;
+import dao.UserDao;
+import dao.WorkflowDao;
+import models.db.user.User;
+import models.db.workflow.*;
 
-import models.ResultFile;
-import models.Workflow;
-import models.WorkflowResult;
-import models.WorkflowRun;
-import org.datakurator.postprocess.FFDQPostProcessor;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.data.WorkflowProduct;
 import play.Logger;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static play.mvc.Controller.request;
+
 /**
  * Created by lowery on 5/10/16.
  */
 public class AsyncWorkflowRunnable implements Runnable {
+    private static final WorkflowDao workflowDao = new WorkflowDao();
+    private static final UserDao userDao = new UserDao();
+
     private WorkflowRunner runner;
     private WorkflowRun run;
+
+    private String workflow;
+
+    private Date startTime;
+    private Date endTime;
+
     private ByteArrayOutputStream errStream;
     private ByteArrayOutputStream outStream;
 
@@ -32,12 +43,11 @@ public class AsyncWorkflowRunnable implements Runnable {
         this.outStream = outStream;
         this.runner = runner;
 
-        run = new WorkflowRun();
-        run.user = Application.getCurrentUser();
-        run.workflow = workflow;
-        run.startTime = new Date();
-        run.status = WorkflowRun.STATUS_RUNNING;
-        run.save();
+        this.workflow = workflow.getTitle();
+        this.startTime = new Date(); // Workflow run start time
+
+        User user = userDao.findByUsername(request().username());
+        run = workflowDao.createWorkflowRun(workflow, user, startTime);
     }
 
     public WorkflowRun getWorkflowRun() {
@@ -45,103 +55,106 @@ public class AsyncWorkflowRunnable implements Runnable {
     }
 
     public void run() {
-        WorkflowResult result = new WorkflowResult();
+        endTime = new Date(); // Workflow run end time
+
+        List<ResultFile> resultFiles = new ArrayList<>();
+        String dqReport = null;
 
         try {
+
+            // Process workflow artifacts
             for (WorkflowProduct product : runner.getWorkflowProducts()) {
                 String fileName = String.valueOf(product.value);
                 File file = new File(fileName);
 
                 if (file.exists()) {
                     if (product.type.equals("DQ_REPORT")) {
-                        result.dqReport = String.valueOf(product.value);
-                    } else {
-                        ResultFile resultFile = new ResultFile();
-                        resultFile.fileName = String.valueOf(product.value);
-                        resultFile.label = product.label;
-
-                        result.resultFiles.add(resultFile);
+                        dqReport = String.valueOf(product.value);
                     }
+
+                    ResultFile resultFile = workflowDao.createResultFile(product.label, String.valueOf(product.value));
+                    resultFiles.add(resultFile);
                 } else {
                     Logger.error("artifact specified does not exist: " + fileName);
                 }
             }
 
-            File archive = File.createTempFile("artifacts_", ".zip");
+            // TODO: yaml file should be workflow yaml and not web app version
+            //File yamlFile = new File(run.workflow.yamlFile);
 
-            result.archivePath = archive.getAbsolutePath();
+            String outputText = new String(outStream.toByteArray());
+            String errorText = new String(errStream.toByteArray());
 
-            result.errorText = new String(errStream.toByteArray());
-            result.outputText = new String(outStream.toByteArray());
-            result.save();
+            // Create output and error log files
+            ResultFile outputFile = createTextFile("output", outputText);
+            resultFiles.add(outputFile);
+            ResultFile errorFile = createTextFile("error", errorText);
+            resultFiles.add(errorFile);
 
-            run.result = result;
-            run.endTime = new Date();
+            // Create readme file
+            ResultFile readmeFile = createReadmeFile(workflow, startTime, endTime);
+            resultFiles.add(readmeFile);
 
-            createArchive(archive, run);
+            // Create archive
+            File archive = createArchive(resultFiles);
 
-            run.status = WorkflowRun.STATUS_SUCCESS;
+            WorkflowResult workflowResult = workflowDao.createWorkflowResult(resultFiles, archive.getAbsolutePath(),
+                    dqReport, outputText, errorText);
 
-            run.save();
+            workflowDao.updateRunResult(run, workflowResult, Status.SUCCESS, endTime);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        /*
         try {
+
             ResultNotificationMailer mailer = new ResultNotificationMailer();
             mailer.sendNotification(run.user, run);
         
         } catch (EmailException e) { 
             // TODO: Handle exceptions related to sending the email
             System.out.println("Error sending notification email message: " + e.getMessage());
-        }
+        }         */
     }
 
-    private void createArchive(File archive, WorkflowRun run) throws IOException {
+    private ResultFile createTextFile(String prefix, String content) throws IOException {
+        // TODO: replace all temp files with files in a designated workspace
+        File file = File.createTempFile(prefix + '_', ".txt");
+
+        FileWriter writer = new FileWriter(file);
+        writer.write(content);
+        writer.close();
+
+        return workflowDao.createResultFile(prefix, file.getAbsolutePath());
+    }
+
+    private File createArchive(List<ResultFile> resultFiles) throws IOException {
+            // TODO: replace all temp files with files in a designated workspace
+            File archive = File.createTempFile("artifacts_", ".zip");
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(archive));
-            List<ResultFile> resultFiles = run.result.resultFiles;
 
             for (ResultFile resultFile : resultFiles) {
-                File file = new File(resultFile.fileName);
+                File file = new File(resultFile.getFileName());
                 writeFile(file, out);
             }
 
-            File readmeFile = createReadmeFile();
-
-            File outputFile = File.createTempFile("output_log_", ".txt");
-            File errorFile = File.createTempFile("error_log_", ".txt");
-
-            // TODO: yaml file should be workflow yaml and not web app version
-            //File yamlFile = new File(run.workflow.yamlFile);
-
-            FileWriter output = new FileWriter(outputFile);
-            FileWriter error = new FileWriter(errorFile);
-
-            output.write(run.result.outputText);
-            error.write(run.result.errorText);
-
-            output.close();
-            error.close();
-
-            writeFile(readmeFile, out);
-            writeFile(outputFile, out);
-            writeFile(errorFile, out);
-            //writeFile(yamlFile, out);
-
             out.close();
+            return archive;
     }
 
-    private File createReadmeFile() throws IOException {
+    private ResultFile createReadmeFile(String workflow, Date startTime, Date endTime) throws IOException {
+        // TODO: replace all temp files with files in a designated workspace
         File readmeFile = File.createTempFile("README_", ".txt");
         FileWriter readme = new FileWriter(readmeFile);
 
-        readme.append("Workflow: " + run.workflow.title + "\n");
-        readme.append("Start time: " + run.startTime + "\n");
-        readme.append("End time: " + run.endTime + "\n");
+        readme.append("Workflow: " + workflow + "\n");
+        readme.append("Start time: " + startTime + "\n");
+        readme.append("End time: " + endTime + "\n");
 
         readme.close();
 
-        return readmeFile;
+        return workflowDao.createResultFile("readme", readmeFile.getAbsolutePath());
     }
 
     private void writeFile(File file, ZipOutputStream out) throws IOException {
@@ -159,15 +172,11 @@ public class AsyncWorkflowRunnable implements Runnable {
 
         in.close();
     }
+
     public synchronized void error(String errorText, String outputText) {
-        WorkflowResult result = new WorkflowResult();
+        WorkflowResult workflowResult = workflowDao.createWorkflowResult(Collections.emptyList(), null,
+                null, outputText, errorText);
 
-        result.errorText = errorText;
-        result.outputText = outputText;
-
-        run.result = result;
-        run.endTime = new Date();
-        run.status = WorkflowRun.STATUS_ERROR;
-        run.save();
+        workflowDao.updateRunResult(run, workflowResult, Status.ERROR, new Date());
     }
 }

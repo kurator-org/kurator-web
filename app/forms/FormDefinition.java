@@ -13,6 +13,7 @@ import java.util.Map;
  * workflow for display on the form.
  */
 public class FormDefinition implements Comparable<FormDefinition> {
+    // TODO: this morphed into a workflow definition, should refactor
     public List<BasicField> fields = new ArrayList<>();
     public String title;
     public String name;

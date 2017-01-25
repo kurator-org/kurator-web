@@ -1,8 +1,6 @@
 package forms.handlers;
 
-import models.UserUpload;
-import play.mvc.Http;
-import views.html.helper.FieldConstructor;
+import models.db.user.UserUpload;
 
 import java.io.File;
 
@@ -14,7 +12,7 @@ public class FileObjectHandler implements FieldHandler<File> {
         if (obj instanceof UserUpload) {
             UserUpload file = (UserUpload) obj;
 
-            return new File(file.fileName);
+            return new File(file.getFileName());
         } else {
             throw new UnsupportedOperationException("Could not transfrom instance of " + obj.getClass());
         }
