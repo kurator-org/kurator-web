@@ -1,7 +1,7 @@
 package models.json;
 
 import config.WorkflowConfig;
-import forms.input.BasicField;
+import ui.input.BasicField;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

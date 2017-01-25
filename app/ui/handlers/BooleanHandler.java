@@ -1,4 +1,4 @@
-package forms.handlers;
+package ui.handlers;
 
 /**
  * Field handler for boolean values capable of transforming text to an instance of Boolean

@@ -1,4 +1,4 @@
-package forms.input;
+package ui.input;
 
 /**
  * Represents an option as part of a radio group field

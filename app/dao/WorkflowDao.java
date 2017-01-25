@@ -51,7 +51,7 @@ public class WorkflowDao {
     }
 
     public List<WorkflowRun> findUserWorkflowRuns(String uid) {
-        return WorkflowRun.find.where().eq("user.uid", uid).findList();
+        return WorkflowRun.find.where().eq("user.id", uid).findList();
     }
 
     public List<WorkflowRun> findWorkflowRunsByStatus(Status status) {

@@ -1,6 +1,6 @@
-package forms.input;
+package ui.input;
 
-import forms.handlers.FilePathHandler;
+import ui.handlers.FilePathHandler;
 import models.db.user.UserUpload;
 
 /**

@@ -1,4 +1,4 @@
-package forms.handlers;
+package ui.handlers;
 
 import models.db.user.UserUpload;
 

@@ -1,6 +1,6 @@
-package forms.input;
+package ui.input;
 
-import forms.handlers.FieldHandler;
+import ui.handlers.FieldHandler;
 
 /**
  * Abstract super class for a generic form field.

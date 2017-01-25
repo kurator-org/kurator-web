@@ -1,5 +1,9 @@
 package controllers;
 
+import dao.UserDao;
+import dao.WorkflowDao;
+import models.db.user.UserUpload;
+import models.json.WorkflowDefinition;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -7,6 +11,9 @@ import play.mvc.Security;
 import javax.inject.Singleton;
 
 import views.html.*;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The main application controller
@@ -19,8 +26,15 @@ public class Application extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public Result index() {
+        // TODO: use ajax on a Workflows controller route to obtain this list instead
+        List<WorkflowDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
+        Collections.sort(workflows);
+
+        String uid = session().get("uid");
+        List<UserUpload> userUploads = UserUpload.find.where().eq("user.id", uid).findList();
+
         return ok(
-                index.render()
+                index.render(workflows, userUploads)
         );
     }
 

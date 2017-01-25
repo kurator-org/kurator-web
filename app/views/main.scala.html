@@ -2,100 +2,93 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-            <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-        <title>@title</title>
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-            <!-- Stylesheets -->
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/demo.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/builder.css")">
+    <title>@title</title>
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
 
-            <!-- Custom CSS -->
-        <link href="@routes.Assets.at("stylesheets/sb-admin-2.css")" rel="stylesheet">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/demo.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/builder.css")">
 
-            <!-- Custom Fonts -->
-        <link href="@routes.Assets.at("stylesheets/font-awesome.min.css")" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/sb-admin-2.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/font-awesome.min.css")">
 
-            <!-- JQuery UI -->
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery-ui.min.css")">
+    <!-- jQuery and jQuery UI -->
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-3.1.0.min.js")"></script>
 
-            <!-- Bootstrap -->
-        <link href="@routes.Assets.at("stylesheets/bootstrap.min.css")" rel="stylesheet">
-        <script href="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-ui.min.js")"></script>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/jquery-ui.min.css")">
 
-            <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-            <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-            <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")">
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    </head>
-    <body>
-        <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container-fluid">
-                    <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="#">Kurator Web</a>
-                </div>
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Kurator Web</a>
+        </div>
 
-                    <ul class="nav navbar-nav">
+        <ul class="nav navbar-nav">
 
-                        <li><a href="@routes.Application.index">Home</a></li>
-                        <li><a href="http://wiki.datakurator.net/Kurator-Web" target="_blank">About</a></li>
-                        <li><a href="@routes.Application.summary(1)">Reports</a></li>
-                        <li><a href="@routes.Application.builder">Workflow Builder</a></li>
+          <li><a href="@routes.Application.index">Home</a></li>
+          <li><a href="http://wiki.datakurator.net/Kurator-Web" target="_blank">About</a></li>
+          <li><a href="@routes.Application.builder">Workflow Builder</a></li>
 
-                        @if(session.get("uid") != null && session.get("user_role").equals("ADMIN")) {
+          @if(session.get("uid") != null && session.get("user_role").equals("ADMIN")) {
 
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                    Admin <span class="caret"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="@routes.Application.viewUserRuns">Workflow Runs</a></li>
-                                    <li><a href="@routes.Workflows.uploadWorkflow">Deploy Workflows</a></li>
-                                    <li role="separator" class="divider"></li>
-                                    <li><a href="@routes.Application.userManagement">User Management</a></li>
-                                    <li><a href="@routes.Application.changePass">Reset Password</a></li>
-                                </ul>
-                            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                Admin <span class="caret" />
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="@routes.Users.userRuns">Workflow Runs</a></li>
+                <li><a href="@routes.Workflows.deploy">Deploy Workflows</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="@routes.Users.manage()">User Management</a></li>
+                <li><a href="@routes.Users.change()">Reset Password</a></li>
+              </ul>
+            </li>
 
-                        }
+          }
 
-                        @if(session.get("uid") == null) {
+          @if(session.get("uid") == null) {
 
-                            <li><a href="@routes.Application.register">Register</a></li>
-                            <li><a href="@routes.Application.login">Login</a></li>
+            <li><a href="@routes.Users.register">Register</a></li>
+            <li><a href="@routes.Users.login">Login</a></li>
 
-                        } else {
+          } else {
 
-                            <li><a href="@routes.Application.logout">Logout</a></li>
+            <li><a href="@routes.Users.logout">Logout</a></li>
 
-                        }
-                    </ul>
-                    @if(session.get("uid") != null) {
-                        <p class="navbar-text navbar-right" style="padding-right: 20px">Logged in as @session.get("username")</p>
-                    }
-            </div><!-- /.container-fluid -->
-        </nav>
+          }
+        </ul>
+        @if(session.get("uid") != null) {
+          <p class="navbar-text navbar-right" style="padding-right: 20px">
+            Logged in as @session.get("username")</p>
+        }
+      </div>
+        <!-- /.container-fluid -->
+    </nav>
 
-            <!-- jQuery and jQuery UI -->
-        <script src="@routes.Assets.at("javascripts/jquery-3.1.0.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/jquery-ui.min.js")" type="text/javascript"></script>
+    <section>
+    @content
+    </section>
 
-            <!-- Bootstrap -->
-        <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" ></script>
-
-        <script src="@routes.Assets.at("javascripts/main.js")" type="text/javascript"></script>
-
-        <section>
-        @content
-        </section>
-
-    </body>
+  </body>
 </html>

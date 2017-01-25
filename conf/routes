@@ -35,15 +35,17 @@ POST    /admin/users                            controllers.Users.manageUsers()
 GET     /admin/groups                           controllers.Users.workshop()
 POST    /admin/groups                           controllers.Users.createWorkshop()
 
+GET     /admin/viewruns                         controllers.Users.userRuns()
+
 # Workflow management routes, package deployment and workflow metadata
 # ~~~~
 GET     /workflow/*name                         controllers.Workflows.workflow(name: String)
 POST    /workflow/*name                         controllers.Workflows.runWorkflow(name: String)
 
-GET     /workflow/deploy                        controllers.Workflows.deploy()
-POST    /workflow/deploy                        controllers.Workflows.deployWorkflows()
+GET     /workflows/deploy                       controllers.Workflows.deploy()
+POST    /workflows/deploy                       controllers.Workflows.deployWorkflows()
 
-POST    /workflow/delete                        controllers.Workflows.deletePackage(name : String)
+POST    /workflows/delete                       controllers.Workflows.deletePackage(name : String)
 
 # Workflow run routes for managing user runs and artifacts (result, report, logs)
 # ~~~~

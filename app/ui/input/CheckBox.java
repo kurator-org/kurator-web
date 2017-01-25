@@ -1,6 +1,6 @@
-package forms.input;
+package ui.input;
 
-import forms.handlers.BooleanHandler;
+import ui.handlers.BooleanHandler;
 
 /**
  * The checkbox field abstraction.

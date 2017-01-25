@@ -1,4 +1,4 @@
-package forms.handlers;
+package ui.handlers;
 
 import java.util.List;
 

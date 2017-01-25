@@ -1,0 +1,27 @@
+@()
+
+@main(title = "Kurator Web - Manage Workshop") {
+  <h1>Create Workshop</h1>
+
+  @if(flash.containsKey("activate_success")) {
+    <div class="alert alert-success" role="alert">
+    @flash.get("activate_success")
+    </div>
+  }
+
+  <div style="float: left">
+    <form id="createworkshop" action="@routes.Users.createWorkshop()" method="post">
+      <div class="form-group">
+        <input type="text" class="form-control" id="name" name="name" placeholder="Workshop Name">
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" id="numUsers" name="numUsers" placeholder="# of Participants">
+      </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create</button>
+      </div>
+    </form>
+  </div>
+
+  <div style="clear: left" />
+}

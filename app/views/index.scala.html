@@ -1,45 +1,50 @@
 @import models.db.user.UserUpload
-@(workflows : List[FormDefinition])(userUploads : List[UserUpload])
+@import models.json.WorkflowDefinition
 
-@main(title = "The Kurator 'helloworld' application") {
+@(workflows: List[WorkflowDefinition])(userUploads: List[UserUpload])
+
+  @main(title = "Kurator Web - Home") {
 
     <h2>Workflows</h2>
 
     <script type="text/javascript" src="@routes.Assets.at("javascripts/workflow.js")"></script>
     <script type="text/javascript">
-                $.ajax({ url: "@routes.Workflows.status(session.get("uid"))", success: updateWorkflowRuns});
+            $.ajax({url: "@routes.Workflows.status(session.get("uid"))", success: updateWorkflowRuns});
 
-                (function poll() {
-                    setTimeout(function() {
-                        $.ajax({ url: "@routes.Workflows.status(session.get("uid"))", success: updateWorkflowRuns, dataType: "json", complete: poll });
-                    }, 3000);
-                })()
-
-            /*;*/
+            (function poll() {
+              setTimeout(function () {
+                $.ajax({
+                  url: "@routes.Workflows.status(session.get("uid"))",
+                  success: updateWorkflowRuns,
+                  dataType: "json",
+                  complete: poll
+                });
+              }, 3000);
+            })()
     </script>
     <table class="workflow-list">
-        @if(workflows.size() == 0) {
-           <i>No workflows deployed</i>
-        }
+      @if(workflows.size() == 0) {
+        <i>No workflows deployed</i>
+      }
 
-        @workflows.map { workflow =>
-            <tr>
-                <td>
-                    @if(workflow.documentation != null) {
-                        <a href="@workflow.documentation"><img src="@routes.Assets.at("images/info.png")" /></a>
-                    }
-                </td>
-                <td>
-                    @workflow.title
-                </td>
-                <td>
-                    <a href="workflow/@workflow.name">Run</a>
-                </td>
-                <td style="width: 500px">
-                    @workflow.summary
-                </td>
-            </tr>
-        }
+      @workflows.map { workflow =>
+        <tr>
+          <td>
+            @if(workflow.getDocumentation() != null) {
+              <a href="@workflow.getDocumentation()"><img src="@routes.Assets.at("images/info.png")" /></a>
+            }
+          </td>
+          <td>
+          @workflow.getTitle()
+          </td>
+          <td>
+            <a href="workflow/@workflow.getName()">Run</a>
+          </td>
+          <td style="width: 500px">
+          @workflow.getSummary()
+          </td>
+        </tr>
+      }
     </table>
 
     <h2>Workflow runs</h2>
@@ -48,4 +53,4 @@
 
     </div>
 
-}
+  }

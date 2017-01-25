@@ -1,129 +1,128 @@
+@main(title = "Kurator Web - Builder") {
 
-@main(title = "The Kurator 'helloworld' application") {
+  <h1>Workflow Builder</h1>
 
-<h1>Workflow Builder</h1>
+  <script src="@routes.Assets.at("javascripts/jsPlumb-2.1.4.js")" type="text/javascript"></script>
 
-<script src="@routes.Assets.at("javascripts/jsPlumb-2.1.4.js")" type="text/javascript"></script>
+  <script type="text/javascript">
+          jsPlumb.ready(function () {
+            jsPlumb.setContainer($("#canvas"));
 
-<script type="text/javascript">
-    jsPlumb.ready(function() {
-        jsPlumb.setContainer($("#canvas"));
-
-        function addInput(name) {
-            var input = $("<div class='input'>" + name + "</div>").dblclick(function() {
+            function addInput(name) {
+              var input = $("<div class='input'>" + name + "</div>").dblclick(function () {
                 jsPlumb.remove(this);
-            });
-            $("#canvas").append(input);
-            jsPlumb.draggable(input);
+              });
+              $("#canvas").append(input);
+              jsPlumb.draggable(input);
 
-            var endpoint = jsPlumb.addEndpoint(input, { anchor:"Right", isSource:true });
-        }
+              var endpoint = jsPlumb.addEndpoint(input, {anchor: "Right", isSource: true});
+            }
 
-        function addOutput(name) {
-            var output = $("<div class='output'>" + name + "</div>").dblclick(function() {
+            function addOutput(name) {
+              var output = $("<div class='output'>" + name + "</div>").dblclick(function () {
                 jsPlumb.remove(this);
-            });
+              });
 
-            $("#canvas").append(output);
-            jsPlumb.draggable(output);
-            var endpoint = jsPlumb.addEndpoint(output, { anchor:"Left", isTarget:true });
-        }
+              $("#canvas").append(output);
+              jsPlumb.draggable(output);
+              var endpoint = jsPlumb.addEndpoint(output, {anchor: "Left", isTarget: true});
+            }
 
-        function addActor(name) {
-            var actor = $("<div class='actor'>" + name + "</div>").dblclick(function() {
+            function addActor(name) {
+              var actor = $("<div class='actor'>" + name + "</div>").dblclick(function () {
                 jsPlumb.remove(this);
-            });
+              });
 
-            $("#canvas").append(actor);
-            jsPlumb.draggable(actor);
+              $("#canvas").append(actor);
+              jsPlumb.draggable(actor);
 
-            var inEnpoint = jsPlumb.addEndpoint(actor, { anchor:"Left", isTarget:true });
-            var outEnpoint = jsPlumb.addEndpoint(actor, { anchor:"Right", isSource:true });
-        }
+              var inEnpoint = jsPlumb.addEndpoint(actor, {anchor: "Left", isTarget: true});
+              var outEnpoint = jsPlumb.addEndpoint(actor, {anchor: "Right", isSource: true});
+            }
 
-        var actorConfig = [
-            {
+            var actorConfig = [
+              {
                 name: "ReadInput",
                 type: "input"
-            },
-            {
+              },
+              {
                 name: "WriteDQReport",
                 type: "output"
-            },
-            {
+              },
+              {
                 name: "VertNetGeoValidator",
                 type: "actor"
-            },
-            {
+              },
+              {
                 name: "ScientificNameValidator",
                 type: "actor"
-            },
-            {
+              },
+              {
                 name: "BasisOfRecValidator",
                 type: "actor"
-            },
-            {
+              },
+              {
                 name: "DateValidator",
                 type: "actor"
-            },
-            {
+              },
+              {
                 name: "FP-GeoValidator",
                 type: "actor"
-            }
-        ];
+              }
+            ];
 
-        $.each(actorConfig, function(i, obj) {
-            $("#actorSelect").append("<option value='" + i + "'>" + obj.name + " </option>");
-        });
+            $.each(actorConfig, function (i, obj) {
+              $("#actorSelect").append("<option value='" + i + "'>" + obj.name + " </option>");
+            });
 
-        $("#addActorButton").click(function() {
-            var value = $("#actorSelect").val();
-            var actor = actorConfig[value];
+            $("#addActorButton").click(function () {
+              var value = $("#actorSelect").val();
+              var actor = actorConfig[value];
 
-            if (actor.type === "input") {
+              if (actor.type === "input") {
                 addInput(actor.name);
-            } else if (actor.type === "actor") {
+              } else if (actor.type === "actor") {
                 addActor(actor.name);
-            } else if (actor.type === "output") {
+              } else if (actor.type === "output") {
                 addOutput(actor.name);
-            }
-        });
+              }
+            });
 
-        // Selection box
+            // Selection box
 
-        var selection = $("<div>").addClass("selection-box");
-        var select_top, select_right, select_left, select_bottom;
-        var dragging = false;
+            var selection = $("<div>").addClass("selection-box");
+            var select_top, select_right, select_left, select_bottom;
+            var dragging = false;
 
-        var selected = [];
+            var selected = [];
 
-        $("#canvas").mousedown(function(e) {
-            selected.forEach(function(item) {
+            $("#canvas").mousedown(function (e) {
+              selected.forEach(function (item) {
                 item.removeClass("selected")
                 jsPlumb.removeFromPosse(item, "selection");
-            });
+              });
 
-            selected = [];
+              selected = [];
 
-            var click_x = e.pageX;
-            var click_y = e.pageY;
+              var click_x = e.pageX;
+              var click_y = e.pageY;
 
 
-            selection.css({
+              selection.css({
                 "top": click_y,
-                "left" : click_x,
+                "left": click_x,
                 "width": 0,
-                "height" : 0
-            });
+                "height": 0
+              });
 
-            selection.appendTo($(this));
+              selection.appendTo($(this));
 
-            $(this).on("mousemove", function(e) {
+              $(this).on("mousemove", function (e) {
                 dragging = true;
 
                 var move_x = e.pageX,
                         move_y = e.pageY,
-                        width  = Math.abs(move_x - click_x),
+                        width = Math.abs(move_x - click_x),
                         height = Math.abs(move_y - click_y),
                         new_x, new_y;
 
@@ -131,57 +130,58 @@
                 new_y = (move_y < click_y) ? (click_y - height) : click_y;
 
                 selection.css({
-                    "width": width,
-                    "height": height,
-                    "top": new_y,
-                    "left": new_x
+                  "width": width,
+                  "height": height,
+                  "top": new_y,
+                  "left": new_x
                 });
 
                 select_top = new_y;
                 select_right = new_x + width;
                 select_bottom = new_y + height;
                 select_left = new_x;
-            });
+              });
 
-            $(this).mouseup(function(e) {
+              $(this).mouseup(function (e) {
                 if (dragging) {
-                    dragging = false;
+                  dragging = false;
 
-                    $(".actor").each(function() {
-                        var top = this.getBoundingClientRect().top;
-                        var bottom = this.getBoundingClientRect().bottom;
-                        var left = this.getBoundingClientRect().left;
-                        var right = this.getBoundingClientRect().right;
+                  $(".actor").each(function () {
+                    var top = this.getBoundingClientRect().top;
+                    var bottom = this.getBoundingClientRect().bottom;
+                    var left = this.getBoundingClientRect().left;
+                    var right = this.getBoundingClientRect().right;
 
-                        if (select_top < top && select_left < left && select_right > right && select_bottom > bottom) {
-                            selected.push($(this));
-                            $(this).addClass("selected");
-                            jsPlumb.addToPosse($(this), "selection");
-                        }
-                    });
+                    if (select_top < top && select_left < left && select_right > right && select_bottom > bottom) {
+                      selected.push($(this));
+                      $(this).addClass("selected");
+                      jsPlumb.addToPosse($(this), "selection");
+                    }
+                  });
                 }
 
                 $(this).off("mousemove");
                 selection.remove();
+              });
+            }).mouseleave(function (e) {
+              $(this).off("mousemove");
+              selection.remove();
             });
-        }).mouseleave(function(e) {
-            $(this).off("mousemove");
-            selection.remove();
-        });
 
-    });
-</script>
+          });
+  </script>
 
-<div id="toolbox">
+  <div id="toolbox">
     <span>Actor: </span>
     <select id="actorSelect">
 
     </select>
 
     <button id="addActorButton">Add Actor</button>
-</div>
+  </div>
 
-<div id="canvas" style="height: 100%; width: 100%">
+  <div id="canvas" style="height: 100%;
+    width: 100%">
 
-</div>
+  </div>
 }

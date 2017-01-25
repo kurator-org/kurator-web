@@ -1,32 +1,31 @@
 @import models.forms.Login
 @(form: Form[Login])
 
-@main(title = "The Kurator 'helloworld' application") {
+@main(title = "Kurator Web - Login") {
+  <h1>Sign in</h1>
 
+  @if(flash.containsKey("message")) {
+    <div class="alert alert-info" role="alert">@flash.get("message")</div>
+  }
 
+  @if(form.hasGlobalErrors) {
+    <div class="alert alert-danger" role="alert">@form.globalError.message</div>
+  }
 
-    <h1>Sign in</h1>
+  <div style="float: left">
 
-    @if(flash.containsKey("message")) {
-        <div class="alert alert-info" role="alert">@flash.get("message")</div>
-    }
-
-    @if(form.hasGlobalErrors) {
-        <div class="alert alert-danger" role="alert">@form.globalError.message</div>
-    }
-
-    <div style="float: left">
-        @helper.form(routes.Application.authenticate) {
-            <div class="form-group">
-                <input type="text" class="form-control" id="username" name="username" placeholder="Username">
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-            </div>
-            <!--<a href="@routes.Application.resetPass()">Reset password</a>-->
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Login</button>
-            </div>
-        }
+  @helper.form(routes.Users.authenticate) {
+    <div class="form-group">
+      <input type="text" class="form-control" id="username" name="username" placeholder="Username">
     </div>
+    <div class="form-group">
+      <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+    </div>
+
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">Login</button>
+    </div>
+  }
+
+  </div>
 }

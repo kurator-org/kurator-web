@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
 import config.ConfigManager;
 import config.ParameterConfig;
+import dao.UserDao;
 import dao.WorkflowDao;
-import forms.input.BasicField;
-import forms.input.FileInput;
-import forms.input.SelectField;
-import forms.input.TextField;
+import ui.input.BasicField;
+import ui.input.FileInput;
+import ui.input.SelectField;
+import ui.input.TextField;
 import models.PackageData;
 import models.db.user.User;
 import models.db.workflow.Workflow;
@@ -40,6 +41,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import views.html.*;
+import views.html.admin.*;
 
 /**
  * This controller deals with actions related to running a workflow, uploading files, checking the status of a run, and
@@ -56,6 +58,7 @@ public class Workflows extends Controller {
     private static final String WORKSPACE_DIR = new File("workspace").getAbsolutePath();
 
     private final WorkflowDao workflowDao = new WorkflowDao();
+    private final UserDao userDao = new UserDao();
 
     // For handling classpath url scheme in workflows.conf files
     static {
@@ -148,6 +151,7 @@ public class Workflows extends Controller {
             config.put("jython_home", JYTHON_HOME);
             config.put("jython_path", JYTHON_PATH);
 
+            // TODO: save user object in global state somehow
             // Get the current logged in user
             User user = userDao.findUserByUsername(request().username());
 
@@ -290,7 +294,7 @@ public class Workflows extends Controller {
      *
      * @return
      */
-    public List<WorkflowDefinition> loadWorkflowFormDefinitions() {
+    public static List<WorkflowDefinition> loadWorkflowFormDefinitions() {
         List<WorkflowDefinition> workflowDefs = new ArrayList<>();
 
         Collection<config.WorkflowConfig> workflows = ConfigManager.getInstance().getWorkflowConfigs();
@@ -406,11 +410,11 @@ public class Workflows extends Controller {
                 configManager.unpack((File) filePart.getFile());
             } catch (Exception e) {
                 flash("error", "Could not verify package.");
-                return redirect(routes.Workflows.uploadWorkflow());
+                return redirect(routes.Workflows.deploy());
             }
 
             flash("message", "Packages zip file was successfully deployed");
-            return redirect(routes.Workflows.uploadWorkflow());
+            return redirect(routes.Workflows.deploy());
         } else {
             flash("error", "Missing file");
             return badRequest();

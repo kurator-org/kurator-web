@@ -1,51 +1,48 @@
 @import models.db.user.User
-@(users : List[User])
+@(users: List[User])
 
-@helper.javascriptRouter("jsRoutes")(
+  @helper.javascriptRouter("jsRoutes")(
     routes.javascript.Workflows.status
-)
+  )
 
-@main(title = "The Kurator 'helloworld' application") {
-
-
-
+  @main(title = "Kurator Web - View Workflow Runs") {
     <h1>User Workflow Runs</h1>
 
     <script type="text/javascript" src="@routes.Assets.at("javascripts/workflow.js")"></script>
     <script>
             $(function () {
-                if ($("#user_workflows").val() != null) {
-                    var uid = $("#user_workflows option:selected").val();
+              if ($("#user_workflows").val() != null) {
+                var uid = $("#user_workflows option:selected").val();
 
-                    $.ajax(jsRoutes.controllers.Workflows.status(uid))
-                            .done(updateWorkflowRuns);
-                }
+                $.ajax(jsRoutes.controllers.Workflows.status(uid))
+                        .done(updateWorkflowRuns);
+              }
 
-                $("#user_workflows").change(function (event) {
+              $("#user_workflows").change(function (event) {
 
-                    $("#workflow-runs").empty();
+                $("#workflow-runs").empty();
 
-                    var uid = $("#user_workflows option:selected").val();
-                    $.ajax(jsRoutes.controllers.Workflows.status(uid))
-                            .done(updateWorkflowRuns);
-                });
+                var uid = $("#user_workflows option:selected").val();
+                $.ajax(jsRoutes.controllers.Workflows.status(uid))
+                        .done(updateWorkflowRuns);
+              });
             })
     </script>
 
     @if(users.size > 0) {
-        Select user:
-        <select id="user_workflows">
+      Select user:
+      <select id="user_workflows">
 
-        @users.map { user =>
-            <option value="@user.id">@user.username</option>
-        }
-        </select>
-        <br />
-        <br />
-        <div id="workflow-runs" style="float: left">
+      @users.map { user =>
+        <option value="@user.getId()">@user.getUsername()</option>
+      }
+      </select>
+      <br />
+      <br />
+      <div id="workflow-runs" style="float: left">
 
-        </div>
+      </div>
     } else {
-        <p><i>No users registered.</i></p>
+      <p><i>No users registered.</i></p>
     }
-}
+  }

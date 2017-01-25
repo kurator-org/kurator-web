@@ -1,6 +1,6 @@
-package forms.input;
+package ui.input;
 
-import forms.handlers.SingleValueHandler;
+import ui.handlers.SingleValueHandler;
 
 import java.util.Map;
 

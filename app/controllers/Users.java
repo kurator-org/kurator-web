@@ -66,7 +66,7 @@ public class Users extends Controller {
 
         flash("message", "User successfully logged out.");
         return redirect(
-                routes.Application.login()
+                routes.Users.login()
         );
     }
 
@@ -141,7 +141,7 @@ public class Users extends Controller {
         }
 
         return redirect(
-                routes.Application.login()
+                routes.Users.login()
         );
     }
 
@@ -172,7 +172,7 @@ public class Users extends Controller {
         flash("activate_success", "Updated user(s) active status!");
 
         return redirect(
-                routes.Application.userManagement()
+                routes.Users.manage()
         );
     }
 
@@ -191,7 +191,7 @@ public class Users extends Controller {
 
         flash("change_success", "Password successfully changed!");
         return redirect(
-                routes.Application.changePass()
+                routes.Users.change()
         );
     }
 
@@ -209,7 +209,7 @@ public class Users extends Controller {
         flash("activate_success", "Created \"" + workshopName + "\" and assigned " + numUsers + " guest accounts");
 
         return redirect(
-                routes.Application.userManagement()
+                routes.Users.manage()
         );
     }
 
@@ -252,11 +252,11 @@ public class Users extends Controller {
         flash("message", "Password reset email sent to: " + emailAddr);
 
         return redirect(
-                routes.Application.resetPass()
+                routes.Users.reset()
         );
     }
 
-    public Result viewUserRuns() {
+    public Result userRuns() {
         List<User> users = userDao.findAllUsers();
         return ok(
                 viewruns.render(users)

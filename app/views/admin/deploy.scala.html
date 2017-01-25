@@ -1,29 +1,29 @@
-@(packages : List[PackageData])
+@(packages: List[PackageData])
 
-    @main(title = "The Kurator 'helloworld' application") {
-    @if(flash.containsKey("message")) {
-        <div class="alert alert-info" role="alert">@flash.get("message")</div>
+@main(title = "Kurator Web - Deploy Packages") {
+  @if(flash.containsKey("message")) {
+    <div class="alert alert-info" role="alert">@flash.get("message")</div>
+  }
+
+  @if(flash.containsKey("error")) {
+    <div class="alert alert-danger" role="alert">@flash.get("error")</div>
+  }
+
+  <h2>Deploy workflows</h2>
+  <form id="deployPackage" action="@routes.Workflows.deploy" method="post" enctype="multipart/form-data">
+    <input type="file" name="filename">
+    <input type="submit" value="Deploy">
+  </form>
+
+  <h2>Packages</h2>
+  <table class="workflow-list">
+    <tr>
+      <th>Name</th><th>Last modified</th><th></th>
+    </tr>
+    @packages.map { pkg =>
+      <tr>
+        <td>@pkg.name</td><td>@pkg.lastModified</td><td><a href="@routes.Workflows.deletePackage(pkg.name)" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></td>
+      </tr>
     }
-
-    @if(flash.containsKey("error")) {
-        <div class="alert alert-danger" role="alert">@flash.get("error")</div>
-    }
-
-        <h2>Deploy workflows</h2>
-        <form id="deployPackage" action="@routes.Workflows.deploy" method="post" enctype="multipart/form-data">
-            <input type="file" name="filename">
-            <input type="submit" value="Deploy">
-        </form>
-
-    <h2>Packages</h2>
-        <table class="workflow-list">
-            <tr>
-                <th>Name</th><th>Last modified</th><th></th>
-            </tr>
-        @packages.map { pkg =>
-          <tr>
-              <td>@pkg.name</td><td>@pkg.lastModified</td><td><a href="@routes.Workflows.deletePackage(pkg.name)" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></td>
-          </tr>
-        }
-        </table>
-    }
+  </table>
+}
