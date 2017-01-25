@@ -15,6 +15,7 @@ import models.db.user.UserUpload;
 import models.db.workflow.Workflow;
 import models.db.workflow.WorkflowResult;
 import models.db.workflow.WorkflowRun;
+import models.json.RunResult;
 import org.apache.commons.io.FileUtils;
 import org.datakurator.postprocess.FFDQPostProcessor;
 import org.kurator.akka.WorkflowConfig;
@@ -279,38 +280,21 @@ public class Workflows extends Controller {
      * @return
      */
     public Result status(String uid) {
+        List<RunResult> results = new ArrayList<>();
         List<WorkflowRun> workflowRuns = workflowDao.findUserWorkflowRuns(uid);
-        ArrayNode response = Json.newArray();
 
         for (WorkflowRun run : workflowRuns) {
-            // TODO: implement the following response json as a Java class serialized via Jackson
+            //boolean hasReport = run.getResult().getDqReport() != null;
+            boolean hasOutput = run.getResult().getOutputText() != null;
+            boolean hasErrors = run.getResult().getErrorText() != null;
 
-            ObjectNode runJson = Json.newObject();
+            RunResult result = new RunResult(run.getId(), run.getWorkflow().getTitle(), run.getStartTime(),
+                    run.getEndTime(), hasOutput, hasErrors, run.getStatus());
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
-            runJson.put("id", run.getId());
-            runJson.put("workflow", run.getWorkflow().getTitle());
-            runJson.put("startTime", dateFormat.format(run.getStartTime()));
-            runJson.put("endTime", run.getEndTime() != null ? dateFormat.format(run.getEndTime()) : null);
-            runJson.put("status", run.getStatus().name());
-            runJson.put("hasResult", run.getResult() != null);
-
-            if (run.getResult() != null) {
-                runJson.put("hasReport", !run.getResult().getDqReport().equals(""));
-                runJson.put("hasOutput", !run.getResult().getOutputText().equals(""));
-                runJson.put("hasErrors", !run.getResult().getErrorText().equals(""));
-            } else {
-                runJson.put("hasReport", false);
-                runJson.put("hasOutput", false);
-                runJson.put("hasErrors", false);
-            }
-
-            response.add(runJson);
+            results.add(result);
         }
 
-        return ok(response);
-
+        return ok(Json.toJson(results));
     }
 
     /**
