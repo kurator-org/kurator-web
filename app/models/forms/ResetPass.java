@@ -13,7 +13,7 @@ import models.db.user.User;
         public String email;
 
         public String validate() {
-            User user = userDao.findByUsername(username);
+            User user = userDao.findUserByUsername(username);
 
             if (user == null || !user.getEmail().equals(email) || !user.isActive()) {
                 return "No active combination of username and email found.";

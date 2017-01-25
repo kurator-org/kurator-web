@@ -134,7 +134,7 @@ public class Application extends Controller {
 
         flash("message", "New user registration successful! The admin will send an email notification when your account has been activated.");
 
-        List<User> adminUsers = userDao.findByRole(Role.ADMIN);
+        List<User> adminUsers = userDao.findUsersByRole(Role.ADMIN);
 
         try {
             // TODO: make this work and perhaps factor it out into a service for mailer tasks
@@ -172,14 +172,14 @@ public class Application extends Controller {
     }
 
     public Result viewUserRuns() {
-        List<User> users = userDao.findAll();
+        List<User> users = userDao.findAllUsers();
         return ok(
                 viewruns.render(users)
         );
     }
 
     public Result userManagement() {
-        List<User> users = userDao.findAll();
+        List<User> users = userDao.findAllUsers();
         return ok(
                 usermgmt.render(users)
         );
@@ -224,7 +224,6 @@ public class Application extends Controller {
             return badRequest(changepw.render(changePassForm));
         }
 
-        User user = userDao.findByUsername(request().username());
         userDao.updatePassword(request().username(), changePassForm.get().password);
 
         flash("change_success", "Password successfully changed!");

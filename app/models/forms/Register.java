@@ -1,7 +1,6 @@
 package models.forms;
 
 import dao.UserDao;
-import models.db.user.User;
 
 /**
      * The register form object
@@ -22,11 +21,11 @@ import models.db.user.User;
                 return "Passwords do not match";
             }
 
-            if (userDao.findByUsername(username) != null) {
+            if (userDao.findUserByUsername(username) != null) {
                 return "A user with that name already exists!";
             }
 
-            if (userDao.findByEmail(email) != null) {
+            if (userDao.findUserByEmail(email) != null) {
                 return "A user with that email already exists!";
             }
             return null;

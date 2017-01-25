@@ -17,7 +17,6 @@ public class FormDefinition implements Comparable<FormDefinition> {
     public List<BasicField> fields = new ArrayList<>();
     public String title;
     public String name;
-    public String outputFormat;
     public String documentation;  // A link to documentation for this workflow
     public String yamlFile;
     public String instructions;

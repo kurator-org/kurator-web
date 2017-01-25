@@ -15,7 +15,7 @@ public class UserService {
     private static final int GEN_PASS_LEN = 16; // Generated password length
 
     public User authenticate(String username, String password) {
-        User user = userDao.findByUsername(username);
+        User user = userDao.findUserByUsername(username);
 
         if (user != null && BCrypt.checkpw(password, user.getPassword())) {
             return user;

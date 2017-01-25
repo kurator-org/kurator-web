@@ -10,6 +10,7 @@ import dao.WorkflowDao;
 import forms.FormDefinition;
 import forms.input.*;
 import models.*;
+import models.db.user.User;
 import models.db.user.UserUpload;
 import models.db.workflow.Workflow;
 import models.db.workflow.WorkflowResult;
@@ -51,6 +52,14 @@ public class Workflows extends Controller {
     private static final WorkflowDao workflowDao = new WorkflowDao();
     private static final UserDao userDao = new UserDao();
 
+    // Get jython home and path directories relative to the current directory
+    private static final String JYTHON_HOME = new File("jython").getAbsolutePath();
+    private static final String JYTHON_PATH = new File("packages").getAbsolutePath();
+
+    // Get the workspace basedir relative to the current directory
+    private static final String WORKSPACE_DIR = new File("workspace").getAbsolutePath();
+
+    // For handling classpath url scheme in workflows.conf files
     static {
         try {
             URL.setURLStreamHandlerFactory(new ConfigurableStreamHandlerFactory("classpath",
@@ -113,7 +122,11 @@ public class Workflows extends Controller {
         Workflow workflow = workflowDao.updateWorkflow(form.name, form.title, form.yamlFile);
 
         // Run the workflow
-        ObjectNode response = runYamlWorkflow(workflow, settings);
+        long runId = runYamlWorkflow(workflow, settings);
+
+        // The response json contains the workflow run id for later reference
+        ObjectNode response = Json.newObject();
+        response.put("runId", runId);
 
         return redirect(
                 routes.Application.index()
@@ -127,14 +140,11 @@ public class Workflows extends Controller {
      * @param settings A map of the settings provided as input to the runner
      * @return json containing the id of this run
      */
-    private static ObjectNode runYamlWorkflow(Workflow workflow, Map<String, Object> settings) {
-        InputStream yamlStream = null;
-        try {
-            yamlStream = loadYamlStream(workflow.yamlFile);
-        } catch (Exception e) {
-            throw new RuntimeException("Could not load workflow from yaml file.", e);
-        }
+    private long runYamlWorkflow(Workflow workflow, Map<String, Object> settings) {
+        // Load workflow yaml
+        InputStream yamlStream = loadYamlStream(workflow.getYamlFile());
 
+        // Initialize streams for output and error logging
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errStream = new ByteArrayOutputStream();
 
@@ -142,52 +152,29 @@ public class Workflows extends Controller {
         AsyncWorkflowRunnable runnable = new AsyncWorkflowRunnable();
 
         try {
-
-            // Get jython home and path directories
-            String jythonPath = new File("packages").getAbsolutePath();
-            String jythonHome = new File("jython").getAbsolutePath();
-
+            // Set up workflow runner configuration
             Map<String, Object> config = new HashMap<String, Object>();
-            config.put("jython_home", jythonHome);
-            config.put("jython_path", jythonPath);
+            config.put("jython_home", JYTHON_HOME);
+            config.put("jython_path", JYTHON_PATH);
 
-            // TODO: return promise instead of using a callable?
+            // Get the current logged in user
+            User user = userDao.findUserByUsername(request().username());
 
             // Initialize and run the yaml workflow
             WorkflowRunner runner = new YamlStreamWorkflowRunner()
                     .yamlStream(yamlStream).configure(config);
 
-            runnable.init(workflow, runner, errStream, outStream);
+            runnable.init(workflow, user, runner, errStream, outStream);
 
             runner.apply(settings)
                     .outputStream(new PrintStream(outStream))
                     .errorStream(new PrintStream(errStream))
                     .runAsync(runnable);
         } catch (Exception e) {
-            e.printStackTrace();
-
-            // Log exceptions as part of the workflow error log
-            StringWriter writer = new StringWriter();
-            e.printStackTrace(new PrintWriter(writer));
-
-            String errorText = writer.toString();
-            String outputText = new String(outStream.toByteArray());
-
-            runnable.error(errorText, outputText);
+            throw new RuntimeException("Error running workflow: " + workflow.getTitle(), e);
         }
 
-        // The response json contains the workflow run id for later reference
-        ObjectNode response = Json.newObject();
-
-        WorkflowRun run = runnable.getWorkflowRun();
-        response.put("runId", run.getId());
-
-        return response;
-    }
-
-    private static InputStream loadYamlStream(String yamlFile) throws IOException {
-        File file = new File(yamlFile);
-        return new FileInputStream(file);
+        return runnable.getRunId();
     }
 
     /**
@@ -229,7 +216,7 @@ public class Workflows extends Controller {
     @Security.Authenticated(Secured.class)
     public Result errorLog(long runId) {
         response().setHeader("Content-Disposition", "attachment; filename=error_log.txt");
-        response().setContentType("text/plain");
+        response().setHeader("Content-Type", "text/plain");
 
         WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
 
@@ -249,7 +236,7 @@ public class Workflows extends Controller {
     @Security.Authenticated(Secured.class)
     public Result outputLog(long runId) {
         response().setHeader("Content-Disposition", "attachment; filename=output_log.txt");
-        response().setContentType("text/plain");
+        response().setHeader("Content-Type", "text/plain");
 
         WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
 
@@ -282,7 +269,6 @@ public class Workflows extends Controller {
     }
 
     public Result removeRun(long workflowRunId) {
-
         workflowDao.removeWorkflowRun(workflowRunId);
         return ok();
     }
@@ -304,7 +290,7 @@ public class Workflows extends Controller {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
             runJson.put("id", run.getId());
-            runJson.put("workflow", run.getWorkflow().title);
+            runJson.put("workflow", run.getWorkflow().getTitle());
             runJson.put("startTime", dateFormat.format(run.getStartTime()));
             runJson.put("endTime", run.getEndTime() != null ? dateFormat.format(run.getEndTime()) : null);
             runJson.put("status", run.getStatus().name());
@@ -353,25 +339,7 @@ public class Workflows extends Controller {
      * @return
      */
     public static List<FormDefinition> loadWorkflowFormDefinitions() {
-//        List<FormDefinition> formDefs = new ArrayList<>();
-//
-//        URL path = Play.application().classloader().getResource(WORKFLOWS_PATH);
-//        try {
-//            File dir = new File(path.toURI());
-//
-//            File[] workflows = dir.listFiles(new FilenameFilter() {
-//                public boolean accept(File dir, String name) {
-//                    return name.toLowerCase().endsWith(".yaml");
-//                }
-//            });
-//
-//            for (File file : workflows) {
-//                formDefs.add(loadFormDefinition(file.getAbsolutePath()));
-//            }
-//        } catch (URISyntaxException e) { /* Should not occur */ }
-
         List<FormDefinition> formDefs = new ArrayList<>();
-
 
         Collection<config.WorkflowConfig> workflows = ConfigManager.getInstance().getWorkflowConfigs();
 
@@ -429,6 +397,7 @@ public class Workflows extends Controller {
      */
     private static UserUpload uploadFile(Http.MultipartFormData.FilePart filePart) {
         File src = (File) filePart.getFile();
+
         File file = null;
         try {
             file = File.createTempFile(filePart.getFilename() + "-", ".csv");
@@ -437,13 +406,18 @@ public class Workflows extends Controller {
             throw new RuntimeException("Could not create temp file for upload", e);
         }
 
-        UserUpload uploadFile = new UserUpload();
-        uploadFile.setAbsolutePath(file.getAbsolutePath());
-        uploadFile.setFileName(filePart.getFilename());
-        uploadFile.setUser(userDao.findByUsername(request().username()));
-        uploadFile.save();
+        UserUpload uploadFile = userDao.createUserUpload(request().username(), filePart.getFilename(),
+                file.getAbsolutePath());
 
         return uploadFile;
+    }
+
+    private static InputStream loadYamlStream(String yamlFile) {
+        try {
+            return new FileInputStream(yamlFile);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not load workflow from yaml file.", e);
+        }
     }
 
     /**
@@ -454,7 +428,7 @@ public class Workflows extends Controller {
      */
     private static File getCurrentUpload() throws FileNotFoundException {
         String uploadFileId = session().get("uploadFileId");
-        UserUpload uploadFile = UserUpload.find.byId(Long.parseLong(uploadFileId));
+        UserUpload uploadFile = userDao.findUserUploadById(Long.parseLong(uploadFileId));
         File file = new File(uploadFile.getAbsolutePath());
 
         if (!file.exists()) {
@@ -475,9 +449,6 @@ public class Workflows extends Controller {
         try {
             Map<String, String> settings = new HashMap<String, String>();
 
-            // Get the workspace basedir from application.conf
-            //String workspace = ConfigFactory.defaultApplication().getString("jython.workspace");
-            String workspace = new File("workspace").getAbsolutePath();
 
             // Load workflow yaml file to check parameters
             GenericApplicationContext springContext = new GenericApplicationContext();
@@ -488,7 +459,7 @@ public class Workflows extends Controller {
             WorkflowConfig workflowConfig = springContext.getBean(WorkflowConfig.class);
 
             // Create a workspace
-            Path path = Paths.get(workspace, "workspace_" + UUID.randomUUID());
+            Path path = Paths.get(WORKSPACE_DIR, "workspace_" + UUID.randomUUID());
             path.toFile().mkdir();
 
             // If the "workspace" parameter is present in the workflow set it to the path defined in the config

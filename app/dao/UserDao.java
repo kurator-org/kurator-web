@@ -34,20 +34,39 @@ public class UserDao {
         return user;
     }
 
-    public List<User> findByRole(Role role) {
+    @Transactional
+    public UserUpload createUserUpload(String username, String filename, String absolutePath) {
+        User user = findUserByUsername(username);
+
+        UserUpload uploadFile = new UserUpload();
+
+        uploadFile.setUser(user);
+        uploadFile.setFileName(filename);
+        uploadFile.setAbsolutePath(absolutePath);
+
+        uploadFile.save();
+
+        return uploadFile;
+    }
+
+    public List<User> findUsersByRole(Role role) {
         return User.find.where().eq("role", role).findList();
     }
 
-    public User findByUsername(String username) {
+    public User findUserByUsername(String username) {
         return User.find.where().eq("username", username).findUnique();
     }
 
-    public User findByEmail(String email) {
+    public User findUserByEmail(String email) {
         return User.find.where().eq("email", email).findUnique();
     }
 
-    public List<User> findAll() {
+    public List<User> findAllUsers() {
         return User.find.all();
+    }
+
+    public UserUpload findUserUploadById(long id) {
+        return UserUpload.find.byId(id);
     }
 
     public List<UserUpload> findUserUploads(String username) {
@@ -56,21 +75,21 @@ public class UserDao {
 
     @Transactional
     public void updatePassword(String username, String password) {
-        User user = findByUsername(username);
+        User user = findUserByUsername(username);
         user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         user.save();
     }
 
     @Transactional
     public void updateActiveStatus(String username, boolean active) {
-        User user = findByUsername(username);
+        User user = findUserByUsername(username);
         user.setActive(active);
         user.save();
     }
 
     @Transactional
     public void updateLastActive(String username) {
-        User user = findByUsername(username);
+        User user = findUserByUsername(username);
         user.setLastActive(new Date());
         user.save();
     }

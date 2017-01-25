@@ -4,6 +4,7 @@ import com.avaje.ebean.annotation.Transactional;
 import models.db.user.User;
 import models.db.workflow.*;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
