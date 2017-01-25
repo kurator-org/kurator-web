@@ -16,18 +16,16 @@ public class WorkflowResult extends Model {
     @Id
     private Long id;
 
-    // TODO: add hasErrors boolean and check after running to display error to the user
+    @Lob
+    private String errorText;
 
     @Lob
-    private String errorText = "";
-
-    @Lob
-    private String outputText = "";
+    private String outputText;
 
     @OneToMany(cascade=CascadeType.ALL)
     private List<ResultFile> resultFiles = new ArrayList<>();
 
-    private String dqReport = "";
+    private String dqReport;
 
     private String archivePath;
 

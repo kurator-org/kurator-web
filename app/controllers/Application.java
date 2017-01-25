@@ -1,7 +1,6 @@
 package controllers;
 
 import dao.UserDao;
-import forms.FormDefinition;
 import models.db.user.Role;
 import models.db.user.User;
 import models.db.user.UserUpload;
@@ -9,6 +8,7 @@ import models.forms.ChangePass;
 import models.forms.Login;
 import models.forms.Register;
 import models.forms.ResetPass;
+import models.json.WorkflowDefinition;
 import play.libs.mailer.Email;
 import play.libs.mailer.MailerClient;
 import play.mvc.*;
@@ -48,7 +48,8 @@ public class Application extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public Result index() {
-        List<FormDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
+        // TODO: use ajax on a Workflows controller route to obtain this list instead
+        List<WorkflowDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
         Collections.sort(workflows);
 
         String uid = session().get("uid");

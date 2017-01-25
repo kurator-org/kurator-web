@@ -7,7 +7,6 @@ import config.ConfigManager;
 import config.ParameterConfig;
 import dao.UserDao;
 import dao.WorkflowDao;
-import forms.FormDefinition;
 import forms.input.*;
 import models.*;
 import models.db.user.User;
@@ -16,6 +15,7 @@ import models.db.workflow.Workflow;
 import models.db.workflow.WorkflowResult;
 import models.db.workflow.WorkflowRun;
 import models.json.RunResult;
+import models.json.WorkflowDefinition;
 import org.apache.commons.io.FileUtils;
 import org.datakurator.postprocess.FFDQPostProcessor;
 import org.kurator.akka.WorkflowConfig;
@@ -30,7 +30,6 @@ import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import util.AsyncWorkflowRunnable;
@@ -90,7 +89,7 @@ public class Workflows extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public Result runWorkflow(String name) {
-        FormDefinition form = formDefinitionForWorkflow(name);
+        WorkflowDefinition workflowDef = formDefinitionForWorkflow(name);
 
         // Process file upload first if present in form data
         Http.MultipartFormData body = request().body().asMultipartFormData();
@@ -99,28 +98,29 @@ public class Workflows extends Controller {
             Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
             UserUpload userUpload = uploadFile(filePart);
 
-            BasicField fileInputField = form.getField(filePart.getKey());
+            BasicField fileInputField = workflowDef.getField(filePart.getKey());
             fileInputField.setValue(userUpload);
         }
 
         //  Set the form definition field values from the request data
         Map<String, String[]> data = body.asFormUrlEncoded();
         for (String key : data.keySet()) {
-            BasicField field = form.getField(key);
+            BasicField field = workflowDef.getField(key);
             field.setValue(data.get(key));
         }
 
         // Transfer form field data to workflow settings map
         Map<String, Object> settings = new HashMap<>();
 
-        for (BasicField field : form.fields) {
+        for (BasicField field : workflowDef.getFields()) {
             settings.put(field.name, field.value());
         }
 
-        settings.putAll(settingsFromConfig( form));
+        settings.putAll(settingsFromConfig(workflowDef));
 
         // Update the workflow model object and persist to the db
-        Workflow workflow = workflowDao.updateWorkflow(form.name, form.title, form.yamlFile);
+        Workflow workflow = workflowDao.updateWorkflow(workflowDef.getName(), workflowDef.getTitle(),
+                workflowDef.getYamlFile());
 
         // Run the workflow
         long runId = runYamlWorkflow(workflow, settings);
@@ -185,11 +185,11 @@ public class Workflows extends Controller {
      */
     @Security.Authenticated(Secured.class)
     public Result workflow(String name) {
-        FormDefinition form = formDefinitionForWorkflow(name);
+        WorkflowDefinition workflowDef = formDefinitionForWorkflow(name);
 
-        if (form != null) {
+        if (workflowDef != null) {
             return ok(
-                    workflow.render(form)
+                    workflow.render(workflowDef)
             );
         } else {
             return notFound("No workflow found for name " + name);
@@ -298,22 +298,21 @@ public class Workflows extends Controller {
     }
 
     /**
-     * Private helper method obtains an instance of FormDefinition from the workflow name.
+     * Private helper method obtains an instance of WorkflowDefinition from the workflow name.
      *
      * @param name workflow name
      * @return the form definition object
      */
-    private static FormDefinition formDefinitionForWorkflow(String name) {
-        List<FormDefinition> formDefs = loadWorkflowFormDefinitions();
-        FormDefinition form = null;
+    private static WorkflowDefinition formDefinitionForWorkflow(String name) {
+        List<WorkflowDefinition> workflowDefs = loadWorkflowFormDefinitions();
 
-        for (FormDefinition formDef : formDefs) {
-            if (formDef.name.equals(name)) {
-                form = formDef;
+        for (WorkflowDefinition workflowDef : workflowDefs) {
+            if (workflowDef.getName().equals(name)) {
+                return workflowDef;
             }
         }
 
-        return form;
+        return null; // no such workflow by name
     }
 
     /**
@@ -322,54 +321,48 @@ public class Workflows extends Controller {
      *
      * @return
      */
-    public static List<FormDefinition> loadWorkflowFormDefinitions() {
-        List<FormDefinition> formDefs = new ArrayList<>();
+    public static List<WorkflowDefinition> loadWorkflowFormDefinitions() {
+        List<WorkflowDefinition> workflowDefs = new ArrayList<>();
 
         Collection<config.WorkflowConfig> workflows = ConfigManager.getInstance().getWorkflowConfigs();
 
         for (config.WorkflowConfig workflow : workflows) {
-            FormDefinition formDef = new FormDefinition();
-            formDef.name = workflow.getName();
-            formDef.title = workflow.getTitle();
-            formDef.yamlFile = workflow.getYaml();
-            formDef.documentation = workflow.getDocumentation();
-            formDef.instructions = workflow.getInstructions();
-            formDef.summary = workflow.getSummary();
+            WorkflowDefinition workflowDef = new WorkflowDefinition(workflow);
 
             for (ParameterConfig parameter : workflow.getParameters()) {
                 if (parameter.isTyped()) {
                     String type = parameter.getType();
+                    BasicField field = null;
 
                     switch (type) {
                         case "text":
-                            TextField textField = new TextField();
-                            textField.name = parameter.getName();
-                            textField.label = parameter.getLabel();
-                            textField.tooltip = parameter.getDescription();
-                            formDef.addField(textField);
+                            field = new TextField();
                             break;
                         case "select":
                             SelectField selectField = new SelectField();
-                            selectField.name = parameter.getName();
-                            selectField.label = parameter.getLabel();
                             selectField.options = parameter.getOptions();
-                            selectField.tooltip = parameter.getDescription();
-                            formDef.addField(selectField);
+                            field = selectField;
                             break;
                         case "upload":
-                            FileInput fileInput = new FileInput();
-                            fileInput.name = parameter.getName();
-                            fileInput.label = parameter.getLabel();
-                            fileInput.tooltip = parameter.getDescription();
-                            formDef.addField(fileInput);
+                            field = new FileInput();
                             break;
+                        default:
+                            throw new RuntimeException("Unsupported parameter type in workflow config: "
+                                    + workflow.getName());
                     }
+
+                    // Set properties common to all fields
+                    field.name = parameter.getName();
+                    field.label = parameter.getLabel();
+                    field.tooltip = parameter.getDescription();
+
+                    workflowDef.addField(field);
                 }
             }
 
-            formDefs.add(formDef);
+            workflowDefs.add(workflowDef);
         }
-        return formDefs;
+        return workflowDefs;
     }
 
     /**
@@ -429,15 +422,14 @@ public class Workflows extends Controller {
      * @param form form definition of the workflow being run
      * @return a map of the settings
      */
-    private static Map<String, String> settingsFromConfig(FormDefinition form) {
+    private static Map<String, String> settingsFromConfig(WorkflowDefinition form) {
         try {
             Map<String, String> settings = new HashMap<String, String>();
-
 
             // Load workflow yaml file to check parameters
             GenericApplicationContext springContext = new GenericApplicationContext();
             YamlBeanDefinitionReader yamlBeanReader = new YamlBeanDefinitionReader(springContext);
-            yamlBeanReader.loadBeanDefinitions(loadYamlStream(form.yamlFile), "-");
+            yamlBeanReader.loadBeanDefinitions(loadYamlStream(form.getYamlFile()), "-");
             springContext.refresh();
 
             WorkflowConfig workflowConfig = springContext.getBean(WorkflowConfig.class);
@@ -499,6 +491,7 @@ public class Workflows extends Controller {
     }
 
     public Result report(long workflowRunId) throws IOException {
+        // TODO: this works for demonstration purposes but should be implemented properly
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
         FFDQPostProcessor postProcessor = new FFDQPostProcessor(new FileInputStream(run.getResult().getDqReport()),

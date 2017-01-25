@@ -11,6 +11,8 @@ import javax.persistence.Id;
  */
 @Entity
 public class ResultFile extends Model {
+    public static Finder<Long, ResultFile> find = new Finder<Long,ResultFile>(ResultFile.class);
+
     @Id
     private Long id;
 
