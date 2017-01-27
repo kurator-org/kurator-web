@@ -7,7 +7,7 @@
 
     <h2>Workflows</h2>
 
-    <script type="text/javascript" src="@routes.Assets.at("javascripts/workflow.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.at("../../public/javascripts/old/workflow.js")"></script>
     <script type="text/javascript">
             $.ajax({url: "@routes.Workflows.status(session.get("uid"))", success: updateWorkflowRuns});
 
