@@ -4,7 +4,7 @@ name := "kurator-web"
 
 version := "1.0.2-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
+lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean, SbtWeb)
 scalaVersion := "2.11.7"
 
 resolvers += Resolver.mavenLocal
@@ -24,7 +24,8 @@ libraryDependencies ++= Seq(
   "org.kurator" % "kurator-akka" % "1.0.0" exclude("com.typesafe.akka", "akka-actor_2.10") exclude("com.typesafe.akka", "akka-slf4j_2.10") ,
   "org.kurator" % "kurator-validation" % "1.0.0",
   "org.datakurator" % "kurator-ffdq" % "1.0.1-SNAPSHOT",
-  "mysql" % "mysql-connector-java" % "5.1.18"
+  "mysql" % "mysql-connector-java" % "5.1.18",
+  "org.webjars" % "requirejs" % "2.1.11-1"
 )
 
 libraryDependencies := libraryDependencies.value.map(_.excludeAll(
@@ -38,3 +39,5 @@ libraryDependencies := libraryDependencies.value.map(_.excludeAll(
 libraryDependencies += "org.springframework" % "spring-context" % "3.1.2.RELEASE"
 
 playEbeanModels in Compile := Seq("models.*")
+
+pipelineStages := Seq(rjs)

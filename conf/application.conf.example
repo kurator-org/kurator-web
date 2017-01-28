@@ -8,7 +8,7 @@ akka.version=2.4.4
 http.address=127.0.0.1
 
 # Application context
-application.context="/kurator-web/"
+play.http.context="/kurator-web/"
 
 # Secret key
 # ~~~~~
@@ -47,7 +47,7 @@ db.default.logStatements=true
 # Mailer config
 
 play.mailer {
-    host = "smtp.gmail.com"cd
+    host = "smtp.gmail.com"
     port = 465
     ssl = true
     user = "user"
@@ -56,7 +56,7 @@ play.mailer {
 
 # Session timeout in minutes
 sessionTimeout=30
-session.cookieName="KURATOR_WEB_SESSION"
+play.http.session.cookieName="KURATOR_WEB_SESSION"
 
 keystore.password = "password"
 

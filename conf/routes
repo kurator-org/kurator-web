@@ -5,9 +5,13 @@
 # Home page and misc actions for features currently in development (builder, ffdq)
 # ~~~~
 GET     /                                       controllers.Application.index()
+GET     /jsroutes                               controllers.Application.jsRoutes()
 
 GET     /builder                                controllers.Application.builder()
 GET     /summary/*id                            controllers.Application.summary(id : Long)
+
+GET     /test                                   controllers.Application.test()
+GET     /auth                                   controllers.Application.auth()
 
 # User authentication and user data routes, login, registration, password reset
 # ~~~~
