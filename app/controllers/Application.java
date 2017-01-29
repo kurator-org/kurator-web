@@ -1,7 +1,9 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import config.WorkflowConfig;
 import dao.UserDao;
 import dao.WorkflowDao;
 import models.db.user.UserUpload;
@@ -17,6 +19,7 @@ import javax.inject.Singleton;
 import play.routing.JavaScriptReverseRouter;
 import views.html.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,7 +32,18 @@ public class Application extends Controller {
     public Result jsRoutes() {
         return ok(
                 JavaScriptReverseRouter.create("jsRoutes",
-                        routes.javascript.Application.auth()
+                        routes.javascript.Application.auth(),
+                        routes.javascript.Application.data(),
+
+                        routes.javascript.Workflows.list(),
+                        routes.javascript.Workflows.runWorkflow(),
+                        routes.javascript.Workflows.status(),
+
+                        routes.javascript.Workflows.resultArchive(),
+                        routes.javascript.Workflows.outputLog(),
+                        routes.javascript.Workflows.errorLog(),
+
+                        routes.javascript.Users.authenticate()
                 )
         ).as("text/javascript");
     }
@@ -74,6 +88,32 @@ public class Application extends Controller {
     public Result test() {
         return ok(
                 test.render()
+        );
+    }
+
+    public Result data() {
+        WorkflowDefinition workflowDef1 = new WorkflowDefinition();
+        workflowDef1.setDocumentation("https://github.com/kurator-org/kurator-validation/wiki/CSV-File-Darwinizer");
+        workflowDef1.setTitle("CSV File Darwinizer");
+        workflowDef1.setName("darwinize_workflow");
+        workflowDef1.setInstructions("Create a file that substitutes standard Darwin Core field names for the fields in an input file.");
+
+        WorkflowDefinition workflowDef2 = new WorkflowDefinition();
+        workflowDef2.setDocumentation("https://github.com/kurator-org/kurator-validation/wiki/CSV-File-Darwinizer");
+        workflowDef2.setTitle("CSV File Darwinizer");
+        workflowDef2.setName("darwinize_workflow");
+        workflowDef2.setInstructions("Create a file that substitutes standard Darwin Core field names for the fields in an input file.");
+
+        List<WorkflowDefinition> workflows = new ArrayList<>();
+        workflows.add(workflowDef1);
+        workflows.add(workflowDef2);
+
+        ArrayNode arr = Json.newArray();
+        arr.add(Json.newObject().put("name", "David"));
+        arr.add(Json.newObject().put("name", "Bob"));
+
+        return ok(
+                Json.toJson(workflows)
         );
     }
 

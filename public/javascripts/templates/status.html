@@ -1,0 +1,33 @@
+<h2>Workflow Runs</h2>
+
+<table>
+  <tbody>
+  <tr>
+    <th>Workflow</th>
+    <th>Start Time</th>
+    <th>End Time</th>
+    <th>Result</th>
+    <th>Output Log</th>
+    <th>Error Log</th>
+    <th>Status</th>
+  </tr>
+
+  <% _.each(runs, function(run) { %>
+
+  <% var resUrl = jsRoutes.controllers.Workflows.resultArchive(run.id).url %>
+  <% var outUrl = jsRoutes.controllers.Workflows.outputLog(run.id).url %>
+  <% var errUrl = jsRoutes.controllers.Workflows.errorLog(run.id).url %>
+
+  <tr>
+    <td><%= run.workflow %></td>
+    <td><%= run.startDate %></td>
+    <td><%= run.endDate %></td>
+    <td><a href="<%= resUrl %>">Result</a></td>
+    <td><% if (run.hasOutput) { %><a href="<%= outUrl %>">Output Log</a><% } else { %>Unavailable<% } %></td>
+    <td><% if (run.hasErrors) { %><a href="<%= errUrl %>">Error Log</a><% } else { %>Unavailable<% } %></td>
+    <td><%= run.status %></td>
+  </tr>
+
+  <% }); %>
+
+</table>

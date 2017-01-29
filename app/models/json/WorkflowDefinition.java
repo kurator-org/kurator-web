@@ -20,6 +20,10 @@ public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
     private String instructions;
     private String summary;
 
+    public WorkflowDefinition() {
+        // Default constructor
+    }
+
     public WorkflowDefinition(WorkflowConfig workflow) {
         this.name = workflow.getName();
         this.title = workflow.getTitle();

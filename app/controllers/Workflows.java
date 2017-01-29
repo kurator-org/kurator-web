@@ -6,6 +6,8 @@ import config.ConfigManager;
 import config.ParameterConfig;
 import dao.UserDao;
 import dao.WorkflowDao;
+import models.db.user.UserUpload;
+import org.apache.commons.io.FileUtils;
 import ui.input.BasicField;
 import ui.input.FileInput;
 import ui.input.SelectField;
@@ -70,6 +72,15 @@ public class Workflows extends Controller {
         }
     }
 
+    public Result list() {
+        List<WorkflowDefinition> workflowDefs = loadWorkflowFormDefinitions();
+        Collections.sort(workflowDefs);
+
+        return ok(
+                Json.toJson(workflowDefs)
+        );
+    }
+
     @Security.Authenticated(Secured.class)
     public Result deletePackage(String name) {
         boolean success = ConfigManager.getInstance().deletePacakge(name);
@@ -94,6 +105,14 @@ public class Workflows extends Controller {
 
         // Process form submission as multipart form data
         Http.MultipartFormData body = request().body().asMultipartFormData();
+
+        for (Object obj : body.getFiles()) {
+            Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
+            UserUpload userUpload = uploadFile(filePart);
+
+            BasicField fileInputField = workflowDef.getField(filePart.getKey());
+            fileInputField.setValue(userUpload);
+        }
 
         //  Set the form definition field values from the request data
         Map<String, String[]> data = body.asFormUrlEncoded();
@@ -125,6 +144,30 @@ public class Workflows extends Controller {
         return redirect(
                 routes.Application.index()
         );
+    }
+
+    /**
+     * Helper method creates a temp file from the multipart form data and persists the upload file metadata to the
+     * database
+     *
+     * @param filePart data from the form submission
+     * @return an instance of UploadFile that has been persisted to the db
+     */
+    private UserUpload uploadFile(Http.MultipartFormData.FilePart filePart) {
+        File src = (File) filePart.getFile();
+        File file = null;
+        try {
+            file = File.createTempFile(filePart.getFilename() + "-", ".csv");
+            FileUtils.copyFile(src, file);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create temp file for upload", e);
+        }
+
+        UserUpload uploadFile = userDao.createUserUpload(request().username(), filePart.getFilename(),
+                file.getAbsolutePath());
+
+
+        return uploadFile;
     }
 
     /**

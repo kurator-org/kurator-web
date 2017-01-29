@@ -6,6 +6,8 @@ import ui.handlers.FieldHandler;
  * Abstract super class for a generic form field.
  */
 public abstract class BasicField<T> {
+    public final String type = getClass().getSimpleName();
+
     public FieldHandler fieldHandler;
     public String name;
     public String label;

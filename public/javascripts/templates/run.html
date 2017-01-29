@@ -1,0 +1,42 @@
+<h2><%= title %></h2>
+<p><%= instructions %></p>
+
+<form id="run-workflow" action="<%= jsRoutes.controllers.Workflows.runWorkflow(name).url %>" method="POST" enctype="multipart/form-data">
+  <% _.each(fields, function(field) { %>
+  <span><%= field.label %></span>
+
+  <!-- File input field -->
+  <% if (field.type == 'FileInput') { %>
+  <input type="file" id="<%= field.name %>" name="<%= field.name %>" title="<%= field.tooltip %>">
+
+  <!-- Text input field -->
+  <% } else if (field.type == 'TextField') { %>
+  <input type="text" name="<%= field.name %>" title="<%= field.tooltip %>">
+
+  <!-- Radio group -->
+  <% } else if (field.type == 'RadioGroup') { %>
+  <div>
+    <% for (value in field.options) { %>
+    <input type="radio" name="<%= field.name %>" title="<%= field.tooltip %>" value="<%= field.value %>"
+      <% if (field.selected == field.value) { %> checked="checked" <% } %>>
+      <%= field.label %>
+    </input>
+    <% } %>
+  </div>
+
+  <!-- Checkbox -->
+  <% } else if (field.type == 'CheckBox') { %>
+  <input type="checkbox" name="<%= field.name %>" title="<%= field.tooltip %>"> <%= field.label %>
+
+  <!-- Select field -->
+  <% } else if (field.type == 'SelectField') { %>
+  <select name="<%= field.name %>" title="<%= field.tooltip %>">
+    <% for (value in field.options) { %>
+    <option value="<%= value %>"><%= field.options[value] %></option>
+    <% } %>
+  </select>
+
+  <% } %><br /><% }); %>
+
+  <input type="submit" value="Run Workflow">
+</form>

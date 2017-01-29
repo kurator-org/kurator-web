@@ -12,6 +12,7 @@ GET     /summary/*id                            controllers.Application.summary(
 
 GET     /test                                   controllers.Application.test()
 GET     /auth                                   controllers.Application.auth()
+GET     /data                                   controllers.Application.data()
 
 # User authentication and user data routes, login, registration, password reset
 # ~~~~
@@ -49,6 +50,7 @@ POST    /workflow/*name                         controllers.Workflows.runWorkflo
 GET     /workflows/deploy                       controllers.Workflows.deploy()
 POST    /workflows/deploy                       controllers.Workflows.deployWorkflows()
 
+GET     /workflows/list                         controllers.Workflows.list()
 POST    /workflows/delete                       controllers.Workflows.deletePackage(name : String)
 
 # Workflow run routes for managing user runs and artifacts (result, report, logs)

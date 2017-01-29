@@ -47,7 +47,7 @@ public class WorkflowDao {
     }
 
     public WorkflowResult findResultByWorkflowId(long id) {
-        return WorkflowResult.find.where().eq("workflow.id", id).findUnique();
+        return WorkflowResult.find.where().eq("workflow_run_id", id).findUnique();
     }
 
     public List<WorkflowRun> findUserWorkflowRuns(String uid) {
