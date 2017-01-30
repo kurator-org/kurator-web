@@ -1,0 +1,30 @@
+<table>
+  <tr>
+    <th></th>
+    <th>Username</th>
+    <th>Fullname</th>
+    <th>Email</th>
+    <th>Affiliation</th>
+    <th>Created On</th>
+    <th>Last Active</th>
+    <th>Role</th>
+    <th>Active</th>
+  </tr>
+
+  <% _.each(users, function(user) { %>
+
+  <tr>
+    <tr><!-- TODO: add view workflow run by uid --></tr>
+    <tr><%= user.username %></tr>
+    <tr><%= user.firstname %> <%= user.lastname %></tr>
+    <tr><%= user.email %></tr>
+    <tr><%= user.affiliation %></tr>
+    <tr><%= user.createdOn %></tr>
+    <tr><%= user.lastActive %></tr>
+    <tr><%= user.role %></tr>
+    <tr><%= user.active %></tr>
+  </tr>
+
+  <% }); %>
+
+</table>

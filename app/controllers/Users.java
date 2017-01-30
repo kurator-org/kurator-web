@@ -153,8 +153,9 @@ public class Users extends Controller {
 
     public Result manage() {
         List<User> users = userDao.findAllUsers();
+
         return ok(
-                usermgmt.render(users)
+                Json.toJson(users)
         );
     }
 

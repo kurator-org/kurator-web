@@ -24,8 +24,12 @@ require([
     'text!templates/workflow.html',
     'text!templates/run.html',
     'text!templates/login.html',
-    'text!templates/status.html'
-], function (app, WebRouter, SessionModel, workflowTpl, runWorkflowTpl, loginTpl, statusTpl) {
+    'text!templates/status.html',
+    'text!templates/users.html',
+    'text!templates/register.html',
+    'text!templates/deploy.html'
+], function (app, WebRouter, SessionModel, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, usersTpl, registerTpl,
+             deployTpl) {
 
     app.router = new WebRouter();
     app.session = new SessionModel({});
@@ -101,14 +105,77 @@ require([
         }
     });
 
+    var RegisterView = Backbone.View.extend({
+        el: '#container',
+        template: _.template(registerTpl),
+
+        render: function () {
+            this.$el.html(this.template());
+        }
+    });
+
+    var Users = Backbone.Collection.extend({
+        url : jsRoutes.controllers.Users.manage().url
+    });
+
+    var UserManagementView = Backbone.View.extend({
+        el: '#container',
+        template: _.template(usersTpl),
+
+        initialize: function () {
+            this.listenTo(this.collection, 'update', this.render);
+            this.collection.fetch();
+        },
+
+        render: function () {
+            console.log(this.collection.models);
+            this.$el.html(this.template({users : this.collection.toJSON()}));
+        }
+    });
+
+    var Packages = Backbone.Collection.extend({
+        url : jsRoutes.controllers.Workflows.deploy().url
+    });
+
+    var DeployPackagesView = Backbone.View.extend({
+        el: '#container',
+        template: _.template(deployTpl),
+
+        initialize: function () {
+            this.listenTo(this.collection, 'update', this.render);
+            this.collection.fetch();
+        },
+
+        render: function () {
+            console.log(this.collection.models);
+            this.$el.html(this.template({packages : this.collection.toJSON()}));
+        }
+    });
+
     app.router.on("route:login", function () {
         var loginView = new LoginView();
         loginView.render();
     });
 
+    app.router.on("route:register", function () {
+        var registerView = new RegisterView();
+        registerView.render();
+    });
+
     app.router.on("route:status", function () {
+        console.log("test");
         var runView = new WorkflowRunsView({collection: new WorkflowRuns()});
         runView.render();
+    });
+
+    app.router.on("route:users", function () {
+        var usersView = new UserManagementView({collection: new Users()});
+        usersView.render();
+    });
+
+    app.router.on("route:deploy", function () {
+        var deployView = new DeployPackagesView({collection: new Packages()});
+        deployView.render();
     });
 
     app.router.on("route:home", function () {

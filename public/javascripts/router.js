@@ -7,6 +7,9 @@ define([
             "login": 'login',
             "workflow/:name": "workflow",
             "status": 'status',
+            "users": 'users',
+            "register": 'register',
+            "deploy": 'deploy'
             //"*actions": "defaultRoute"
         },
 

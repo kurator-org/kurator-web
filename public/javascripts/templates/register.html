@@ -1,0 +1,13 @@
+<h2>Register</h2>
+
+<form id="login" action="<%= jsRoutes.controllers.Users.registerSubmit().url %>" method="POST"><br />
+  <input type="email" id="email" name="email" placeholder="Email" /><br />
+  <input type="text" id="firstName" name="firstName" placeholder="First Name" /><br />
+  <input type="text" id="lastName" name="lastName" placeholder="Last Name" /><br />
+  <input type="text" id="username" name="username" placeholder="Username" required /><br />
+  <input type="password" id="password" placeholder="Password" name="password" required /><br />
+  <input type="password" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword" required /><br />
+  <input type="text" id="affiliation" placeholder="Affiliation" name="affiliation" required /><br />
+
+  <input type="submit" value="Register">Register</input>
+</form>

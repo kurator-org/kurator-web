@@ -43,6 +43,12 @@ public class Application extends Controller {
                         routes.javascript.Workflows.outputLog(),
                         routes.javascript.Workflows.errorLog(),
 
+                        routes.javascript.Workflows.deploy(),
+                        routes.javascript.Workflows.deletePackage(),
+
+                        routes.javascript.Users.manage(),
+                        routes.javascript.Users.registerSubmit(),
+
                         routes.javascript.Users.authenticate()
                 )
         ).as("text/javascript");

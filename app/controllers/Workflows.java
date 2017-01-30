@@ -430,7 +430,7 @@ public class Workflows extends Controller {
         List<PackageData> packages = ConfigManager.getInstance().listPackages();
 
         return ok(
-                deploy.render(packages)
+                Json.toJson(packages)
         );
     }
 

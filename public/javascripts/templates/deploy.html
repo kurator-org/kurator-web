@@ -1,0 +1,26 @@
+<h2>Deploy workflows</h2>
+
+<form id="deploy-package" action="<%= jsRoutes.controllers.Workflows.deploy().url %>" method="post" enctype="multipart/form-data">
+  <input type="file" name="filename">
+  <input type="submit" value="Deploy">
+</form>
+
+<h2>Packages</h2>
+<table>
+  <tr>
+    <th>Name</th><th>Last modified</th><th></th>
+  </tr>
+  <% console.log(packages) %>
+  <% _.each(packages, function(pkg) { %>
+
+  <tr>
+    <td><%= pkg.name %></td>
+    <td><%= pkg.lastModified %></td>
+    <td>
+      <a href="<%= jsRoutes.controllers.Workflows.deletePackage(pkg.name) %>">Delete</a>
+    </td>
+  </tr>
+
+  <% }); %>
+
+</table>
