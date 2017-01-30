@@ -1,4 +1,4 @@
-<table>
+<table class="table">
   <tr>
     <th></th>
     <th>Username</th>
@@ -14,15 +14,15 @@
   <% _.each(users, function(user) { %>
 
   <tr>
-    <tr><!-- TODO: add view workflow run by uid --></tr>
-    <tr><%= user.username %></tr>
-    <tr><%= user.firstname %> <%= user.lastname %></tr>
-    <tr><%= user.email %></tr>
-    <tr><%= user.affiliation %></tr>
-    <tr><%= user.createdOn %></tr>
-    <tr><%= user.lastActive %></tr>
-    <tr><%= user.role %></tr>
-    <tr><%= user.active %></tr>
+    <td><!-- TODO: add view workflow run by uid --></td>
+    <td><%= user.username %></td>
+    <td><%= user.firstname %> <%= user.lastname %></td>
+    <td><%= user.email %></td>
+    <td><%= user.affiliation %></td>
+    <td><%= user.createdOn %></td>
+    <td><%= user.lastActive %></td>
+    <td><%= user.role %></td>
+    <td><%= user.active %></td>
   </tr>
 
   <% }); %>

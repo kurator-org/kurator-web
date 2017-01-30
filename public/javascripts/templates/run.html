@@ -1,23 +1,25 @@
 <h2><%= title %></h2>
-<p><%= instructions %></p>
+<i><%= instructions %></i>
 
 <form id="run-workflow" action="<%= jsRoutes.controllers.Workflows.runWorkflow(name).url %>" method="POST" enctype="multipart/form-data">
+
   <% _.each(fields, function(field) { %>
-  <span><%= field.label %></span>
+  <div class="form-group workflow-form-field">
+    <label for="<%= field.name %>"><%= field.label %></label>
 
   <!-- File input field -->
   <% if (field.type == 'FileInput') { %>
-  <input type="file" id="<%= field.name %>" name="<%= field.name %>" title="<%= field.tooltip %>">
+  <input type="file" id="<%= field.name %>" name="<%= field.name %>">
 
   <!-- Text input field -->
   <% } else if (field.type == 'TextField') { %>
-  <input type="text" name="<%= field.name %>" title="<%= field.tooltip %>">
+  <input type="text" class="form-control" name="<%= field.name %>">
 
   <!-- Radio group -->
   <% } else if (field.type == 'RadioGroup') { %>
   <div>
     <% for (value in field.options) { %>
-    <input type="radio" name="<%= field.name %>" title="<%= field.tooltip %>" value="<%= field.value %>"
+    <input type="radio" class="form-control" name="<%= field.name %>" value="<%= field.value %>"
       <% if (field.selected == field.value) { %> checked="checked" <% } %>>
       <%= field.label %>
     </input>
@@ -26,17 +28,18 @@
 
   <!-- Checkbox -->
   <% } else if (field.type == 'CheckBox') { %>
-  <input type="checkbox" name="<%= field.name %>" title="<%= field.tooltip %>"> <%= field.label %>
+  <input type="checkbox" class="form-control" name="<%= field.name %>"> <%= field.label %>
 
   <!-- Select field -->
   <% } else if (field.type == 'SelectField') { %>
-  <select name="<%= field.name %>" title="<%= field.tooltip %>">
+  <select class="form-control" name="<%= field.name %>">
     <% for (value in field.options) { %>
     <option value="<%= value %>"><%= field.options[value] %></option>
     <% } %>
   </select>
 
-  <% } %><br /><% }); %>
+  <% } %> <p class="help-block"><%= field.tooltip %></p></div> <% }); %>
 
-  <input type="submit" value="Run Workflow">
+  <button type="submit" class="btn btn-primary">Run Workflow</button>
+
 </form>

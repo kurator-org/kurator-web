@@ -27,9 +27,10 @@ require([
     'text!templates/status.html',
     'text!templates/users.html',
     'text!templates/register.html',
-    'text!templates/deploy.html'
+    'text!templates/deploy.html',
+    'text!templates/home.html'
 ], function (app, WebRouter, SessionModel, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, usersTpl, registerTpl,
-             deployTpl) {
+             deployTpl, homeTpl) {
 
     app.router = new WebRouter();
     app.session = new SessionModel({});
@@ -152,6 +153,19 @@ require([
         }
     });
 
+    var HomeView = Backbone.View.extend({
+        el: '#container',
+        template: _.template(homeTpl),
+
+        initialize: function () {
+            this.render();
+        },
+
+        render: function () {
+            this.$el.html(this.template());
+        }
+    });
+
     app.router.on("route:login", function () {
         var loginView = new LoginView();
         loginView.render();
@@ -178,12 +192,17 @@ require([
         deployView.render();
     });
 
-    app.router.on("route:home", function () {
+    app.router.on("route:workflow", function () {
         var workflowsView = new WorkflowsView({collection: workflows});
         workflowsView.render();
     });
 
-    app.router.on("route:workflow", function (name) {
+    app.router.on("route:home", function () {
+        var homeView = new HomeView();
+        homeView.render();
+    });
+
+    app.router.on("route:run", function (name) {
         new RunWorkflowView({ model : workflows.get(name)});
     });
 

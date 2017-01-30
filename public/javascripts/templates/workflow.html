@@ -1,12 +1,21 @@
 <h2>Workflows</h2>
 
-<table id="workflows-list">
+<table class="table" id="workflows-list">
   <% _.each(definitions, function(def) { %>
 
   <tr>
-    <td><a href="<%= def.documentation %>" target="_blank">Doc</a></td>
+    <td>
+      <a href="<%= def.documentation %>" target="_blank">
+        <span class="glyphicon glyphicon-link"></span>
+      </a>
+    </td>
+
     <td><%= def.title %></td>
-    <td><a href="#workflow/<%= def.name %>">Run</a></td>
+
+    <td>
+      <a href="#workflow/<%= def.name %>">Run</a>
+    </td>
+
     <td><%= def.instructions %></td>
   </tr>
 

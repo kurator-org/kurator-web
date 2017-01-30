@@ -1,1 +1,9 @@
 /* Application styles */
+body {
+    padding-top: 70px;
+}
+
+.workflow-form-field {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

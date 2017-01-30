@@ -1,13 +1,42 @@
 <h2>Register</h2>
 
-<form id="login" action="<%= jsRoutes.controllers.Users.registerSubmit().url %>" method="POST"><br />
-  <input type="email" id="email" name="email" placeholder="Email" /><br />
-  <input type="text" id="firstName" name="firstName" placeholder="First Name" /><br />
-  <input type="text" id="lastName" name="lastName" placeholder="Last Name" /><br />
-  <input type="text" id="username" name="username" placeholder="Username" required /><br />
-  <input type="password" id="password" placeholder="Password" name="password" required /><br />
-  <input type="password" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword" required /><br />
-  <input type="text" id="affiliation" placeholder="Affiliation" name="affiliation" required /><br />
+<form id="register-form" action="<%= jsRoutes.controllers.Users.registerSubmit().url %>" method="POST">
 
-  <input type="submit" value="Register">Register</input>
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" class="form-control" id="email" name="email" placeholder="Email" />
+  </div>
+
+  <div class="form-group">
+    <label for="firstName">First Name</label>
+    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" />
+  </div>
+
+  <div class="form-group">
+    <label for="lastName">Last Name</label>
+    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" />
+  </div>
+
+  <div class="form-group">
+    <label for="username">Username</label>
+    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required />
+  </div>
+
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" class="form-control" id="password" placeholder="Password" name="password" required />
+  </div>
+
+  <div class="form-group">
+    <label for="confirmPassword">Confirm Password</label>
+    <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword" required />
+  </div>
+
+  <div class="form-group">
+    <label for="affiliation">Affiliation</label>
+    <input type="text" class="form-control" id="affiliation" placeholder="Affiliation" name="affiliation" required />
+  </div>
+
+  <button type="submit" class="btn btn-primary">Register</button>
+
 </form>
