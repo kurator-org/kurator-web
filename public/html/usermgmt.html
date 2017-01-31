@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Create a New Pen</title>
+  
+  
+  <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css'>
+
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+  <br />
+<div id="container"><button type="button" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span>&nbsp; Add User</button><br /><br />
+
+<table class="table">
+  <tr><th></th><th>Username</th><th>Full Name</th><th>Email</th><th>Affiliation</th><th>Created On</th><th>Last Active</th> <th>Role</th><th>Status</th></tr>
+  <tr><td><span class=" glyphicon glyphicon-eye-open" style="font-size: 1.3em"></span></td><td>admin</td><td>N/A</td><td>N/A</td><td>N/A</td><td>2017-01-17T19:00:53</td> <td>2017-01-17T19:00:53</td>
+<td>
+ <div class="btn-group">
+  <button type="button" class="btn btn-primary btn-xs disabled" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <b>Admin</b>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#">User</a></li>
+    <li><a href="#">Admin</a></li>
+  </ul>
+</div>
+      </td><td><button type="button" class="btn btn-success btn-xs disabled"><b>Active</b></button></td></tr>
+    <tr><td><span class=" glyphicon glyphicon-eye-open" style="font-size: 1.3em"></span> </td><td>lowerydb</td><td>David Lowery</td><td>lowerydb@gmail.com</td><td>MCZ</td><td>2017-01-17T19:00:53</td> <td>2017-01-17T19:00:53</td>
+<td>
+ <div class="btn-group">
+  <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <b>Admin</b>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#">User</a></li>
+    <li><a href="#">Admin</a></li>
+  </ul>
+</div>
+      </td><td><button type="button" id="status-btn" class="btn btn-warning btn-xs"><b>Inactive</b></button></td></tr>
+</table>
+</div>
+
+<!-- Single button -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js'></script>
+
+    <script type="text/javascript">
+        $('#status-btn').click(function(evt) {
+            $(this).removeClass('btn-warning');
+            $(this).addClass('btn-success');
+            $(this).html('<b>Active</b>');
+        });
+    </script>
+
+</body>
+</html>
