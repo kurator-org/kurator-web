@@ -141,9 +141,11 @@ public class Workflows extends Controller {
         ObjectNode response = Json.newObject();
         response.put("runId", runId);
 
-        return redirect(
+        /*return redirect(
                 routes.Application.index()
-        );
+        );*/
+
+        return ok(response);
     }
 
     /**
@@ -301,8 +303,8 @@ public class Workflows extends Controller {
 
         for (WorkflowRun run : workflowRuns) {
             //boolean hasReport = run.getResult().getDqReport() != null;
-            boolean hasOutput = run.getResult().getOutputText() != null;
-            boolean hasErrors = run.getResult().getErrorText() != null;
+            boolean hasOutput = run.getResult() != null && run.getResult().getOutputText() != null;
+            boolean hasErrors = run.getResult() != null && run.getResult().getErrorText() != null;
 
             RunResult result = new RunResult(run.getId(), run.getWorkflow().getTitle(), run.getStartTime(),
                     run.getEndTime(), hasOutput, hasErrors, run.getStatus());

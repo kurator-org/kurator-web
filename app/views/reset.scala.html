@@ -1,31 +1,60 @@
 @import models.forms.ResetPass
 @(form: Form[ResetPass])
 
-@main(title = "Kurator Web - Reset Password") {
-  <h1>Reset Password</h1>
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>Kurator Web</title>
 
-  @if(flash.containsKey("message")) {
-    <div class="alert alert-info" role="alert">@flash.get("message")</div>
-  }
+      <!-- Bootstrap CSS -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/lib/bootstrap/bootstrap.min.css")">
 
-  @if(form.hasGlobalErrors) {
-    <div class="alert alert-danger" role="alert">@form.globalError.message</div>
-  }
+      <!-- Application CSS -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/landing.css")">
 
-  <div style="float: left">
 
-  @helper.form(routes.Users.resetPassword) {
-    <div class="form-group">
-      <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <h1>Welcome to Kurator</h1>
+
+          <p>Kurator is a project to develop a provenance-enabled Workflow Platform and Toolkit to Curate
+            Biodiversity Data.</p>
+
+          <p>See <a href="@routes.Application.index()">home page</a> for more info.</p>
+        </div>
+      </div>
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <h3>Forgot password</h3>
+        <br />
+        <p>Enter the email you used to sign up and you will receive a link to reset your password.</p>
+
+        @helper.form(routes.Users.resetPassword) {
+          <div class="form-group">
+            <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+          </div>
+          <div class="form-group">
+            <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+          </div>
+
+
+          <button class="btn btn-primary" type="submit">Submit</button><div style="float:right">
+            <a href="@routes.Users.login()">Login</a>&nbsp;|
+            <a href="@routes.Users.register()">Register</a><br /></div>
+        }
+
+
+
+      </div>
     </div>
-    <div class="form-group">
-      <input type="email" class="form-control" id="email" name="email" placeholder="Email">
     </div>
 
-    <div class="form-group">
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-  }
-
-  </div>
-}
+  </body>
+</html>

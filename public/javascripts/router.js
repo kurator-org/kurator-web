@@ -3,8 +3,7 @@ define([
 ], function (app) {
     var WebRouter = Backbone.Router.extend({
         routes: {
-            "": 'home',
-            "workflow": 'workflow',
+            "": 'workflow',
             "login": 'login',
             "workflow/:name": "run",
             "status": 'status',

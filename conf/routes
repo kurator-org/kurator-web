@@ -10,7 +10,7 @@ GET     /jsroutes                               controllers.Application.jsRoutes
 GET     /builder                                controllers.Application.builder()
 GET     /summary/*id                            controllers.Application.summary(id : Long)
 
-GET     /test                                   controllers.Application.test()
+GET     /workflows                                   controllers.Application.test()
 GET     /auth                                   controllers.Application.auth()
 GET     /data                                   controllers.Application.data()
 

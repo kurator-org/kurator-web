@@ -63,7 +63,7 @@ require([
     });
 
     var RunWorkflowView = Backbone.View.extend({
-        el: '#container',
+        el: '#run-modal',
         template: _.template(runWorkflowTpl),
 
         initialize: function() {
@@ -72,7 +72,52 @@ require([
 
         render: function () {
             //console.log(this.model.toJSON());
-            this.$el.html(this.template(this.model.toJSON()));
+            $('.modal-title').html(this.model.get('title'));
+           $('.modal-body').html(this.template(this.model.toJSON()));
+
+            $('#run-workflow').submit(function (event) {
+                event.preventDefault();
+                console.log("submitting form...");
+
+                //grab all form data
+                var formData = new FormData($(this)[0]);
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        $('.progress').hide();
+                        console.log(data.runId);
+                    }
+                });
+
+                return false;
+            });
+
+            $('.modal').on('hidden.bs.modal', function (e) {
+                app.router.navigate("#", {trigger: true});
+            });
+
+            $('#run-btn').on('click', function (e) {
+
+                $('.modal').on('hidden.bs.modal', function (e) {
+                    app.router.navigate("status", {trigger: true});
+                });
+
+                $('.progress').show();
+                $('#run-workflow').submit();
+                $('.modal').modal('toggle');
+
+            });
+
+            $('.modal').modal({show: true});
+
+            //this.$el.html(this.template(this.model.toJSON()));
         }
     });
 
@@ -177,6 +222,9 @@ require([
     });
 
     app.router.on("route:status", function () {
+        $(".nav-pills li").removeClass("active");
+        $('.status-pill').addClass('active');
+
         console.log("test");
         var runView = new WorkflowRunsView({collection: new WorkflowRuns()});
         runView.render();
@@ -193,6 +241,8 @@ require([
     });
 
     app.router.on("route:workflow", function () {
+        $(".nav-pills li").removeClass("active");
+        $('.run-pill').addClass('active');
         var workflowsView = new WorkflowsView({collection: workflows});
         workflowsView.render();
     });
@@ -204,6 +254,7 @@ require([
 
     app.router.on("route:run", function (name) {
         new RunWorkflowView({ model : workflows.get(name)});
+        //new RunWorkflowView({ model : workflows.get(name)});
     });
 
     // Fetch list of workflows

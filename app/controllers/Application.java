@@ -57,7 +57,6 @@ public class Application extends Controller {
     /**
      * Index page.
      */
-    @Security.Authenticated(Secured.class)
     public Result index() {
         // TODO: use ajax on a Workflows controller route to obtain this list instead
         List<WorkflowDefinition> workflows = Workflows.loadWorkflowFormDefinitions();
@@ -67,7 +66,7 @@ public class Application extends Controller {
         List<UserUpload> userUploads = UserUpload.find.where().eq("user.id", uid).findList();
 
         return ok(
-                index.render(workflows, userUploads)
+                index.render()
         );
     }
 
@@ -93,7 +92,7 @@ public class Application extends Controller {
     //@Security.Authenticated(SecuredBackbone.class)
     public Result test() {
         return ok(
-                test.render()
+                workflows.render()
         );
     }
 

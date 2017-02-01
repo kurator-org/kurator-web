@@ -80,7 +80,7 @@ public class Users extends Controller {
             return badRequest(login.render(loginForm));
         } else {
             return redirect(
-                    routes.Application.index()
+                    routes.Application.test()
             );
         }
     }
@@ -141,7 +141,7 @@ public class Users extends Controller {
         }
 
         return redirect(
-                routes.Users.login()
+                routes.Users.register()
         );
     }
 

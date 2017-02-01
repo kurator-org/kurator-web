@@ -1,56 +1,78 @@
-@import models.db.user.UserUpload
-@import models.json.WorkflowDefinition
+@()
 
-@(workflows: List[WorkflowDefinition])(userUploads: List[UserUpload])
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Kurator Web</title>
 
-  @main(title = "Kurator Web - Home") {
+      <!-- Bootstrap CSS -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/lib/bootstrap/bootstrap.min.css")">
 
-    <h2>Workflows</h2>
+      <!-- Application CSS -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/styles.css")">
+  </head>
+  <body>
 
-    <script type="text/javascript" src="@routes.Assets.at("../../public/javascripts/old/workflow.js")"></script>
-    <script type="text/javascript">
-            $.ajax({url: "@routes.Workflows.status(session.get("uid"))", success: updateWorkflowRuns});
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Kurator Web</a>
+        </div>
 
-            (function poll() {
-              setTimeout(function () {
-                $.ajax({
-                  url: "@routes.Workflows.status(session.get("uid"))",
-                  success: updateWorkflowRuns,
-                  dataType: "json",
-                  complete: poll
-                });
-              }, 3000);
-            })()
-    </script>
-    <table class="workflow-list">
-      @if(workflows.size() == 0) {
-        <i>No workflows deployed</i>
-      }
+        <ul class="nav navbar-nav">
 
-      @workflows.map { workflow =>
-        <tr>
-          <td>
-            @if(workflow.getDocumentation() != null) {
-              <a href="@workflow.getDocumentation()"><img src="@routes.Assets.at("../../../public/images/info.png")" /></a>
+          <li class="active"><a href="@routes.Application.index()">Home</a></li>
+
+          @if(session.get("uid") != null) {
+
+            <li><a href="@routes.Application.test()">Workflows</a></li>
+            <li><a href="@routes.Application.builder">Builder</a></li>
+
+            @if(session.get("user_role").equals("ADMIN")) {
+              <li><a href="#">Users</a></li>
             }
-          </td>
-          <td>
-          @workflow.getTitle()
-          </td>
-          <td>
-            <a href="workflow/@workflow.getName()">Run</a>
-          </td>
-          <td style="width: 500px">
-          @workflow.getSummary()
-          </td>
-        </tr>
-      }
-    </table>
 
-    <h2>Workflow runs</h2>
+          }
 
-    <div id="workflow-runs" style="float: left">
+          <li><a href="#">Help <span class="glyphicon glyphicon-question-sign" ></span></a></li>
+          <li><a href="http://wiki.datakurator.net/Kurator-Web" target="_blank">Wiki <span class="glyphicon glyphicon-new-window"></span></a></li>
 
+        </ul>
+
+        @if(session.get("uid") != null) {
+
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@session.get("username") <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                <li><a href="#"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+              </ul>
+            </li>
+          </ul>
+          <p class="navbar-text navbar-right">Logged in as</p>
+
+        } else {
+          <form class="navbar-form navbar-right" role="search">
+            <a href="login" type="submit" class="btn btn-default">Login</a>
+            <a href="register" class="btn btn-default">Register</a>
+          </form>
+        }
+
+      </div>
+
+    </nav>
+
+    <div id="container">
+      Your text here!
     </div>
 
-  }
+      <!-- jQuery -->
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/lib/jquery/jquery-min.js")"></script>
+
+      <!-- Bootstrap -->
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/lib/bootstrap/bootstrap.min.js")"></script>
+  </body>
+</html>

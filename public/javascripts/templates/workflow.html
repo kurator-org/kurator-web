@@ -1,24 +1,37 @@
-<h2>Workflows</h2>
+ <% _.each(definitions, function(def) { %>
 
-<table class="table" id="workflows-list">
-  <% _.each(definitions, function(def) { %>
+    <div class="bs-callout bs-callout-primary" style="padding-left: 3em">
 
-  <tr>
-    <td>
-      <a href="<%= def.documentation %>" target="_blank">
-        <span class="glyphicon glyphicon-link"></span>
-      </a>
-    </td>
+      <h4 style="display: inline; margin-left: -1em">
+        <a href="<%= def.documentation %>" target="_blank">
+          <span class="glyphicon glyphicon-link" style="padding-right: 0.5em"></span>
+        </a><%= def.title %></h4>
 
-    <td><%= def.title %></td>
+      <div style="float:right; padding-left: 10px" >
+        <a href="#workflow/<%= def.name %>" class="btn btn-primary">Run <span class="glyphicon glyphicon-play"></span></a>
+      </div>
 
-    <td>
-      <a href="#workflow/<%= def.name %>">Run</a>
-    </td>
+      <div style="margin-left: 0.7em; margin-top: 0.5em; font-size: 1em"><%= def.instructions %></div>
+    </div>
 
-    <td><%= def.instructions %></td>
-  </tr>
+    <% }); %>
 
-  <% }); %>
+ <div class="modal fade" tabindex="-1">
+   <div class="modal-dialog modal-lg">
+     <div class="modal-content">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+         <h3 class="modal-title" id="gridSystemModalLabel">Modal title</h3>
+       </div>
 
-</table>
+       <div class="modal-body">
+
+       </div>
+
+       <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+         <button id="run-btn" type="button" class="btn btn-primary">Run Workflow</button>
+       </div>
+     </div>
+   </div>
+ </div>

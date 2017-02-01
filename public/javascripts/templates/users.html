@@ -14,15 +14,31 @@
   <% _.each(users, function(user) { %>
 
   <tr>
-    <td><!-- TODO: add view workflow run by uid --></td>
+    <td><span class=" glyphicon glyphicon-eye-open" style="font-size: 1.3em"></span><!-- TODO: add view workflow run by uid --></td>
     <td><%= user.username %></td>
     <td><%= user.firstname %> <%= user.lastname %></td>
     <td><%= user.email %></td>
     <td><%= user.affiliation %></td>
     <td><%= user.createdOn %></td>
     <td><%= user.lastActive %></td>
-    <td><%= user.role %></td>
-    <td><%= user.active %></td>
+    <td>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-primary btn-xs disabled" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <b>Admin</b>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#">User</a></li>
+          <li><a href="#">Admin</a></li>
+        </ul>
+      </div>
+
+    </td>
+    <td>
+      <button type="button" id="status-btn" class="btn btn-warning btn-xs">
+        <b>Inactive</b>
+      </button>
+    </td>
   </tr>
 
   <% }); %>
