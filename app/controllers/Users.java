@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import views.html.*;
-import views.html.admin.*;
+import views.html.adminviews.*;
 
 /**
  * Created by lowery on 1/25/2017.
@@ -79,6 +79,8 @@ public class Users extends Controller {
         if (loginForm.hasErrors()) {
             return badRequest(login.render(loginForm));
         } else {
+            userDao.updateLastActive(loginForm.get().getUsername());
+
             return redirect(
                     routes.Application.test()
             );
@@ -164,17 +166,14 @@ public class Users extends Controller {
      * deactivate the user accounts specified and assign role.
      */
     public Result manageUsers() {
-        UserManagement[] request = Json.fromJson(request().body().asJson(), UserManagement[].class);
+        UserManagement userMgmt = Json.fromJson(request().body().asJson(), UserManagement.class);
 
-        for (UserManagement userMgmt : request) {
-            userDao.updateUserAccess(userMgmt.getUsername(), userMgmt.getActive(), userMgmt.getRole());
-        }
 
-        flash("activate_success", "Updated user(s) active status!");
+        userDao.updateUserAccess(userMgmt.getUsername(), userMgmt.getActive(), userMgmt.getRole());
 
-        return redirect(
-                routes.Users.manage()
-        );
+        //flash("activate_success", "Updated user(s) active status!");
+
+        return ok(Json.toJson(userMgmt));
     }
 
     /**

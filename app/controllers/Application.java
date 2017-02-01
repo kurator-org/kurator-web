@@ -47,6 +47,7 @@ public class Application extends Controller {
                         routes.javascript.Workflows.deletePackage(),
 
                         routes.javascript.Users.manage(),
+                        routes.javascript.Users.manageUsers(),
                         routes.javascript.Users.registerSubmit(),
 
                         routes.javascript.Users.authenticate()
@@ -126,5 +127,11 @@ public class Application extends Controller {
         ObjectNode json = Json.newObject();
         json.put("user", "test");
         return ok(json);
+    }
+
+    public Result admin() {
+        return ok(
+                admin.render()
+        );
     }
 }

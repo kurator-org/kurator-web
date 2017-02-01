@@ -294,12 +294,11 @@ public class Workflows extends Controller {
 
     /** REST endopint returns a json object with metadata about the status of all of a current users workflow runs.
      *
-     * @param uid
      * @return
      */
-    public Result status(String uid) {
+    public Result status() {
         List<RunResult> results = new ArrayList<>();
-        List<WorkflowRun> workflowRuns = workflowDao.findUserWorkflowRuns(uid);
+        List<WorkflowRun> workflowRuns = workflowDao.findUserWorkflowRuns(session().get("uid"));
 
         for (WorkflowRun run : workflowRuns) {
             //boolean hasReport = run.getResult().getDqReport() != null;

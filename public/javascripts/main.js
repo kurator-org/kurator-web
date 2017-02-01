@@ -184,7 +184,11 @@ require([
     });
 
     var Users = Backbone.Collection.extend({
-        url : jsRoutes.controllers.Users.manage().url
+        url : jsRoutes.controllers.Users.manage().url,
+
+        modelId: function(attrs) {
+            return attrs.username;
+        }
     });
 
     var UserManagementView = Backbone.View.extend({
@@ -198,6 +202,64 @@ require([
         render: function () {
             console.log(this.collection.models);
             this.$el.html(this.template({users : this.collection.toJSON()}));
+
+            var postManageUsers = function(user, active, role, callback) {
+                $.ajax({
+                    type: "POST",
+                    //the url where you want to sent the userName and password to
+                    url: jsRoutes.controllers.Users.manageUsers().url,
+                    dataType: 'json',
+                    async: false,
+                    contentType: 'application/json',
+                    //json object to sent to the authentication url
+                    data: JSON.stringify({username: user.get('username'), active: active, role: role}),
+                    success: callback
+                });
+            }
+
+                var that = this;
+
+            $('.dropdown-menu li').on('click', function (event) {
+                var username = $(this).parent().attr('id').substr(5);
+                var user = that.collection.get(username);
+
+                var role = $(this).text();
+
+                postManageUsers(user, user.get('active'), role, function (data) {
+                    user.set('role', data.role);
+
+                    $('#role_value_' + data.username).html('<b>' + data.role + '</b>');
+
+                    console.log(data);
+                });
+            });
+
+            $('.status-btn').on('click', function (event) {
+                var username = $(this).attr('id').substr(7);
+                var user = that.collection.get(username);
+
+                var active = user.get('active') ? false : true;
+
+                postManageUsers(user, active, user.get('role'), function (data) {
+                    user.set('active', data.active);
+
+                    if (data.active) {
+                        $('#status_' + data.username)
+                            .removeClass('btn-warning')
+                            .addClass('btn-success')
+                            .html('<b>Active</b>');
+                    } else {
+                        $('#status_' + data.username)
+                            .removeClass('btn-success')
+                            .addClass('btn-warning')
+                            .html('<b>Inactive</b>');
+                    }
+
+                    console.log(data);
+                });
+            });
+
+            return this;
         }
     });
 
@@ -255,6 +317,6 @@ require([
 
     // Fetch list of workflows
     //var workflows = new Workflows();
-    app.router.navigateToView(new WorkflowsView({ collection: new Workflows() }));
+    //app.router.navigateToView(new WorkflowsView({ collection: new Workflows() }));
 
 });

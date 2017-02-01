@@ -19,25 +19,29 @@
     <td><%= user.firstname %> <%= user.lastname %></td>
     <td><%= user.email %></td>
     <td><%= user.affiliation %></td>
-    <td><%= user.createdOn %></td>
-    <td><%= user.lastActive %></td>
+    <td><%= new Date(user.createdOn).toLocaleString() %></td>
+    <td><% if (user.lastActive) { %><%= new Date(user.lastActive).toLocaleString() %><% } else { %><i style="color: #777">No activity</i><% } %></td>
     <td>
 
       <div class="btn-group">
-        <button type="button" class="btn btn-primary btn-xs disabled" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <b>Admin</b>
+        <button type="button" class="btn btn-primary btn-xs <% if (user.username == "admin") { %> disabled <% } %>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <b><span id="role_value_<%= user.username %>"><%= user.role %></span></b>
         </button>
-        <ul class="dropdown-menu">
-          <li><a href="#">User</a></li>
-          <li><a href="#">Admin</a></li>
+        <ul id="role_<%= user.username %>" class="dropdown-menu">
+          <li><a href="#">USER</a></li>
+          <li><a href="#">ADMIN</a></li>
         </ul>
       </div>
 
+
+
     </td>
     <td>
-      <button type="button" id="status-btn" class="btn btn-warning btn-xs">
-        <b>Inactive</b>
-      </button>
+      <% if (user.active) { %>
+      <button type="button" id="status_<%= user.username %>" class="btn btn-success btn-xs status-btn <% if (user.username == "admin") { %> disabled <% } %>"><b>Active</b></button>
+      <% } else { %>
+      <button type="button" id="status_<%= user.username %>" class="btn btn-warning btn-xs status-btn <% if (user.username == "admin") { %> disabled <% } %>"><b>Inactive</b></button>
+      <% } %>
     </td>
   </tr>
 

@@ -10,9 +10,11 @@ GET     /jsroutes                               controllers.Application.jsRoutes
 GET     /builder                                controllers.Application.builder()
 GET     /summary/*id                            controllers.Application.summary(id : Long)
 
-GET     /workflows                                   controllers.Application.test()
+GET     /workflows                              controllers.Application.test()
 GET     /auth                                   controllers.Application.auth()
 GET     /data                                   controllers.Application.data()
+
+GET     /admin                                  controllers.Application.admin()
 
 # User authentication and user data routes, login, registration, password reset
 # ~~~~
@@ -55,7 +57,7 @@ POST    /workflows/delete                       controllers.Workflows.deletePack
 
 # Workflow run routes for managing user runs and artifacts (result, report, logs)
 # ~~~~
-GET     /run/status/*uid                        controllers.Workflows.status(uid : String)
+GET     /run/status                             controllers.Workflows.status()
 
 GET     /run/result/*id                         controllers.Workflows.resultArchive(id : Long)
 GET     /run/report/*id                         controllers.Workflows.report(id : Long)
