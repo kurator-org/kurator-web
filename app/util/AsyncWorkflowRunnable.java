@@ -80,9 +80,8 @@ public class AsyncWorkflowRunnable implements Runnable {
             String outputText = new String(outStream.toByteArray());
             String errorText = new String(errStream.toByteArray());
 
-            // Create output and error log files
+            // Create output error log file
             resultFiles.add(createTextFile("output", outputText));
-            resultFiles.add(createTextFile("error", errorText));
 
             // Create readme file
             resultFiles.add(createReadmeFile(workflow, startTime, endTime));
@@ -94,7 +93,15 @@ public class AsyncWorkflowRunnable implements Runnable {
             WorkflowResult workflowResult = workflowDao.createWorkflowResult(resultFiles, archive.getAbsolutePath(),
                     dqReportFile, outputText, errorText);
 
-            workflowDao.updateRunResult(run, workflowResult, Status.SUCCESS, endTime);
+            // Default status is success unless errors are present in the error log
+            Status status = Status.SUCCESS;
+
+            if (!errorText.isEmpty()) {
+                status = Status.ERRORS;
+                resultFiles.add(createTextFile("error", errorText));
+            }
+
+            workflowDao.updateRunResult(run, workflowResult, status, endTime);
         } catch (Exception e) {
             throw new RuntimeException("Failure during processing of workflow result", e);
         }

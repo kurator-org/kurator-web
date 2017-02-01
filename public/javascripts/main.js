@@ -49,26 +49,25 @@ require([
     });
 
     var WorkflowsView = Backbone.View.extend({
-        el: '#container',
         template: _.template(workflowTpl),
 
         initialize: function () {
+            console.log("initialize");
             this.listenTo(this.collection, 'update', this.render);
             this.collection.fetch();
         },
 
         render: function () {
+            console.log("render");
             this.$el.html(this.template({definitions : this.collection.toJSON()}));
+
+            return this;
         }
     });
 
     var RunWorkflowView = Backbone.View.extend({
         el: '#run-modal',
         template: _.template(runWorkflowTpl),
-
-        initialize: function() {
-            this.render();
-        },
 
         render: function () {
             //console.log(this.model.toJSON());
@@ -125,38 +124,62 @@ require([
         uid: 0,
         url : function() {
             return jsRoutes.controllers.Workflows.status(this.uid).url
+        },
+        comparator: function(a, b) {
+            a = new Date(a.attributes.startDate);
+            b = new Date(b.attributes.startDate);
+            return a > b ? -1 : a < b ? 1 : 0;
         }
     });
 
     var WorkflowRunsView = Backbone.View.extend({
-        el: '#container',
         template: _.template(statusTpl),
 
         initialize: function () {
             this.listenTo(this.collection, 'update', this.render);
+            //this.listenTo(app.router, 'route', this.beforeClose);
             this.collection.fetch();
+
+            var that = this;
+            this.timer = setInterval(function() {
+                    that.collection.fetch();
+                    console.log("fetch...");
+                }, 5000);
         },
 
         render: function () {
-            this.$el.html(this.template({runs : this.collection.toJSON()}));
-        }
-    });
+            var runs = this.collection.toJSON();
+            this.$el.html(this.template({runs : runs }));
 
-    var LoginView = Backbone.View.extend({
-        el: '#container',
-        template: _.template(loginTpl),
+            runs.forEach(function(run) {
+                var statusEl = $('#'+run.id);
 
-        render: function () {
-            this.$el.html(this.template());
-        }
-    });
+                switch (run.status) {
+                    case "RUNNING":
+                        $('#status'+run.id).html($('<span class="label label-default" style="font-size: .9em">Running</span>'));
+                        break;
+                    case "SUCCESS":
+                        $('#status'+run.id).html($('<span class="label label-success" style="font-size: .9em">Complete</span>'));
+                        break;
+                    case "ERRORS":
+                        $('#status'+run.id).html($('<span class="label label-danger" style="font-size: .9em">Errors</span>'));
+                        break;
+                    default:
+                        console.log('status');
+                }
+            });
 
-    var RegisterView = Backbone.View.extend({
-        el: '#container',
-        template: _.template(registerTpl),
+            $('[data-toggle="tooltip"]').tooltip();
 
-        render: function () {
-            this.$el.html(this.template());
+            return this;
+        },
+
+        onBeforeClose: function () {
+            console.log("Before close");
+            if (this.timer) {
+                console.log("has timer: " + this.timer);
+                clearInterval(this.timer);
+            }
         }
     });
 
@@ -165,7 +188,6 @@ require([
     });
 
     var UserManagementView = Backbone.View.extend({
-        el: '#container',
         template: _.template(usersTpl),
 
         initialize: function () {
@@ -184,7 +206,6 @@ require([
     });
 
     var DeployPackagesView = Backbone.View.extend({
-        el: '#container',
         template: _.template(deployTpl),
 
         initialize: function () {
@@ -198,66 +219,42 @@ require([
         }
     });
 
-    var HomeView = Backbone.View.extend({
-        el: '#container',
-        template: _.template(homeTpl),
-
-        initialize: function () {
-            this.render();
-        },
-
-        render: function () {
-            this.$el.html(this.template());
-        }
-    });
-
-    app.router.on("route:login", function () {
-        var loginView = new LoginView();
-        loginView.render();
-    });
-
-    app.router.on("route:register", function () {
-        var registerView = new RegisterView();
-        registerView.render();
-    });
-
     app.router.on("route:status", function () {
         $(".nav-pills li").removeClass("active");
         $('.status-pill').addClass('active');
 
-        console.log("test");
-        var runView = new WorkflowRunsView({collection: new WorkflowRuns()});
-        runView.render();
+        var statusView = new WorkflowRunsView({collection: new WorkflowRuns()});
+        this.navigateToView(statusView);
     });
 
     app.router.on("route:users", function () {
         var usersView = new UserManagementView({collection: new Users()});
-        usersView.render();
+        this.navigateToView(usersView);
     });
 
     app.router.on("route:deploy", function () {
         var deployView = new DeployPackagesView({collection: new Packages()});
-        deployView.render();
+        this.navigateToView(deployView);
     });
 
     app.router.on("route:workflow", function () {
         $(".nav-pills li").removeClass("active");
         $('.run-pill').addClass('active');
-        var workflowsView = new WorkflowsView({collection: workflows});
-        workflowsView.render();
-    });
-
-    app.router.on("route:home", function () {
-        var homeView = new HomeView();
-        homeView.render();
+        var workflowsView = new WorkflowsView({collection: new Workflows()});
+        console.log(workflowsView);
+        this.navigateToView(workflowsView);
     });
 
     app.router.on("route:run", function (name) {
-        new RunWorkflowView({ model : workflows.get(name)});
+        var currentView = app.router.currentView;
+        var runView = new RunWorkflowView({ model : currentView.collection.get(name)});
+        runView.render();
+        //this.navigateToView(runView);
         //new RunWorkflowView({ model : workflows.get(name)});
     });
 
     // Fetch list of workflows
-    var workflows = new Workflows();
+    //var workflows = new Workflows();
+    app.router.navigateToView(new WorkflowsView({ collection: new Workflows() }));
 
 });

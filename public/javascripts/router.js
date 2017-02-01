@@ -2,8 +2,10 @@ define([
     'app'
 ], function (app) {
     var WebRouter = Backbone.Router.extend({
+        currentView : null,
+
         routes: {
-            "": 'workflow',
+            "run": 'workflow',
             "login": 'login',
             "workflow/:name": "run",
             "status": 'status',
@@ -13,8 +15,16 @@ define([
             //"*actions": "defaultRoute"
         },
 
-        defaultRoute: function(actions) {
-            console.log(actions);
+        navigateToView: function(view) {
+            var current = this.currentView;
+            if (current) {
+                if (current.onBeforeClose)
+                    current.onBeforeClose();
+                current.remove();
+            }
+
+            this.currentView = view;
+            $('#container').html(view.render().el);
         }
     });
 

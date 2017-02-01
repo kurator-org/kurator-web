@@ -1,6 +1,7 @@
 package dao;
 
 import com.avaje.ebean.annotation.Transactional;
+import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import models.db.user.User;
 import models.db.workflow.*;
 
@@ -47,7 +48,8 @@ public class WorkflowDao {
     }
 
     public WorkflowResult findResultByWorkflowId(long id) {
-        return WorkflowResult.find.where().eq("workflow_run_id", id).findUnique();
+        WorkflowRun run = WorkflowRun.find.where().eq("id", id).findUnique();
+        return run.getResult();
     }
 
     public List<WorkflowRun> findUserWorkflowRuns(String uid) {
