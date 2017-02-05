@@ -97,6 +97,18 @@ public class Application extends Controller {
         );
     }
 
+    public Result help() {
+        return ok(
+                help.render()
+        );
+    }
+
+    public Result about() {
+        return ok(
+                about.render()
+        );
+    }
+
     public Result data() {
         WorkflowDefinition workflowDef1 = new WorkflowDefinition();
         workflowDef1.setDocumentation("https://github.com/kurator-org/kurator-validation/wiki/CSV-File-Darwinizer");

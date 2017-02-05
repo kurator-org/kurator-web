@@ -1,0 +1,38 @@
+@()
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Kurator Web</title>
+
+      <!-- Bootstrap CSS -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/lib/bootstrap/bootstrap.min.css")">
+
+      <!-- Application CSS -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/styles.css")">
+  </head>
+  <body>
+
+    @navbar()
+
+    <div id="container">
+      <h3>About Kurator</h3>
+
+      <p>Kurator, is an an open source toolkit for automated and semi-automated curation services to aid biodiversity research and beyond. KuratorWeb will consist of a user friendly web interface to configure and launch curation workflows while maintaining provenance, and a workflow platform for development of new curation services and workflow variations.</p>
+
+      <p>Kurator will facilitate digitization efforts through custom processing of raw data obtained from hardcopy specimen labels against existing services, including taxonomic name resolution, georeferencing, and duplicate specimen detection, as well as newly created customizable actors for appropriate controlled vocabularies to clean the data. Curation pipelines can be integrated with other workflows for analysis of ecological, evolutionary, phenological, genomic and related data, can be shared or repurposed easily, and can be made accessible for publication.</p>
+
+      <p>The Kurator project is a collaborative project led by The University of Illinois Urbana Champaign and Harvard University and other partners and funded by the National Science Foundation. Learn more about the project here (link to: <a href="http://wiki.datakurator.org/wiki" target="_blank">http://wiki.datakurator.org/wiki</a></p>
+
+      <p>Kurator: A Provenance-enabled Workflow Platform and Toolkit to Curate Biodiversity Data Collaborative <a href="https://nsf.gov/awardsearch/showAward?AWD_ID=1356438" target="_blank">NSF Awards 1356438</a> and <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1356751" target="_blank">1356751</a></p>
+    </div>
+
+      <!-- jQuery -->
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/lib/jquery/jquery-min.js")"></script>
+
+      <!-- Bootstrap -->
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/lib/bootstrap/bootstrap.min.js")"></script>
+  </body>
+</html>

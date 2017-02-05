@@ -11,6 +11,8 @@ GET     /builder                                controllers.Application.builder(
 GET     /summary/*id                            controllers.Application.summary(id : Long)
 
 GET     /workflows                              controllers.Application.test()
+GET     /about                                  controllers.Application.about()
+GET     /help                                   controllers.Application.help()
 GET     /auth                                   controllers.Application.auth()
 GET     /data                                   controllers.Application.data()
 

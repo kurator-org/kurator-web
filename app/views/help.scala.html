@@ -7,23 +7,31 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Kurator Web</title>
 
-    <!-- Bootstrap CSS -->
+      <!-- Bootstrap CSS -->
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/lib/bootstrap/bootstrap.min.css")">
 
-    <!-- Application CSS -->
+      <!-- Application CSS -->
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/styles.css")">
   </head>
   <body>
 
     @navbar()
 
-    <div id="container"></div>
+    <div id="container">
+      <p><i>Help page coming soon! Good place to start with here:</i></p>
+      <a href="http://wiki.datakurator.org/wiki/Kurator-Web_User_Documentation">http://wiki.datakurator.org/wiki/Kurator-Web_User_Documentation</a>
+    </div>
 
-    <!-- Play JavaScript routes -->
+      <!-- Play JavaScript routes -->
     <script type="text/javascript" src="@routes.Application.jsRoutes"></script>
 
-    <!-- RequireJS -->
+      <!-- RequireJS -->
     <script data-main="@routes.Assets.at("javascripts/main.js")" type="text/javascript" src="@routes.Assets.at("lib/requirejs/require.js")"></script>
 
+      <!-- jQuery -->
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/lib/jquery/jquery-min.js")"></script>
+
+      <!-- Bootstrap -->
+    <script type="text/javascript" src="@routes.Assets.at("javascripts/lib/bootstrap/bootstrap.min.js")"></script>
   </body>
 </html>

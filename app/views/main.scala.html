@@ -19,7 +19,7 @@
           @if(session.get("uid") != null) {
 
             <li class="active"><a href="@routes.Application.test()#run">Workflows</a></li>
-            <li><a class="disabled" href="@routes.Application.builder">Builder</a></li>
+            <li><a class="disabled" href="#">Builder</a></li>
 
             @if(session.get("user_role").equals("ADMIN")) {
               <li><a href="@routes.Application.admin()#users">Admin</a></li>
@@ -27,7 +27,7 @@
 
           }
 
-            <li><a href="#">Help <span class="glyphicon glyphicon-question-sign" ></span></a></li>
+            <li><a href="@routes.Application.help()">Help <span class="glyphicon glyphicon-question-sign" ></span></a></li>
             <li><a href="http://wiki.datakurator.net/Kurator-Web" target="_blank">Wiki <span class="glyphicon glyphicon-new-window"></span></a></li>
 
           </ul>

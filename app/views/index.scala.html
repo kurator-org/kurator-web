@@ -15,58 +15,34 @@
   </head>
   <body>
 
-    <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">Kurator Web</a>
-        </div>
-
-        <ul class="nav navbar-nav">
-
-          <li class="active"><a href="@routes.Application.index()">Home</a></li>
-
-          @if(session.get("uid") != null) {
-
-            <li><a href="@routes.Application.test()#run">Workflows</a></li>
-            <li><a href="@routes.Application.builder">Builder</a></li>
-
-            @if(session.get("user_role").equals("ADMIN")) {
-              <li><a href="@routes.Application.admin()#users">Admin</a></li>
-            }
-
-          }
-
-          <li><a href="#">Help <span class="glyphicon glyphicon-question-sign" ></span></a></li>
-          <li><a href="http://wiki.datakurator.net/Kurator-Web" target="_blank">Wiki <span class="glyphicon glyphicon-new-window"></span></a></li>
-
-        </ul>
-
-        @if(session.get("uid") != null) {
-
-          <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@session.get("username") <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
-                <li><a href="logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-              </ul>
-            </li>
-          </ul>
-          <p class="navbar-text navbar-right">Logged in as</p>
-
-        } else {
-          <form class="navbar-form navbar-right" role="search">
-            <a href="login" type="submit" class="btn btn-default">Login</a>
-            <a href="register" class="btn btn-default">Register</a>
-          </form>
-        }
-
-      </div>
-
-    </nav>
+    @navbar()
 
     <div id="container">
-      Your text here!
+      <h3>Home</h3>
+
+      <p>Kurator Web is a series of open source data curation tools that will run a given set of biodiversity data
+      against verified databases such as Catalogue of Life, Global Biodiversity Information Facility (GBIF),
+        Global Names Index (GNI) and others (<a href="#authorities">see full list here</a>). Kurator tools data quality tools include:
+        taxonomic name resolution, georeferencing, and duplicate specimen detection.</p>
+
+      <p>Checking your data against these databases using the Kurator tools will provide you with a “data
+      quality” report showing you possible errors that you can then correct = better data quality to help
+        facilitate digitization and biodiversity research!</p>
+
+      <img src="@routes.Assets.at("images/home.png")" />
+
+      <h3><a name="authorities">Authorities that Kurator checks against</a></h3>
+
+      <ul>
+        <li>Catalogue of Life (CoL) <a href="www.catalogueoflife.org">www.catalogueoflife.org</a></li>
+        <li>GEOLocate  <a href="www.museum.tulane.edu/geolocate">www.museum.tulane.edu/geolocate</a></li>
+      <li>Global Biodiversity Information Facility (GBIF) <a href="www.gbif.org">www.gbif.org</a></li>
+        <li>Global Names Index  (GNI) <a href="http://gni.globalnames.org">http://gni.globalnames.org</a></li>
+      <li>Flora of North America (FNA) <a href="www.floranorthamerica.org">www.floranorthamerica.org</a></li>
+        <li>Index Fungorum (IF) <a href="www.indexfungorum.org">www.indexfungorum.org</a></li>
+      <li>International Plants Names Index (IPNI) <a href="www.ipni.org">www.ipni.org</a></li>
+        <li>World Register of Marine Species (WoRMS) <a href="www.marinespecies.org">www.marinespecies.org</a></li>
+      </ul>
     </div>
 
       <!-- jQuery -->

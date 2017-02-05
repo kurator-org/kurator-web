@@ -1,0 +1,52 @@
+@()
+
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Kurator Web</a>
+      </div>
+
+      <ul class="nav navbar-nav">
+
+        <li><a href="@routes.Application.index()">Home</a></li>
+        <li><a href="@routes.Application.about()">About</a></li>
+
+        @if(session.get("uid") != null) {
+
+          <li><a href="@routes.Application.test()#run">Workflows</a></li>
+          <li><a class="disabled" href="#">Builder</a></li>
+
+          @if(session.get("user_role").equals("ADMIN")) {
+            <li><a href="@routes.Application.admin()#users">Admin</a></li>
+          }
+
+        }
+
+        <li><a href="@routes.Application.help()">Help <span class="glyphicon glyphicon-question-sign" ></span></a></li>
+        <li><a href="http://wiki.datakurator.net/Kurator-Web" target="_blank">Wiki <span class="glyphicon glyphicon-new-window"></span></a></li>
+
+      </ul>
+
+      @if(session.get("uid") != null) {
+
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@session.get("username") <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+              <li><a href="logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+        <p class="navbar-text navbar-right">Logged in as</p>
+
+      } else {
+        <form class="navbar-form navbar-right" role="search">
+          <a href="login" type="submit" class="btn btn-default">Login</a>
+          <a href="register" class="btn btn-default">Register</a>
+        </form>
+      }
+
+    </div>
+
+  </nav>
