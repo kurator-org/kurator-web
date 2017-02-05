@@ -1,6 +1,6 @@
 # --- !Ups
 
-insert into user (id, username, password, role, active) values(0, 'admin', '$2a$10$XWZwG/VQ4TNXroeHV5mqfuORCA.5ULZ17zxatXxmVuFQp1NWYoXuu', 'ADMIN', TRUE);
+insert into user (id, username, email, password, role, active) values(0, 'admin', 'lowery@gmail.com', '$2a$10$TXASsPiH2GhjqsGb8MMPiOkMLiZ5s6l7PO0xTTlXMweMz1PD5JoCa', 'ADMIN', TRUE);
 
 # --- !Downs
 

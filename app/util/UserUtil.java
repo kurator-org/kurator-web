@@ -9,7 +9,7 @@ import java.util.Random;
  * Created by lowery on 1/25/2017.
  */
 public class UserUtil {
-    private static final int GEN_PASS_LEN = 16; // Generated password length
+    private static final int GEN_PASS_LEN = 12; // Generated password length
 
     public static User authenticate(User user, String password) {
         if (user != null && BCrypt.checkpw(password, user.getPassword())) {
@@ -35,5 +35,11 @@ public class UserUtil {
             buf[idx] = symbols[random.nextInt(symbols.length)];
 
         return new String(buf);
+    }
+
+    public static void main(String[] args) {
+        String pass = generatePassword();
+        System.out.println(pass);
+        System.out.println(BCrypt.hashpw(pass, BCrypt.gensalt()));
     }
 }
