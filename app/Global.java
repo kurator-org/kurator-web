@@ -26,7 +26,7 @@ public class Global extends GlobalSettings {
 
     for (WorkflowRun run : stalled) {
       run.setEndTime(new Date());
-      run.setStatus(Status.ERROR);
+      run.setStatus(Status.ERRORS);
       run.save();
     }
   }  
