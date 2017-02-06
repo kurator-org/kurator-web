@@ -301,12 +301,14 @@ public class Workflows extends Controller {
         List<WorkflowRun> workflowRuns = workflowDao.findUserWorkflowRuns(uid);
 
         for (WorkflowRun run : workflowRuns) {
-            //boolean hasReport = run.getResult().getDqReport() != null;
-            boolean hasOutput = run.getResult() != null && run.getResult().getOutputText() != null;
-            boolean hasErrors = run.getResult() != null && run.getResult().getErrorText() != null;
+            boolean hasReport = run.getResult() != null && run.getResult().getDqReport() != null;
+            boolean hasOutput = run.getResult() != null && !run.getResult().getOutputText().isEmpty();
+            boolean hasErrors = run.getResult() != null && !run.getResult().getErrorText().isEmpty();
+
+            boolean hasResult = run.getResult() != null;
 
             RunResult result = new RunResult(run.getId(), run.getWorkflow().getTitle(), run.getStartTime(),
-                    run.getEndTime(), hasOutput, hasErrors, run.getStatus());
+                    run.getEndTime(), hasResult, hasOutput, hasErrors, hasReport, run.getStatus());
 
             results.add(result);
         }

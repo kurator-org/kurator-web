@@ -1,26 +1,30 @@
 <h2>Deploy workflows</h2>
 
-<form id="deploy-package" action="<%= jsRoutes.controllers.Workflows.deploy().url %>" method="post" enctype="multipart/form-data">
-  <input type="file" name="filename">
-  <input type="submit" value="Deploy">
+<form id="deploy-package" class="form-inline" action="<%= jsRoutes.controllers.Workflows.deploy().url %>" method="post" enctype="multipart/form-data">
+  <div class="form-group">
+    <input type="file" name="filename">
+  </div>
+  <button type="submit" class="btn btn-primary">Deploy</button>
 </form>
 
 <h2>Packages</h2>
-<table>
+<div style="float: left">
+<table class="table">
   <tr>
-    <th>Name</th><th>Last modified</th><th></th>
+    <th>Name</th><th>Last modified</th><th>Delete</th>
   </tr>
   <% console.log(packages) %>
   <% _.each(packages, function(pkg) { %>
 
   <tr>
     <td><%= pkg.name %></td>
-    <td><%= pkg.lastModified %></td>
-    <td>
-      <a href="<%= jsRoutes.controllers.Workflows.deletePackage(pkg.name) %>">Delete</a>
+    <td><%= new Date(pkg.lastModified) %></td>
+    <td style="text-align: center">
+      <a href="<%= jsRoutes.controllers.Workflows.deletePackage(pkg.name).url %>"><span class="glyphicon glyphicon-trash"></span></a>
     </td>
   </tr>
 
   <% }); %>
 
 </table>
+</div>

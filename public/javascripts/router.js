@@ -12,7 +12,7 @@ define([
             "users": 'users',
             "runs/:uid": "runs",
             "deploy": 'deploy',
-            "report": 'report'
+            "report/:runId": 'report'
             //"*actions": "defaultRoute"
         },
 
