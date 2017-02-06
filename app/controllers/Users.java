@@ -206,10 +206,11 @@ public class Users extends Controller {
         String workshopName = form.get("name")[0];
         int numUsers = Integer.parseInt(form.get("numUsers")[0]);
 
+        System.out.println("workshop: " + workshopName + ", numUsers: " + numUsers);
         flash("activate_success", "Created \"" + workshopName + "\" and assigned " + numUsers + " guest accounts");
 
         return redirect(
-                routes.Users.manage()
+                routes.Application.admin()
         );
     }
 

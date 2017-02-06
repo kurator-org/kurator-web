@@ -296,9 +296,9 @@ public class Workflows extends Controller {
      *
      * @return
      */
-    public Result status() {
+    public Result status(String uid) {
         List<RunResult> results = new ArrayList<>();
-        List<WorkflowRun> workflowRuns = workflowDao.findUserWorkflowRuns(session().get("uid"));
+        List<WorkflowRun> workflowRuns = workflowDao.findUserWorkflowRuns(uid);
 
         for (WorkflowRun run : workflowRuns) {
             //boolean hasReport = run.getResult().getDqReport() != null;

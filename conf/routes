@@ -59,7 +59,7 @@ POST    /workflows/delete                       controllers.Workflows.deletePack
 
 # Workflow run routes for managing user runs and artifacts (result, report, logs)
 # ~~~~
-GET     /run/status                             controllers.Workflows.status()
+GET     /run/status                             controllers.Workflows.status(uid : String)
 
 GET     /run/result/*id                         controllers.Workflows.resultArchive(id : Long)
 GET     /run/report/*id                         controllers.Workflows.report(id : Long)

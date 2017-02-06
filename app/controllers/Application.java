@@ -49,6 +49,7 @@ public class Application extends Controller {
                         routes.javascript.Users.manage(),
                         routes.javascript.Users.manageUsers(),
                         routes.javascript.Users.registerSubmit(),
+                        routes.javascript.Users.createWorkshop(),
 
                         routes.javascript.Users.authenticate()
                 )

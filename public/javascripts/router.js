@@ -10,7 +10,9 @@ define([
             "workflow/:name": "run",
             "status": 'status',
             "users": 'users',
-            "deploy": 'deploy'
+            "runs/:uid": "runs",
+            "deploy": 'deploy',
+            "report": 'report'
             //"*actions": "defaultRoute"
         },
 

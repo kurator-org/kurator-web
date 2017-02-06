@@ -28,9 +28,9 @@ require([
     'text!templates/users.html',
     'text!templates/register.html',
     'text!templates/deploy.html',
-    'text!templates/home.html'
+    'text!templates/report.html'
 ], function (app, WebRouter, SessionModel, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, usersTpl, registerTpl,
-             deployTpl, homeTpl) {
+             deployTpl, reportTpl) {
 
     app.router = new WebRouter();
     app.session = new SessionModel({});
@@ -121,8 +121,8 @@ require([
     });
 
     var WorkflowRuns = Backbone.Collection.extend({
-        uid: 0,
         url : function() {
+            console.log("userid:" + this.uid);
             return jsRoutes.controllers.Workflows.status(this.uid).url
         },
         comparator: function(a, b) {
@@ -259,6 +259,33 @@ require([
                 });
             });
 
+            // $('#create-workshop-form').submit(function (event) {
+            //     event.preventDefault();
+            //     console.log("submitting form...");
+            //
+            //     //grab all form data
+            //     var formData = new FormData($(this)[0]);
+            //
+            //     $.ajax({
+            //         url: $(this).attr('action'),
+            //         type: 'POST',
+            //         data: formData,
+            //         async: false,
+            //         cache: false,
+            //         contentType: false,
+            //         processData: false,
+            //         success: function (data) {
+            //             console.log(data);
+            //         }
+            //     });
+            //
+            //     return false;
+            // });
+            //
+            $('#create-btn').click(function (event) {
+                $('#create-workshop-form').submit();
+             });
+
             return this;
         }
     });
@@ -281,17 +308,46 @@ require([
         }
     });
 
+    var ReportView = Backbone.View.extend({
+        template: _.template(reportTpl),
+
+        initialize: function () {
+            //this.listenTo(this.collection, 'update', this.render);
+            //this.collection.fetch();
+        },
+
+        render: function () {
+            //console.log(this.collection.models);
+            this.$el.html(this.template());
+
+            return this;
+        }
+    });
+
     app.router.on("route:status", function () {
         $(".nav-pills li").removeClass("active");
         $('.status-pill').addClass('active');
 
-        var statusView = new WorkflowRunsView({collection: new WorkflowRuns()});
+        console.log(window.uid);
+
+        var runs =  new WorkflowRuns();
+        runs.uid = window.uid;
+        var statusView = new WorkflowRunsView({collection: runs });
         this.navigateToView(statusView);
     });
 
     app.router.on("route:users", function () {
         var usersView = new UserManagementView({collection: new Users()});
         this.navigateToView(usersView);
+    });
+
+    app.router.on("route:runs", function (uid) {
+        console.log(uid);
+        var runs = new WorkflowRuns();
+        runs.uid = uid;
+
+        var statusView = new WorkflowRunsView({collection: runs});
+        this.navigateToView(statusView);
     });
 
     app.router.on("route:deploy", function () {
@@ -313,6 +369,11 @@ require([
         runView.render();
         //this.navigateToView(runView);
         //new RunWorkflowView({ model : workflows.get(name)});
+    });
+
+    app.router.on("route:report", function () {
+        var reportView = new ReportView();
+        this.navigateToView(reportView);
     });
 
     // Fetch list of workflows
