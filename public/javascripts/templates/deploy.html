@@ -20,7 +20,7 @@
     <td><%= pkg.name %></td>
     <td><%= new Date(pkg.lastModified) %></td>
     <td style="text-align: center">
-      <a href="<%= jsRoutes.controllers.Workflows.deletePackage(pkg.name).url %>"><span class="glyphicon glyphicon-trash"></span></a>
+      <a class="delete-btn" id="delete-<%= pkg.name %>" href="#"><span class="glyphicon glyphicon-trash"></span></a>
     </td>
   </tr>
 

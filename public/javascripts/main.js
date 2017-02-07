@@ -312,6 +312,25 @@ require([
             console.log(this.collection.models);
             this.$el.html(this.template({packages : this.collection.toJSON()}));
 
+            var that = this;
+            $('.delete-btn').click(function (event) {
+                var package = $(this).attr('id').substr(7);
+
+                $.ajax({
+                    type: "POST",
+                    //the url where you want to sent the userName and password to
+                    url: jsRoutes.controllers.Workflows.deletePackage(package).url,
+                    dataType: 'json',
+                    async: false,
+                    contentType: 'application/json',
+                    //json object to sent to the authentication url
+                    data: JSON.stringify({package: package}),
+                    success: function(data) {
+                        that.collection.fetch();
+                    }
+                });
+            });
+
             return this;
         }
     });
@@ -335,6 +354,9 @@ require([
     app.router.on("route:status", function () {
         $(".nav-pills li").removeClass("active");
         $('.status-pill').addClass('active');
+
+        $('.breadcrumb .active').remove();
+        $('.breadcrumb').append('<li class="active"><a href="#status">Status</a></li>');
 
         var runs =  new WorkflowRuns();
 
@@ -363,6 +385,12 @@ require([
     });
 
     app.router.on("route:deploy", function () {
+        $(".nav-pills li").removeClass("active");
+        $('.deploy-pill').addClass('active');
+
+        $('.breadcrumb .active').remove();
+        $('.breadcrumb').append('<li class="active"><a href="#deploy">Deploy</a></li>');
+
         var deployView = new DeployPackagesView({collection: new Packages()});
         this.navigateToView(deployView);
     });
@@ -370,6 +398,10 @@ require([
     app.router.on("route:workflow", function () {
         $(".nav-pills li").removeClass("active");
         $('.run-pill').addClass('active');
+
+        $('.breadcrumb .active').remove();
+        $('.breadcrumb').append('<li class="active"><a href="#run">Run</a></li>');
+
         var workflowsView = new WorkflowsView({collection: new Workflows()});
         console.log(workflowsView);
         this.navigateToView(workflowsView);
@@ -385,6 +417,8 @@ require([
 
     app.router.on("route:report", function (runId) {
         var report = new ReportSummary();
+
+        $('.breadcrumb').append('<li class="active"><a href="#report/' + runId + '">View Report</a></li>');
 
         console.log("runId: " + runId);
         report.runId = runId;

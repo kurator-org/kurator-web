@@ -13,7 +13,6 @@ GET     /workflows                              controllers.Application.test()
 GET     /about                                  controllers.Application.about()
 GET     /help                                   controllers.Application.help()
 GET     /auth                                   controllers.Application.auth()
-GET     /data                                   controllers.Application.data()
 
 GET     /admin                                  controllers.Application.admin()
 

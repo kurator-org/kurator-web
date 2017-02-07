@@ -28,23 +28,46 @@
     <td>
 
       <div class="btn-group">
-        <button type="button" class="btn btn-primary btn-xs <% if (user.username == "admin") { %> disabled <% } %>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <% if (user.username == "admin" || user.id == uid) { %>
+
+          <button type="button" class="btn btn-primary btn-xs disabled">
+            <b><span><%= user.role %></span></b>
+          </button>
+
+        <% } else { %>
+
+        <button type="button" class="btn btn-primary btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <b><span id="role_value_<%= user.username %>"><%= user.role %></span></b>
         </button>
         <ul id="role_<%= user.username %>" class="dropdown-menu">
           <li><a href="#">USER</a></li>
           <li><a href="#">ADMIN</a></li>
         </ul>
+
+        <% } %>
       </div>
 
 
 
     </td>
     <td>
-      <% if (user.active) { %>
-      <button type="button" id="status_<%= user.username %>" class="btn btn-success btn-xs status-btn <% if (user.username == "admin") { %> disabled <% } %>"><b>Active</b></button>
+      <% if (user.username == "admin" || user.id == uid) { %>
+
+        <% if (user.active) { %>
+        <button type="button" class="btn btn-success btn-xs status-btn disabled"><b>Active</b></button>
+        <% } else { %>
+        <button type="button" class="btn btn-warning btn-xs status-btn disabled"><b>Inactive</b></button>
+        <% } %>
+
       <% } else { %>
-      <button type="button" id="status_<%= user.username %>" class="btn btn-warning btn-xs status-btn <% if (user.username == "admin") { %> disabled <% } %>"><b>Inactive</b></button>
+
+        <% if (user.active) { %>
+
+        <button type="button" id="status_<%= user.username %>" class="btn btn-success btn-xs status-btn"><b>Active</b></button>
+        <% } else { %>
+        <button type="button" id="status_<%= user.username %>" class="btn btn-warning btn-xs status-btn"><b>Inactive</b></button>
+        <% } %>
+
       <% } %>
     </td>
   </tr>
