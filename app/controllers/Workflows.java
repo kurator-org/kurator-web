@@ -116,9 +116,15 @@ public class Workflows extends Controller {
 
         //  Set the form definition field values from the request data
         Map<String, String[]> data = body.asFormUrlEncoded();
+        String runName = null;
+
         for (String key : data.keySet()) {
-            BasicField field = workflowDef.getField(key);
-            field.setValue(data.get(key));
+            if (key.equals("run-name")) {
+                runName = data.get(key)[0];
+            } else {
+                BasicField field = workflowDef.getField(key);
+                field.setValue(data.get(key));
+            }
         }
 
         // Transfer form field data to workflow settings map
@@ -135,7 +141,7 @@ public class Workflows extends Controller {
                 workflowDef.getYamlFile());
 
         // Run the workflow
-        long runId = runYamlWorkflow(workflow, settings);
+        long runId = runYamlWorkflow(runName, workflow, settings);
 
         // The response json contains the workflow run id for later reference
         ObjectNode response = Json.newObject();
@@ -179,7 +185,7 @@ public class Workflows extends Controller {
      * @param settings A map of the settings provided as input to the runner
      * @return json containing the id of this run
      */
-    private long runYamlWorkflow(Workflow workflow, Map<String, Object> settings) {
+    private long runYamlWorkflow(String name, Workflow workflow, Map<String, Object> settings) {
         // Load workflow yaml
         InputStream yamlStream = loadYamlStream(workflow.getYamlFile());
 
@@ -204,7 +210,7 @@ public class Workflows extends Controller {
             WorkflowRunner runner = new YamlStreamWorkflowRunner()
                     .yamlStream(yamlStream).configure(config);
 
-            runnable.init(workflow, user, runner, errStream, outStream);
+            runnable.init(name, workflow, user, runner, errStream, outStream);
 
             runner.apply(settings)
                     .outputStream(new PrintStream(outStream))
@@ -289,7 +295,7 @@ public class Workflows extends Controller {
 
             boolean hasResult = run.getResult() != null;
 
-            RunResult result = new RunResult(run.getId(), run.getWorkflow().getTitle(), run.getStartTime(),
+            RunResult result = new RunResult(run.getId(), run.getName(), run.getWorkflow().getTitle(), run.getStartTime(),
                     run.getEndTime(), hasResult, hasOutput, hasErrors, hasReport, run.getStatus());
 
             results.add(result);

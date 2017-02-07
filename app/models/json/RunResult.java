@@ -9,6 +9,7 @@ import java.util.Date;
  */
 public class RunResult {
     private long id;
+    private String name;
     private String workflow;
 
     private Date startDate;
@@ -21,9 +22,10 @@ public class RunResult {
 
     private Status status;
 
-    public RunResult(long id, String workflow, Date startDate, Date endDate, boolean hasResult, boolean hasOutput,
+    public RunResult(long id, String name, String workflow, Date startDate, Date endDate, boolean hasResult, boolean hasOutput,
                      boolean hasErrors, boolean hasReport, Status status) {
         this.id = id;
+        this.name = name;
         this.workflow = workflow;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -40,6 +42,14 @@ public class RunResult {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getWorkflow() {
