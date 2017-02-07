@@ -82,15 +82,6 @@ public class Application extends Controller {
         );
     }
 
-    /**
-     * DQ Reports and workflow run summary page
-     */
-    public Result summary(long runId) {
-        return ok(
-                summary.render(runId)
-        );
-    }
-
     //@Security.Authenticated(SecuredBackbone.class)
     public Result test() {
         return ok(

@@ -218,24 +218,6 @@ public class Workflows extends Controller {
     }
 
     /**
-     * Generic workflow input form page.
-     *
-     * @param name workflow name
-     */
-    @Security.Authenticated(Secured.class)
-    public Result workflow(String name) {
-        WorkflowDefinition workflowDef = formDefinitionForWorkflow(name);
-
-        if (workflowDef != null) {
-            return ok(
-                    workflow.render(workflowDef)
-            );
-        } else {
-            return notFound("No workflow found for name " + name);
-        }
-    }
-
-    /**
      * Return the result archive containing artifacts produced by the workflow run.
      *
      * @param runId identifies the workflow run by id
