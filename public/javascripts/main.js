@@ -183,6 +183,12 @@ require([
         }
     });
 
+    var ReportSummary = Backbone.Model.extend({
+        url : function() {
+            return jsRoutes.controllers.Workflows.report(this.runId).url;
+        }
+    });
+
     var Users = Backbone.Collection.extend({
         url : jsRoutes.controllers.Users.manage().url,
 
@@ -305,6 +311,8 @@ require([
         render: function () {
             console.log(this.collection.models);
             this.$el.html(this.template({packages : this.collection.toJSON()}));
+
+            return this;
         }
     });
 
@@ -312,13 +320,13 @@ require([
         template: _.template(reportTpl),
 
         initialize: function () {
-            //this.listenTo(this.collection, 'update', this.render);
-            //this.collection.fetch();
+            this.listenTo(this.model, 'change', this.render);
+            this.model.fetch();
         },
 
         render: function () {
-            //console.log(this.collection.models);
-            this.$el.html(this.template());
+            console.log(this.model.toJSON());
+            this.$el.html(this.model.toJSON());
 
             return this;
         }
@@ -371,8 +379,12 @@ require([
         //new RunWorkflowView({ model : workflows.get(name)});
     });
 
-    app.router.on("route:report", function () {
-        var reportView = new ReportView();
+    app.router.on("route:report", function (runId) {
+        var report = new ReportSummary();
+
+        console.log("runId: " + runId);
+        report.runId = runId;
+        var reportView = new ReportView({ model : report});
         this.navigateToView(reportView);
     });
 

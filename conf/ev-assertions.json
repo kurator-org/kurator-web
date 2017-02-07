@@ -1,0 +1,115 @@
+{
+  "measures": [
+    {
+      "label": "Event Date Completeness",
+
+      "context": {
+        "name": "eventDateIsNotEmpty"
+      },
+
+      "dimension": "Completeness",
+      "specification": "Check that the value of ${context.fieldsActedUpon} is not empty.",
+      "mechanism": "Kurator: ${actor.class} - ${actor.name}"
+    },
+    {
+      "label" : "Event Date Contains Time",
+
+      "context": {
+        "name": "eventDateContainsEventTime"
+      },
+
+      "dimension": "Completeness",
+      "specification": "Check that ${context.fieldsActedUpon} matches an ISO date that contains a time",
+      "mechanism": "Kurator: ${actor.class} - ${actor.name}"
+    },
+    {
+      "label": "Event Date Precision",
+
+      "context": {
+        "name": "durationInSeconds"
+      },
+
+      "dimension": "Precision",
+      "specification": "For values of ${context.fieldsActedUpon} specified as a date range, calculate the duration in seconds.",
+      "mechanism": "Kurator: ${actor.class} - ${actor.name}"
+    }
+  ],
+
+  "validations": [
+    {
+      "context": {
+        "name": "eventDateIsConsistent"
+      },
+
+      "criterion": "The value for eventDate must be consistent with atomic parts",
+      "specification": "Check that the value for ${context.fieldsActedUpon} is consistent with the values for ${context.fieldsConsulted}.",
+      "mechanism": "Kurator: ${actor.class} - ${actor.name}"
+    },
+    {
+      "context": {
+        "name": "checkVerbatimEventDate"
+      },
+
+      "criterion": "The value for eventDate must be consistent with verbatimEventDate",
+      "specification": "Check that the value of ${context.fieldsConsulted} parses to the same value as ${context.fieldsActedUpon}.",
+      "mechanism": "Kurator: ${actor.class} - ${actor.name}"
+    },
+    {
+      "context": {
+        "name": "eventDateIsConsistentWithEventTime"
+      },
+
+      "criterion": "The time specified as part of eventDate must be consistent with eventTime",
+      "specification": "Check that the time extracted from ${context.fieldsActedUpon} matches the value for ${context.fieldsConsulted}",
+      "mechanism": "Kurator: ${actor.class} - ${actor.name}"
+    },
+    {
+      "context": {
+        "name": "eventDateSpecificToDay"
+      },
+
+      "criterion": "dwc:eventDate specifies a date to a day or less.",
+      "specification": "Check that the value for ${context.fieldsActedUpon} specifies a duration of one day or less.",
+      "mechanism": "Kurator: ${actor.class} - ${actor.name}"
+    },
+    {
+      "context": {
+        "name": "eventDateSpecificToMonthScale"
+      },
+
+      "criterion": "dwc:eventDate specifies a date range of between a day and a month.",
+      "specification": "Check that the value for ${context.fieldsActedUpon} specifies a duration of 31 days or less",
+      "mechanism": "Kurator: ${actor.class} - ${actor.name}"
+    },
+    {
+      "context": {
+        "name": "eventDateSpecificToYearScale"
+      },
+
+      "criterion": "dwc:eventDate specifies a date range of between a month and a year.",
+      "specification": "Check that the value for ${context.fieldsActedUpon} specifies a duration of one year or less",
+      "mechanism": "Kurator: ${actor.class} - ${actor.name}"
+    },
+    {
+      "context": {
+        "name": "eventDateSpecificToDecadeScale"
+      },
+
+      "criterion": "dwc:eventDate specifies a date range of between a year and a decade.",
+      "specification": "Check that the value for ${context.fieldsActedUpon} specifies a duration of 10 years or less",
+      "mechanism": "Kurator: ${actor.class} - ${actor.name}"
+    }
+  ],
+
+  "improvements": [
+    {
+      "context": {
+        "name": "eventDateFromAtomicParts"
+      },
+
+      "enhancement": "Recommendation to fill in ${context.fieldsActedUpon} based on values from atomic fields ${context.fieldsConsulted}",
+      "specification": "specification text",
+      "mechanism": "Kurator: ${actor.class} - ${actor.name}"
+    }
+  ]
+}

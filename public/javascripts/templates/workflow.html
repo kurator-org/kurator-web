@@ -3,16 +3,16 @@
 
     <div class="bs-callout bs-callout-primary" style="padding-left: 3em">
 
-      <h4 style="display: inline; margin-left: -1em">
+      <h4 style="float:left; margin-left: -1em; line-height: 2em;">
         <a href="<%= def.documentation %>" target="_blank">
           <span class="glyphicon glyphicon-link" style="padding-right: 0.5em"></span>
         </a><%= def.title %></h4>
 
-      <div style="float:right; padding-left: 10px" >
-        <a href="#workflow/<%= def.name %>" class="btn btn-primary">Run <span class="glyphicon glyphicon-play"></span></a>
+      <div style="float:left; padding-left: 20px;" >
+        <a href="#workflow/<%= def.name %>" class="btn btn-primary btn-sm">Run <span class="glyphicon glyphicon-play"></span></a>
       </div>
 
-      <div style="margin-left: 0.7em; margin-top: 0.5em; font-size: 1em"><%= def.instructions %></div>
+      <div style="clear: both; margin-left: 0.7em; font-size: 1em"><%= def.instructions %></div>
     </div>
 
     <% }); %>
