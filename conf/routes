@@ -8,13 +8,11 @@ GET     /                                       controllers.Application.index()
 GET     /jsroutes                               controllers.Application.jsRoutes()
 
 GET     /builder                                controllers.Application.builder()
-GET     /summary/*id                            controllers.Application.summary(id : Long)
 
 GET     /workflows                              controllers.Application.test()
 GET     /about                                  controllers.Application.about()
 GET     /help                                   controllers.Application.help()
 GET     /auth                                   controllers.Application.auth()
-GET     /data                                   controllers.Application.data()
 
 GET     /admin                                  controllers.Application.admin()
 
@@ -31,9 +29,6 @@ POST    /authenticate                           controllers.Users.authenticate()
 GET     /reset                                  controllers.Users.reset()
 POST    /reset                                  controllers.Users.resetPassword()
 
-GET     /password                               controllers.Users.change()
-POST    /password                               controllers.Users.changePassword()
-
 GET     /uploads                                controllers.Users.listUploads()
 
 # Admin and user management, user accounts and user groups
@@ -41,14 +36,10 @@ GET     /uploads                                controllers.Users.listUploads()
 GET     /admin/users                            controllers.Users.manage()
 POST    /admin/users                            controllers.Users.manageUsers()
 
-GET     /admin/groups                           controllers.Users.workshop()
 POST    /admin/groups                           controllers.Users.createWorkshop()
-
-GET     /admin/viewruns                         controllers.Users.userRuns()
 
 # Workflow management routes, package deployment and workflow metadata
 # ~~~~
-GET     /workflow/*name                         controllers.Workflows.workflow(name: String)
 POST    /workflow/*name                         controllers.Workflows.runWorkflow(name: String)
 
 GET     /workflows/deploy                       controllers.Workflows.deploy()

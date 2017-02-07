@@ -14,12 +14,13 @@ import java.util.List;
 public class WorkflowDao {
 
     @Transactional
-    public WorkflowRun createWorkflowRun(Workflow workflow, User user, Date startTime) {
+    public WorkflowRun createWorkflowRun(String name, Workflow workflow, User user, Date startTime) {
         WorkflowRun run = new WorkflowRun();
         run.setUser(user);
         run.setWorkflow(workflow);
         run.setStartTime(startTime);
         run.setStatus(Status.RUNNING);
+        run.setName(name);
         run.save();
 
         return run;

@@ -35,7 +35,7 @@ public class AsyncWorkflowRunnable implements Runnable {
     private List<ResultFile> resultFiles = new ArrayList<>();
     private String dqReportFile;
 
-    public synchronized void init(Workflow workflow, User user, WorkflowRunner runner, ByteArrayOutputStream errStream, ByteArrayOutputStream outStream) {
+    public synchronized void init(String name, Workflow workflow, User user, WorkflowRunner runner, ByteArrayOutputStream errStream, ByteArrayOutputStream outStream) {
         this.errStream = errStream;
         this.outStream = outStream;
         this.runner = runner;
@@ -44,7 +44,7 @@ public class AsyncWorkflowRunnable implements Runnable {
         this.yamlFile = workflow.getYamlFile();
         this.startTime = new Date(); // Workflow run start time
 
-        run = workflowDao.createWorkflowRun(workflow, user, startTime);
+        run = workflowDao.createWorkflowRun(name, workflow, user, startTime);
     }
 
     public long getRunId() {

@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import views.html.*;
-import views.html.adminviews.*;
 
 /**
  * Created by lowery on 1/25/2017.
@@ -147,12 +146,6 @@ public class Users extends Controller {
         );
     }
 
-    public Result change() {
-        return ok(
-                changepw.render(formFactory.form(ChangePass.class))
-        );
-    }
-
     public Result manage() {
         List<User> users = userDao.findAllUsers();
 
@@ -174,29 +167,6 @@ public class Users extends Controller {
         //flash("activate_success", "Updated user(s) active status!");
 
         return ok(Json.toJson(userMgmt));
-    }
-
-    /**
-     * Action to process the change password form submission for the currently logged in user.
-     */
-    public Result changePassword() {
-        Form<ChangePass> form = formFactory.form(ChangePass.class).bindFromRequest();
-
-        if (form.hasErrors()) {
-            return badRequest(changepw.render(form));
-        }
-
-        ChangePass changePass = form.get();
-        userDao.updatePassword(request().username(), changePass.getPassword());
-
-        flash("change_success", "Password successfully changed!");
-        return redirect(
-                routes.Users.change()
-        );
-    }
-
-    public Result workshop() {
-        return ok(workshop.render());
     }
 
     public Result createWorkshop() {
@@ -254,13 +224,6 @@ public class Users extends Controller {
 
         return redirect(
                 routes.Users.reset()
-        );
-    }
-
-    public Result userRuns() {
-        List<User> users = userDao.findAllUsers();
-        return ok(
-                viewruns.render(users)
         );
     }
 

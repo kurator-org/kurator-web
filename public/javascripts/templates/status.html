@@ -3,7 +3,8 @@
   <tbody>
   <tr>
     <th></th>
-    <th>Workflow Run</th>
+    <th>Name</th>
+    <th>Workflow</th>
     <th>Start Time</th>
     <th>End Time</th>
     <th>Status</th>
@@ -18,6 +19,7 @@
 
   <tr>
     <td><input type="checkbox"></td>
+    <td><%= run.name ? run.name : "Workflow Run #" + run.id %></td>
     <td><%= run.workflow %></td>
     <td><%= new Date(run.startDate).toLocaleString() %></td>
     <td><% if (run.endDate) { %><%= new Date(run.endDate).toLocaleString() %><% } else { %><i style="color: #777">Unavailable</i><% } %></td>

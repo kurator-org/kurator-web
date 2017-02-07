@@ -16,6 +16,8 @@ public class WorkflowRun extends Model {
     @Id
     private Long id;
 
+    private String name;
+
     @ManyToOne
     private Workflow workflow;
 
@@ -32,6 +34,14 @@ public class WorkflowRun extends Model {
 
     public Long getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Workflow getWorkflow() {

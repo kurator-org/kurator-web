@@ -1,6 +1,14 @@
-<i><%= instructions %></i>
-
 <form id="run-workflow" action="<%= jsRoutes.controllers.Workflows.runWorkflow(name).url %>" method="POST" enctype="multipart/form-data">
+
+  <div class="form-group">
+    <label for="run-name">Workflow Run Name</label>
+    <input type="text" class="form-control" id="run-name" name="run-name">
+    <p class="help-block">Name your workflow run (optional)</p>
+  </div>
+
+  <hr />
+
+  <i><%= instructions %></i>
 
   <% _.each(fields, function(field) { %>
   <div class="form-group workflow-form-field">
