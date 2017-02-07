@@ -22,6 +22,7 @@ require([
     'app',
     'router',
     'models/session',
+    'ffdq',
     'text!templates/workflow.html',
     'text!templates/run.html',
     'text!templates/login.html',
@@ -30,7 +31,7 @@ require([
     'text!templates/register.html',
     'text!templates/deploy.html',
     'text!templates/report.html'
-], function (app, WebRouter, SessionModel, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, usersTpl, registerTpl,
+], function (app, WebRouter, SessionModel, FFDQPostProcessor, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, usersTpl, registerTpl,
              deployTpl, reportTpl) {
 
     app.router = new WebRouter();
@@ -345,20 +346,38 @@ require([
         },
 
         render: function () {
-            console.log(this.model.toJSON());
-            this.$el.html(this.template());
+            this.$el.html('');
 
-            var data = [4, 8, 15, 16, 23, 42];
+            // Tooltip div
+            this.$el.append('<div id="tooltip" class="hidden"><p><span id="value">100</span></p></div>');
 
-            var chart = d3.select(".panel-body")
-                .append("div")
-                .attr("class", "chart");
+            var measures = this.model.toJSON();
 
-            chart.selectAll("div")
-                 .data(data)
-               .enter().append("div")
-                 .style("width", function(d) { return d * 10 + "px"; })
-                 .text(function(d) { return d; });
+            //measures.forEach(function(measure) {
+
+                var measure = {
+                    "id": 0,
+                    "title": "Event Date Completeness",
+                    "specification": "Check that the value of dwc:eventDate is not empty.",
+                    "mechanism": "Kurator: DateValidator",
+
+                    "before": {
+                        "complete": 2,
+                        "incomplete": 10
+                    },
+                    "after": {
+                        "complete": 6,
+                        "incomplete": 6
+                    },
+                    "total": 12
+                };
+
+            this.$el.append(this.template({ measure: measure })); // panel
+
+                console.log(measure);
+                var postprocessor = new FFDQPostProcessor('#chart', measure);
+                postprocessor.renderBinarySummary();
+            //});
 
             return this;
         }
