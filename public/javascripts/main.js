@@ -5,7 +5,8 @@ require.config({
         'underscore'            : 'lib/underscore/underscore-min',
         'backbone'              : 'lib/backbone/backbone-min',
         'paper'                 : 'lib/paper/paper-core',
-        'text'                  : 'lib/requirejs-text/text'
+        'text'                  : 'lib/requirejs-text/text',
+        'd3'                    : 'http://d3js.org/d3.v3.min'
     },
 
     // non-AMD lib
@@ -326,7 +327,19 @@ require([
 
         render: function () {
             console.log(this.model.toJSON());
-            this.$el.html(this.model.toJSON());
+            this.$el.html(this.template());
+
+            var data = [4, 8, 15, 16, 23, 42];
+
+            var chart = d3.select(".panel-body")
+                .append("div")
+                .attr("class", "chart");
+
+            chart.selectAll("div")
+                 .data(data)
+               .enter().append("div")
+                 .style("width", function(d) { return d * 10 + "px"; })
+                 .text(function(d) { return d; });
 
             return this;
         }

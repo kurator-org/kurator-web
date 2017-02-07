@@ -1,8 +1,9 @@
 define([
     'jquery',
     'underscore',
-    'backbone'
-], function ($, _, Backbone) {
+    'backbone',
+    'd3'
+], function ($, _, Backbone, d3) {
 
     // app globals
     var app = { };

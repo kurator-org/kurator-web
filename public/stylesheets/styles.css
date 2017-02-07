@@ -14,6 +14,17 @@ body {
     background-color: #FFF;
 }
 
+/* FFDQ report summary */
+
+.chart div {
+    font: 10px sans-serif;
+    background-color: steelblue;
+    text-align: right;
+    padding: 10px;
+    margin: 1px;
+    color: white;
+}
+
 /* Bootstrap style callouts */
 
 .bs-callout {
