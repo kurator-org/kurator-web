@@ -6,7 +6,6 @@
 
 <table class="table">
   <tr>
-    <th></th>
     <th>Username</th>
     <th>Fullname</th>
     <th>Email</th>
@@ -20,7 +19,6 @@
   <% _.each(users, function(user) { %>
 
   <tr>
-    <td><a href="#runs/<%= user.id %>"><span class=" glyphicon glyphicon-eye-open" style="font-size: 1.3em"></span></a></td>
     <td><%= user.username %></td>
     <td><%= user.firstname %> <%= user.lastname %></td>
     <td><%= user.email %></td>

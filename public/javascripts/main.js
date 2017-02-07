@@ -71,8 +71,8 @@ require([
 
         render: function () {
             //console.log(this.model.toJSON());
-            $('.modal-title').html(this.model.get('title'));
-           $('.modal-body').html(this.template(this.model.toJSON()));
+            $('#run-modal-title').html(this.model.get('title'));
+           $('#run-modal-body').html(this.template(this.model.toJSON()));
 
             $('#run-workflow').submit(function (event) {
                 event.preventDefault();
@@ -98,23 +98,23 @@ require([
                 return false;
             });
 
-            $('.modal').on('hidden.bs.modal', function (e) {
+            $('#run-modal').on('hidden.bs.modal', function (e) {
                 app.router.navigate("#", {trigger: true});
             });
 
             $('#run-btn').on('click', function (e) {
 
-                $('.modal').on('hidden.bs.modal', function (e) {
+                $('#run-modal').on('hidden.bs.modal', function (e) {
                     app.router.navigate("status", {trigger: true});
                 });
 
                 $('.progress').show();
                 $('#run-workflow').submit();
-                $('.modal').modal('toggle');
+                $('#run-modal').modal('toggle');
 
             });
 
-            $('.modal').modal({show: true});
+            $('#run-modal').modal({show: true});
 
             //this.$el.html(this.template(this.model.toJSON()));
         }
@@ -336,10 +336,14 @@ require([
         $(".nav-pills li").removeClass("active");
         $('.status-pill').addClass('active');
 
-        console.log(window.uid);
-
         var runs =  new WorkflowRuns();
-        runs.uid = window.uid;
+
+        if (app.view_as) {
+            runs.uid = app.view_as;
+        } else {
+            runs.uid = window.uid;
+        }
+
         var statusView = new WorkflowRunsView({collection: runs });
         this.navigateToView(statusView);
     });
@@ -391,5 +395,56 @@ require([
     // Fetch list of workflows
     //var workflows = new Workflows();
     //app.router.navigateToView(new WorkflowsView({ collection: new Workflows() }));
+
+    $('#user-select-btn').click(function (event) {
+        var userlist = new Users();
+        userlist.fetch({
+            success: function (data) {
+                var user = data.toJSON().filter(function (value) {
+                    return value.username == $('#user-select').val();
+                })[0];
+
+                // TODO: make this session variable state that persists between page loads
+                app.view_as = user.id;
+
+                $('#view-as-text').html('<span class="label label-warning" style="font-size: .9em">Viewing as <i>' + user.username + '</i></span>');
+                $('#page-alert').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Viewing workflows page as ' + user.username + '.</strong> Navigating away from the workflows page will restore view state to the currently logged in user.</div>');
+                $('#view-as-user').toggle();
+                $('#view-as-self').toggle();
+
+                // TODO: reset view differently, this is a hack for now
+                if (app.router.currentView instanceof WorkflowRunsView) {
+                    var runs =  new WorkflowRuns();
+
+                    if (app.view_as) {
+                        runs.uid = app.view_as;
+                    }
+
+                    var statusView = new WorkflowRunsView({collection: runs });
+                    app.router.navigateToView(statusView);
+                }
+            }
+        });
+
+        $('#user-select-modal').modal('toggle');
+    });
+
+    $('#view-as-self').click(function (event) {
+        $('#view-as-text').html('');
+        $('#page-alert').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>View state reset to logged in user.</strong> Viewing workflows page as current user.</div>');
+        $(this).toggle();
+        $('#view-as-user').toggle();
+
+        delete app.view_as;
+
+        // TODO: reset view differently, this is a hack for now
+        if (app.router.currentView instanceof WorkflowRunsView) {
+            var runs =  new WorkflowRuns();
+            runs.uid = window.uid;
+
+            var statusView = new WorkflowRunsView({collection: runs });
+            app.router.navigateToView(statusView);
+        }
+    });
 
 });

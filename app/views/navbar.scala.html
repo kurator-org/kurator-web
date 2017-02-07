@@ -29,6 +29,7 @@
 
       @if(session.get("uid") != null) {
 
+
         <ul class="nav navbar-nav navbar-right">
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@session.get("username") <span class="caret"></span></a>
@@ -36,12 +37,16 @@
               <li><a href="#"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
               <li><a href="logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
               <li role="separator" class="divider"></li>
-              <li><a href="#"><span class="glyphicon glyphicon-eye-open"></span> View as User</a></li>
-              <li><a href="#"><span class="glyphicon glyphicon-eye-close"></span> View as Self</a></li>
+
+              @if(session.get("user_role").equals("ADMIN")) {
+                <li><a id="view-as-user" href="#" data-toggle="modal" data-target="#user-select-modal"><span class="glyphicon glyphicon-eye-open"></span> View as User</a></li>
+                <li><a id="view-as-self" style="display: none" href="#"><span class="glyphicon glyphicon-eye-close"></span>View as Self</a></li>
+              }
             </ul>
           </li>
         </ul>
         <p class="navbar-text navbar-right">Logged in as</p>
+        <p id="view-as-text" class="navbar-text navbar-right"></p>
 
       } else {
         <form class="navbar-form navbar-right" role="search">
@@ -57,3 +62,25 @@
     </script>
 
   </nav>
+
+  <!-- Modal -->
+<div id="user-select-modal" class="modal fade">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Select User</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <label for="user-select">Username</label>
+          <input id="user-select" class="form-control" type="text" />
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" id="user-select-btn" class="btn btn-primary">Select</button>
+      </div>
+    </div>
+  </div>
+</div>
