@@ -43,7 +43,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import views.html.*;
-import views.html.admin.*;
 
 /**
  * This controller deals with actions related to running a workflow, uploading files, checking the status of a run, and
