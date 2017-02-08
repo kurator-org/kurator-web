@@ -19,7 +19,17 @@ define([
                     height = 100 - margins.top - margins.bottom,
 
                     // Construct d3 dataset object from measure
+
                     dataset = [{
+                        data: [{
+                            stage: 'Before',
+                            count: this.measure.before.assurance
+                        }, {
+                            stage: 'After',
+                            count: this.measure.after.assurance
+                        }],
+                        name: 'Assurance'
+                    }, {
                         data: [{
                             stage: 'Before',
                             count: this.measure.before.complete
@@ -115,10 +125,10 @@ define([
                     groups = svg.selectAll('g')
                         .data(dataset)
                         .enter()
-                        .append('g')
-                        .style('fill', function (d, i) {
-                            return colors[i];
-                        }),
+                        .append('g'),
+                        //.style('fill', function (d, i) {
+                        //    return colors[i];
+                        //}),
 
                     // Create rectangles and add mouseover even handling for tooltip
                     rects = groups.selectAll('rect')
@@ -127,6 +137,10 @@ define([
                         })
                         .enter()
                         .append('rect')
+                        .attr('class', function (d) {
+                            return d.series.toLowerCase();
+                        })
+                        //.attr('style', 'mask: url(#mask-stripe)')
                         .attr('x', function (d) {
                             return xScale(d.x0);
                         })

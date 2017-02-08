@@ -20,6 +20,28 @@ body {
     fill: none;
 }
 
+.assurance {
+    fill: #5cb85c;
+    stroke: #5cb85c;
+    mask: url(mask.svg#mask-stripe);
+}
+
+.complete {
+    fill: #5cb85c;
+    stroke: #4cae4c;;
+}
+
+.incomplete {
+    fill: #eeeeee;
+    stroke: #e1e1e8;
+    /* fill: #d9534f; */
+}
+
+.untested {
+    fill: #ffffff;
+    stroke: #e1e1e8;
+}
+
 #tooltip {
     position: absolute;
     text-align: center;

@@ -362,11 +362,13 @@ require([
                     "mechanism": "Kurator: DateValidator",
 
                     "before": {
-                        "complete": 2,
-                        "incomplete": 10
+                        "assurance": 1,
+                        "complete": 3,
+                        "incomplete": 8
                     },
                     "after": {
-                        "complete": 6,
+                        "assurance": 1,
+                        "complete": 5,
                         "incomplete": 6
                     },
                     "total": 12
