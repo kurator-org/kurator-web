@@ -42,6 +42,8 @@ require([
         Backbone.history.start();
     });
 
+    app.assetsUrl = jsRoutes.controllers.Assets.at('').url;
+
     var Workflows = Backbone.Collection.extend({
         url : jsRoutes.controllers.Workflows.list().url,
 
@@ -61,7 +63,7 @@ require([
 
         render: function () {
             console.log("render");
-            this.$el.html(this.template({definitions : this.collection.toJSON()}));
+            this.$el.html(this.template({definitions : this.collection.toJSON(), infoImg : app.assetsUrl + "images/info.png"}));
 
             return this;
         }
@@ -380,6 +382,8 @@ require([
                 var postprocessor = new FFDQPostProcessor('#chart', measure);
                 postprocessor.renderBinarySummary();
             //});
+
+            $('[data-toggle="popover"]').popover();
 
             return this;
         }

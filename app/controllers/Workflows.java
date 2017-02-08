@@ -289,7 +289,7 @@ public class Workflows extends Controller {
         List<WorkflowRun> workflowRuns = workflowDao.findUserWorkflowRuns(uid);
 
         for (WorkflowRun run : workflowRuns) {
-            boolean hasReport = run.getResult() != null && run.getResult().getDqReport() != null;
+            boolean hasReport = true;
             boolean hasOutput = run.getResult() != null && !run.getResult().getOutputText().isEmpty();
             boolean hasErrors = run.getResult() != null && !run.getResult().getErrorText().isEmpty();
 
@@ -460,10 +460,20 @@ public class Workflows extends Controller {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
         FFDQPostProcessor postProcessor = new FFDQPostProcessor(new FileInputStream(run.getResult().getDqReport()),
-                AsyncWorkflowRunnable.class.getResourceAsStream("/ev-assertions.json"));
+                Workflows.class.getResourceAsStream("/ev-assertions.json"));
 
         String json = postProcessor.measureSummary();
-        System.out.println(json);
+
+        return ok(json);
+    }
+
+    public Result dataset(long workflowRunId) throws IOException {
+        WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
+
+        FFDQPostProcessor postProcessor = new FFDQPostProcessor(new FileInputStream(run.getResult().getDqReport()),
+                Workflows.class.getResourceAsStream("/ev-assertions.json"));
+
+        String json = postProcessor.curatedDataset();
 
         return ok(json);
     }

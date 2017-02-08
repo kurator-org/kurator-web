@@ -54,6 +54,7 @@ GET     /run/status                             controllers.Workflows.status(uid
 
 GET     /run/result/*id                         controllers.Workflows.resultArchive(id : Long)
 GET     /run/report/*id                         controllers.Workflows.report(id : Long)
+GET     /run/data/*id                           controllers.Workflows.dataset(id: Long)
 
 GET     /run/error/*id                          controllers.Workflows.errorLog(id : Long)
 GET     /run/output/*id                         controllers.Workflows.outputLog(id : Long)

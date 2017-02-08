@@ -51,7 +51,9 @@ public class Application extends Controller {
                         routes.javascript.Users.registerSubmit(),
                         routes.javascript.Users.createWorkshop(),
 
-                        routes.javascript.Users.authenticate()
+                        routes.javascript.Users.authenticate(),
+
+                        routes.javascript.Assets.at()
                 )
         ).as("text/javascript");
     }
