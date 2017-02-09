@@ -31,7 +31,8 @@
 
       <div class="panel panel-default">
         <div class="panel-body">
-          <h3>Please log in</h3>
+          <div style="float: left"><h3 style="display: inline;">Please log in</h3></div><div style="float: right">Need an account? <a  href="@routes.Users.register()">Register</a></div>
+          <div style="clear: both"></div>
           <br />
 
   @if(flash.containsKey("message")) {
@@ -53,7 +54,6 @@
       <button type="submit" class="btn btn-primary">Login</button>
 
     <div style="float:right">
-      <a href="@routes.Users.register()">Register</a>&nbsp;|
       <a href="@routes.Users.reset()">Forgot password</a><br /></div>
   }
 

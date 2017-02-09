@@ -31,7 +31,10 @@
 
   <div class="panel panel-default">
   <div class="panel-body">
-    <h3>Register</h3><br />
+    <div style="float: left"><h3 style="display: inline;">Register</h3></div><div style="float: right">Already have an account? <a  href="@routes.Users.login()">Login</a></div>
+    <div style="clear: both"></div>
+    <br />
+
     @if(flash.containsKey("message")) {
       <div class="alert alert-info" role="alert">@flash.get("message")</div>
     }
@@ -66,8 +69,6 @@
 
           <br />
           <button class="btn btn-primary" type="submit">Register</button><div style="float:right">
-          <a href="@routes.Users.login()">Login</a>&nbsp;|
-          <a href="@routes.Users.reset()">Forgot password</a><br /></div>
         }
   </div>
 </div>
