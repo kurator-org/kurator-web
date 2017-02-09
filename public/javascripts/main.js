@@ -30,9 +30,10 @@ require([
     'text!templates/users.html',
     'text!templates/register.html',
     'text!templates/deploy.html',
-    'text!templates/report.html'
+    'text!templates/report.html',
+    'text!templates/dataset.html'
 ], function (app, WebRouter, SessionModel, FFDQPostProcessor, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, usersTpl, registerTpl,
-             deployTpl, reportTpl) {
+             deployTpl, reportTpl, datasetTpl) {
 
     app.router = new WebRouter();
     app.session = new SessionModel({});
@@ -99,7 +100,7 @@ require([
                     }
                 });
 
-                return false;
+                return this;
             });
 
             $('#run-modal').on('hidden.bs.modal', function (e) {
@@ -187,7 +188,7 @@ require([
         }
     });
 
-    var ReportSummary = Backbone.Model.extend({
+    var ReportSummary = Backbone.Collection.extend({
         url : function() {
             return jsRoutes.controllers.Workflows.report(this.runId).url;
         }
@@ -339,12 +340,28 @@ require([
         }
     });
 
+    var DatasetView = Backbone.View.extend({
+        template: _.template(datasetTpl),
+
+        initialize: function () {
+            this.render();
+        },
+
+        render: function () {
+            this.$el.html(this.template());
+
+            var postprocessor = new FFDQPostProcessor();
+            postprocessor.renderDatasetSpreadsheet(this.$el);
+            return this;
+        }
+    });
+
     var ReportView = Backbone.View.extend({
         template: _.template(reportTpl),
 
         initialize: function () {
-            this.listenTo(this.model, 'change', this.render);
-            this.model.fetch();
+            this.listenTo(this.collection, 'update', this.render);
+            this.collection.fetch();
         },
 
         render: function () {
@@ -353,35 +370,37 @@ require([
             // Tooltip div
             this.$el.append('<div id="tooltip" class="hidden"><p><span id="value">100</span></p></div>');
 
-            var measures = this.model.toJSON();
+            var measures = this.collection.toJSON();
 
-            //measures.forEach(function(measure) {
+            console.log(measures);
 
-                var measure = {
-                    "id": 0,
-                    "title": "Event Date Completeness",
-                    "specification": "Check that the value of dwc:eventDate is not empty.",
-                    "mechanism": "Kurator: DateValidator",
+                // var measure = {
+                //     "id": 0,
+                //     "title": "Event Date Completeness",
+                //     "specification": "Check that the value of dwc:eventDate is not empty.",
+                //     "mechanism": "Kurator: DateValidator",
+                //
+                //     "before": {
+                //         "assurance": 1,
+                //         "complete": 3,
+                //         "incomplete": 8
+                //     },
+                //     "after": {
+                //         "assurance": 1,
+                //         "complete": 5,
+                //         "incomplete": 6
+                //     },
+                //     "total": 12
+                // };
 
-                    "before": {
-                        "assurance": 1,
-                        "complete": 3,
-                        "incomplete": 8
-                    },
-                    "after": {
-                        "assurance": 1,
-                        "complete": 5,
-                        "incomplete": 6
-                    },
-                    "total": 12
-                };
-
-            this.$el.append(this.template({ measure: measure })); // panel
+            var that = this;
+            measures.forEach(function(measure, index) {
+                that.$el.append(that.template({ measure: measure, id: index })); // panel
 
                 console.log(measure);
-                var postprocessor = new FFDQPostProcessor('#chart', measure);
+                var postprocessor = new FFDQPostProcessor('#chart-' + index, measure);
                 postprocessor.renderBinarySummary();
-            //});
+            });
 
             $('[data-toggle="popover"]').popover();
 
@@ -460,8 +479,13 @@ require([
 
         console.log("runId: " + runId);
         report.runId = runId;
-        var reportView = new ReportView({ model : report});
+        var reportView = new ReportView({ collection : report});
         this.navigateToView(reportView);
+    });
+
+    app.router.on("route:dataset", function () {
+        var datasetView = new DatasetView({});
+        this.navigateToView(datasetView);
     });
 
     // Fetch list of workflows

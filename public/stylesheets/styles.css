@@ -75,6 +75,37 @@ body {
     line-height: 20px;
 }
 
+/* FFDQ spreadsheet view */
+
+.spreadsheet-view {
+    border: 1px solid #CCC;
+}
+
+.spreadsheet-view table th {
+    background-color: #f3f3f3;
+}
+
+.spreadsheet-view table {
+    border-spacing: 0px;
+    border: none;
+
+}
+
+.spreadsheet-view th, .spreadsheet-view table td {
+    border-left: 1px solid #CCC;
+    border-bottom: 1px solid #CCC;
+    color: #474747;
+    padding: 0 4px 0 4px;
+}
+
+.spreadsheet-view table th:first-child {
+    border-left: none;
+}
+
+.spreadsheet-view table tbody tr:last-child th, .spreadsheet-view table tbody tr:last-child td {
+    border-bottom: none;
+}
+
 /* Bootstrap style callouts */
 
 .bs-callout {

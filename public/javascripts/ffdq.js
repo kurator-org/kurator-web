@@ -2,9 +2,9 @@ define([
     'd3'
 ], function (d3) {
 
-    var FFDQPostProcessor = function (tag, measure) {
+    var FFDQPostProcessor = function (tag, data) {
         this.tag = tag;
-        this.measure = measure;
+        this.data = data;
     }
 
     FFDQPostProcessor.prototype = {
@@ -13,7 +13,7 @@ define([
                         top: 12,
                         left: 50,
                         right: 24,
-                        bottom: 24
+                        bottom: 30
                     },
                     width = 320 - margins.left - margins.right,
                     height = 100 - margins.top - margins.bottom,
@@ -23,28 +23,28 @@ define([
                     dataset = [{
                         data: [{
                             stage: 'Before',
-                            count: this.measure.before.assurance
+                            count: this.data.before.assurance
                         }, {
                             stage: 'After',
-                            count: this.measure.after.assurance
+                            count: this.data.after.assurance
                         }],
                         name: 'Assurance'
                     }, {
                         data: [{
                             stage: 'Before',
-                            count: this.measure.before.complete
+                            count: this.data.before.complete
                         }, {
                             stage: 'After',
-                            count: this.measure.after.complete
+                            count: this.data.after.complete
                         }],
                         name: 'Complete'
                     }, {
                         data: [{
                             stage: 'Before',
-                            count: this.measure.before.incomplete
+                            count: this.data.before.incomplete
                         }, {
                             stage: 'After',
-                            count: this.measure.after.incomplete
+                            count: this.data.after.incomplete
                         }],
                         name: 'Incomplete'
                     }],
@@ -177,6 +177,88 @@ define([
                 svg.append('g')
                     .attr('class', 'axis')
                     .call(yAxis);
+            },
+
+            renderDatasetSpreadsheet: function($el) {
+                    var json = {
+                        headers: ['ID', 'Country', 'Code', 'Currency', 'Level', 'Units', 'Date', 'Change'],
+                        rows: [
+                            ['1', '', 'EUR', 'Euro', '0.9033', 'EUR / USD', '08/19/2015', '0.26%'],
+                            ['2', '', 'JPY', 'Japanese Yen', '124.3870', 'JPY / USD', '08/19/2015', '0.01%'],
+                            ['3', '', 'GBP', 'Pound Sterling', '0.6396', 'GBP / USD', '08/19/2015', '0.00%'],
+                            ['4', '', 'CHF', 'Swiss Franc', '0.9775', 'CHF / USD', '08/19/2015', '0.08%'],
+                            ['5', '', 'CAD', 'Canadian Dollar', '1.3097', 'CAD / USD', '08/19/2015', '-0.05%'],
+                            ['6', '', 'AUD', 'Australian Dollar', '1.3589', 'AUD / USD', '08/19/2015', '0.20%'],
+                            ['7', '', 'NZD', 'New Zealand Dollar', '1.5218', 'NZD / USD', '08/19/2015', '-0.36%'],
+                            ['8', '', 'SEK', 'Swedish Krona', '8.5280', 'SEK / USD', '08/19/2015', '0.16%'],
+                            ['9', '', 'NOK', 'Norwegian Krone', '8.2433', 'NOK / USD', '08/19/2015', '0.08%'],
+                            ['10', '', 'BRL', 'Brazilian Real', '6.3961', 'BRL / USD', '08/19/2015', '-0.09%'],
+                            ['11', '', 'CNY', 'Chinese Yuan', '6.3961', 'CNY / USD', '08/19/2015', '0.04%'],
+                            ['12', '', 'RUB', 'Russian Rouble', '65.5980', 'RUB / USD', '08/19/2015', '0.59%'],
+                            ['13', '', 'INR', 'Indian Rupee', '65.3724', 'INR / USD', '08/19/2015', '0.26%'],
+                            ['14', '', 'TRY', 'New Turkish Lira', '2.8689', 'TRY / USD', '08/19/2015', '0.92%'],
+                            ['15', '', 'THB', 'Thai Baht', '35.5029', 'THB / USD', '08/19/2015', '0.44%'],
+                            ['16', '', 'IDR', 'Indonesian Rupiah', '13.8300', 'IDR / USD', '08/19/2015', '-0.09%'],
+                            ['17', '', 'MYR', 'Malaysian Ringgit', '4.0949', 'MYR / USD', '08/19/2015', '0.10%'],
+                            ['18', '', 'MXN', 'Mexican New Peso', '16.4309', 'MXN / USD', '08/19/2015', '0.17%'],
+                            ['19', '', 'ARS', 'Argentinian Peso', '9.2534', 'ARS / USD', '08/19/2015', '0.11%']
+                        ]
+                    };
+
+                    var table = $('<table></table>');
+
+                    // Create table header
+                    var thead = $('<thead></thead>');
+                    var tr = $('<tr></tr>');
+                    thead.append(tr);
+
+                    json.headers.forEach(function(header, index) {
+                        var th = $('<th>' + header + '</th>');
+
+                        // Column for row ids
+                        if (index == 0) {
+                            idCol = $('<th>&nbsp;</th>').css('height', '25px');
+                            tr.append(idCol);
+                        }
+
+                        tr.append(th);
+                    });
+
+                    table.append(thead);
+
+                    // Create table body
+                    var tbody = $('<tbody></tbody>');
+
+                    json.rows.forEach(function(rowData, index) {
+                        var row = $('<tr></tr>');
+                        tbody.append(row);
+
+                        row.append('<th>' + Number(1+index) + '</th>');
+                        rowData.forEach(function(cellData) {
+                            row.append($('<td>' + cellData + '</td>'));
+                        });
+                    });
+
+                    table.append(tbody);
+
+                    // Apend table to view
+                    $el.find('.spreadsheet-view').append(table);
+
+                    // Create fixed table headers
+                    var target = $('.spreadsheet-view table thead');
+                    var clone = target.clone();
+
+                    clone.css('position', 'fixed');
+
+                    clone.find('th').width(function(i,val) {
+                        var headers = target.find('th');
+                        return headers.eq(i).width();
+                    });
+
+                    // Overlay clone over original headers
+                    var height = clone.find('th:first-child').outerHeight();
+                    clone.css('margin-top', -height);
+                    $el.find('table').prepend(clone);
             }
         };
 
