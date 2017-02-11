@@ -1,1 +1,30 @@
-<div class="spreadsheet-view" style="display: inline-block; height: 241px; overflow: auto;"></div>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#initial-values" aria-expanded="true" aria-controls="collapseOne">
+          Initial Values
+        </a>
+      </h4>
+    </div>
+    <div id="initial-values" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+      <div class="panel-body">
+        <div class="spreadsheet-view" style="height: 241px; overflow: auto;"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingTwo">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#final-values" aria-expanded="false" aria-controls="collapseTwo">
+          Final Values
+        </a>
+      </h4>
+    </div>
+    <div id="final-values" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+      <div class="panel-body">
+        <div class="spreadsheet-view" style="height: 241px; overflow: auto;"></div>
+      </div>
+    </div>
+  </div>
+</div>

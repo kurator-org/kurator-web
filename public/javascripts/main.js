@@ -194,6 +194,13 @@ require([
         }
     });
 
+    var DatasetSummary = Backbone.Model.extend({
+        url : function() {
+            return jsRoutes.controllers.Workflows.dataset(this.id).url;
+        }
+    });
+
+
     var Users = Backbone.Collection.extend({
         url : jsRoutes.controllers.Users.manage().url,
 
@@ -344,14 +351,20 @@ require([
         template: _.template(datasetTpl),
 
         initialize: function () {
-            this.render();
+            this.listenTo(this.model, 'change', this.render);
+            this.model.fetch();
         },
 
         render: function () {
             this.$el.html(this.template());
 
-            var postprocessor = new FFDQPostProcessor();
-            postprocessor.renderDatasetSpreadsheet(this.$el);
+            console.log(this.model.toJSON());
+
+            if (this.model.toJSON().records) {
+                var postprocessor = new FFDQPostProcessor();
+                postprocessor.renderDatasetSpreadsheet(this.$el, this.model.toJSON());
+            }
+
             return this;
         }
     });
@@ -483,8 +496,8 @@ require([
         this.navigateToView(reportView);
     });
 
-    app.router.on("route:dataset", function () {
-        var datasetView = new DatasetView({});
+    app.router.on("route:dataset", function (runId) {
+        var datasetView = new DatasetView({ model : new DatasetSummary({ id : runId }) });
         this.navigateToView(datasetView);
     });
 

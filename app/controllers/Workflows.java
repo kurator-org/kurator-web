@@ -474,6 +474,21 @@ public class Workflows extends Controller {
 
         String json = postProcessor.curatedDataset();
 
+        // DQ report json
+//        try {
+//            InputStream inputStream = new FileInputStream(run.getResult().getDqReport());
+//            BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+//            StringBuilder responseStrBuilder = new StringBuilder();
+//
+//            String inputStr;
+//            while ((inputStr = streamReader.readLine()) != null)
+//                responseStrBuilder.append(inputStr);
+//
+//
+//            return ok(responseStrBuilder.toString());
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         return ok(json);
     }
 }
