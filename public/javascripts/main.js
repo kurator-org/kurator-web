@@ -356,7 +356,7 @@ require([
         },
 
         render: function () {
-            this.$el.html(this.template());
+            this.$el.html(this.template({ runId: this.model.id }));
 
             console.log(this.model.toJSON());
 
@@ -406,10 +406,9 @@ require([
                 //     "total": 12
                 // };
 
-            var that = this;
-            measures.forEach(function(measure, index) {
-                that.$el.append(that.template({ measure: measure, id: index })); // panel
+            this.$el.append(this.template({ measures: measures, runId: this.collection.runId })); // panel
 
+            measures.forEach(function(measure, index) {
                 console.log(measure);
                 var postprocessor = new FFDQPostProcessor('#chart-' + index, measure);
                 postprocessor.renderBinarySummary();
@@ -488,7 +487,9 @@ require([
     app.router.on("route:report", function (runId) {
         var report = new ReportSummary();
 
-        $('.breadcrumb').append('<li class="active"><a href="#report/' + runId + '">View Report</a></li>');
+        if (!($('.report-bc').length)) {
+            $('.breadcrumb').append('<li class="active report-bc"><a href="#report/' + runId + '">View Report</a></li>');
+        }
 
         console.log("runId: " + runId);
         report.runId = runId;
@@ -497,6 +498,7 @@ require([
     });
 
     app.router.on("route:dataset", function (runId) {
+
         var datasetView = new DatasetView({ model : new DatasetSummary({ id : runId }) });
         this.navigateToView(datasetView);
     });
