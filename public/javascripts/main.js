@@ -360,7 +360,7 @@ require([
 
             console.log(this.model.toJSON());
 
-            if (this.model.toJSON().records) {
+            if (this.model.toJSON().dataset) {
                 var postprocessor = new FFDQPostProcessor();
                 postprocessor.renderDatasetSpreadsheet(this.$el, this.model.toJSON());
             }

@@ -179,11 +179,20 @@ define([
                 .call(yAxis);
         },
 
-        renderDatasetSpreadsheet: function ($el, dataset) {
+        renderDatasetSpreadsheet: function ($el, summary) {
+            var dataset = summary.dataset;
             console.log(dataset.fields);
             console.log(dataset.records);
 
             var createTable = function (json) {
+                var cellColor = {
+                    COMPLIANT: 'green',
+                    NOT_COMPLIANT: 'red',
+                    FILLED_IN: 'DarkGoldenRod',
+                    DATA_PREREQUISITES_NOT_MET: 'grey',
+                    EXTERNAL_PREREQUISITES_NOT_MET: 'grey'
+                };
+
                 var table = $('<table></table>');
 
                 // Create table header
@@ -214,7 +223,14 @@ define([
 
                     row.append('<th>' + Number(1 + index) + '</th>');
                     rowData.forEach(function (cellData) {
-                        row.append($('<td>' + cellData + '</td>'));
+                        var cell = $('<td>' + cellData.value + '</td>');
+
+                        if (cellData.status) {
+                            cell.css("background-color", cellColor[cellData.status]);
+                            cell.css("color", "white");
+                        }
+                        row.append(cell);
+
                     });
                 });
 
@@ -245,23 +261,23 @@ define([
 
                 for (var field in dataset.fields) {
                     if (field == 'recordId') {
-                        finalValsRow.push(record.recordId);
-                        initialValsRow.push(record.recordId);
+                        finalValsRow.push({ value: record.recordId });
+                        initialValsRow.push({ value: record.recordId });
                     } else {
                         var finalVal = record.finalValues[field];
 
                         if (finalVal) {
-                            finalValsRow.push(finalVal);
+                            finalValsRow.push({ value: finalVal });
                         } else {
-                            finalValsRow.push('&nbsp;')
+                            finalValsRow.push({ value: '&nbsp;'});
                         }
 
                         var initialVal = record.initialValues[field];
 
                         if (initialVal) {
-                            initialValsRow.push(initialVal);
+                            initialValsRow.push({ value: initialVal });
                         } else {
-                            initialValsRow.push('&nbsp;')
+                            initialValsRow.push({ value: '&nbsp;' });
                         }
                     }
                 }
@@ -272,6 +288,54 @@ define([
             // Apend table to view
             $el.find('#initial-values .spreadsheet-view').append(createTable(initialValues));
             $el.find('#final-values .spreadsheet-view').append(createTable(finalValues));
+
+            var assertionsTable = function (div, assertions) {
+                // render validations
+                var json = {
+                    headers: [],
+                    rows: []
+                };
+
+                // header
+                json.headers.push('assertion');
+
+                for (var field in dataset.fields) {
+                    json.headers.push(field);
+                }
+
+                json.headers.push('comment');
+                json.headers.push('status');
+
+                assertions.forEach(function (assertion) {
+                    var recordId = assertion.recordId;
+
+                    assertion.assertionRows.forEach(function (assertionRow) {
+                        var row = [];
+                        row.push({ value: assertionRow.label });
+                        row.push({ value: recordId });
+
+                        assertionRow.record.forEach(function (item) {
+                            var colNum = json.headers.indexOf(item.field);
+
+                            if (colNum) {
+                                row[colNum] = { value: item.value ? item.value : '&nbsp;', status: item.status };
+                            }
+
+                            //console.log( + item.field + ": " + item.value + " - " + item.status);
+                        });
+
+                        row.push({ value: assertionRow.comment });
+                        row.push({ value: assertionRow.status, status: assertionRow.status});
+
+                        json.rows.push(row);
+                    })
+                });
+
+                div.append(createTable(json));
+            };
+
+            assertionsTable($el.find('#validations .spreadsheet-view'), summary.validations);
+            assertionsTable($el.find('#improvements .spreadsheet-view'), summary.improvements);
 
             // Create fixed table headers
             // var target = $('.spreadsheet-view table thead');
