@@ -1,62 +1,25 @@
 <div>
   <a class="btn btn-default" href="#report/<%= runId %>" role="button">Measure Summary View</a>
+  <a class="btn btn-success" href="#report/<%= runId %>" role="button">Download XLS</a>
 </div>
 <hr />
-<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingOne">
-      <h4 class="panel-title">
-        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#initial-values" aria-expanded="true" aria-controls="collapseOne">
-          Initial Values
-        </a>
-      </h4>
-    </div>
-    <div id="initial-values" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-      <div class="panel-body">
-        <div class="spreadsheet-view" style="height: 241px; overflow: auto;"></div>
-      </div>
-    </div>
+
+<div>
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#initial-values" role="tab" data-toggle="tab">Initial Values</a></li>
+    <li role="presentation"><a href="#final-values" role="tab" data-toggle="tab">Final Values</a></li>
+    <li role="presentation"><a href="#validations" role="tab" data-toggle="tab">Validations</a></li>
+    <li role="presentation"><a href="#improvements" role="tab" data-toggle="tab">Improvements</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content" style="max-height: 500px; overflow: auto">
+    <div role="tabpanel" class="tab-pane active" id="initial-values"><div class="spreadsheet-view"></div></div>
+    <div role="tabpanel" class="tab-pane" id="final-values"><div class="spreadsheet-view"></div></div>
+    <div role="tabpanel" class="tab-pane" id="validations"><div class="spreadsheet-view"></div></div>
+    <div role="tabpanel" class="tab-pane" id="improvements"><div class="spreadsheet-view"></div></div>
   </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingTwo">
-      <h4 class="panel-title">
-        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#final-values" aria-expanded="false" aria-controls="collapseTwo">
-          Final Values
-        </a>
-      </h4>
-    </div>
-    <div id="final-values" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-      <div class="panel-body">
-        <div class="spreadsheet-view" style="height: 241px; overflow: auto;"></div>
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingThree">
-      <h4 class="panel-title">
-        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#validations" aria-expanded="true" aria-controls="collapseThree">
-          Validations
-        </a>
-      </h4>
-    </div>
-    <div id="validations" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-      <div class="panel-body">
-        <div class="spreadsheet-view" style="height: 241px; overflow: auto;"></div>
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingFour">
-      <h4 class="panel-title">
-        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#improvements" aria-expanded="true" aria-controls="collapseFour">
-          Improvements
-        </a>
-      </h4>
-    </div>
-    <div id="improvements" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-      <div class="panel-body">
-        <div class="spreadsheet-view" style="height: 241px; overflow: auto;"></div>
-      </div>
-    </div>
-  </div>
+
 </div>

@@ -365,6 +365,11 @@ require([
                 postprocessor.renderDatasetSpreadsheet(this.$el, this.model.toJSON());
             }
 
+            $('#dataset-tabs a').click(function (e) {
+                e.preventDefault()
+                $(this).tab('show')
+            })
+
             return this;
         }
     });
