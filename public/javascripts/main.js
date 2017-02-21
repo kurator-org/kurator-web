@@ -60,13 +60,11 @@ require([
         template: _.template(workflowTpl),
 
         initialize: function () {
-            console.log("initialize");
             this.listenTo(this.collection, 'update', this.render);
             this.collection.fetch();
         },
 
         render: function () {
-            console.log("render");
             this.$el.html(this.template({definitions : this.collection.toJSON(), infoImg : app.assetsUrl + "images/info.png"}));
 
             return this;
@@ -84,7 +82,6 @@ require([
 
             $('#run-workflow').submit(function (event) {
                 event.preventDefault();
-                console.log("submitting form...");
 
                 //grab all form data
                 var formData = new FormData($(this)[0]);
@@ -99,7 +96,6 @@ require([
                     processData: false,
                     success: function (data) {
                         $('.progress').hide();
-                        console.log(data.runId);
                     }
                 });
 
@@ -130,7 +126,6 @@ require([
 
     var WorkflowRuns = Backbone.Collection.extend({
         url : function() {
-            console.log("userid:" + app.session.get('uid'));
             return jsRoutes.controllers.Workflows.status(app.session.get('uid')).url
         },
         comparator: function(a, b) {
@@ -151,7 +146,6 @@ require([
             var that = this;
             this.timer = setInterval(function() {
                     that.collection.fetch();
-                    console.log("fetch...");
                 }, 5000);
         },
 
@@ -159,18 +153,18 @@ require([
             var runs = this.collection.toJSON();
             this.$el.html(this.template({runs : runs }));
 
+            var that = this;
             runs.forEach(function(run) {
-                var statusEl = $('#'+run.id);
 
                 switch (run.status) {
                     case "RUNNING":
-                        $('#status'+run.id).html($('<span class="label label-default" style="font-size: .9em">Running</span>'));
+                        that.$('#status'+run.id).html($('<span class="label label-default" style="font-size: .9em">Running</span>'));
                         break;
                     case "SUCCESS":
-                        $('#status'+run.id).html($('<span class="label label-success" style="font-size: .9em">Complete</span>'));
+                        that.$('#status'+run.id).html($('<span class="label label-success" style="font-size: .9em">Complete</span>'));
                         break;
                     case "ERRORS":
-                        $('#status'+run.id).html($('<span class="label label-danger" style="font-size: .9em">Errors</span>'));
+                        that.$('#status'+run.id).html($('<span class="label label-danger" style="font-size: .9em">Errors</span>'));
                         break;
                     default:
                         console.log('status');
@@ -183,9 +177,7 @@ require([
         },
 
         onBeforeClose: function () {
-            console.log("Before close");
             if (this.timer) {
-                console.log("has timer: " + this.timer);
                 clearInterval(this.timer);
             }
         }
@@ -221,7 +213,6 @@ require([
         },
 
         render: function () {
-            console.log(this.collection.models);
             this.$el.html(this.template({users : this.collection.toJSON(), uid : app.session.get('uid')}));
 
             var postManageUsers = function(user, active, role, callback) {
@@ -250,8 +241,6 @@ require([
                     user.set('role', data.role);
 
                     $('#role_value_' + data.username).html('<b>' + data.role + '</b>');
-
-                    console.log(data);
                 });
             });
 
@@ -275,8 +264,6 @@ require([
                             .addClass('btn-warning')
                             .html('<b>Inactive</b>');
                     }
-
-                    console.log(data);
                 });
             });
 
@@ -324,7 +311,6 @@ require([
         },
 
         render: function () {
-            console.log(this.collection.models);
             this.$el.html(this.template({packages : this.collection.toJSON()}));
 
             var that = this;
@@ -361,8 +347,6 @@ require([
         render: function () {
             this.$el.html(this.template({ runId: this.model.id }));
 
-            console.log(this.model.toJSON());
-
             if (this.model.toJSON().dataset) {
                 var postprocessor = new FFDQPostProcessor();
                 postprocessor.renderDatasetSpreadsheet(this.$el, this.model.toJSON());
@@ -393,8 +377,6 @@ require([
 
             var measures = this.collection.toJSON();
 
-            console.log(measures);
-
                 // var measure = {
                 //     "id": 0,
                 //     "title": "Event Date Completeness",
@@ -417,7 +399,6 @@ require([
             this.$el.append(this.template({ measures: measures, runId: this.collection.runId })); // panel
 
             measures.forEach(function(measure, index) {
-                console.log(measure);
                 var postprocessor = new FFDQPostProcessor('#chart-' + index, measure);
                 postprocessor.renderBinarySummary();
             });
@@ -453,7 +434,6 @@ require([
     });
 
     app.router.on("route:runs", function (uid) {
-        console.log(uid);
         var runs = new WorkflowRuns();
         //runs.uid = uid;
 
@@ -480,7 +460,6 @@ require([
         $('.breadcrumb').append('<li class="active"><a href="#run">Run</a></li>');
 
         var workflowsView = new WorkflowsView({collection: new Workflows()});
-        console.log(workflowsView);
         this.navigateToView(workflowsView);
     });
 
@@ -499,7 +478,6 @@ require([
             $('.breadcrumb').append('<li class="active report-bc"><a href="#report/' + runId + '">View Report</a></li>');
         }
 
-        console.log("runId: " + runId);
         report.runId = runId;
         var reportView = new ReportView({ collection : report});
         this.navigateToView(reportView);

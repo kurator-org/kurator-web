@@ -26,13 +26,12 @@ define([
 
             this.currentView = view;
 
-            console.log("navigate to view");
             // Check auth before rendering current view
             var self = this;
             app.session.checkAuth({
                 success: function(res){
                     // If auth successful, render inside the page wrapper
-                    $('#container').html(view.render().el);
+                    $('#container').html(self.currentView.render().el);
                 }, error: function(res){
                     window.location = jsRoutes.controllers.Users.login().url;
                 }
