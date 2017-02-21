@@ -32,7 +32,7 @@ public class Application extends Controller {
     public Result jsRoutes() {
         return ok(
                 JavaScriptReverseRouter.create("jsRoutes",
-                        routes.javascript.Application.auth(),
+                        routes.javascript.Users.checkAuth(),
 
                         routes.javascript.Workflows.list(),
                         routes.javascript.Workflows.runWorkflow(),
@@ -52,6 +52,7 @@ public class Application extends Controller {
                         routes.javascript.Users.registerSubmit(),
                         routes.javascript.Users.createWorkshop(),
 
+                        routes.javascript.Users.login(),
                         routes.javascript.Users.authenticate(),
 
                         routes.javascript.Assets.at()

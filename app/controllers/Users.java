@@ -13,6 +13,7 @@ import models.forms.Register;
 import models.forms.ResetPass;
 import models.json.UserManagement;
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
@@ -84,6 +85,21 @@ public class Users extends Controller {
                     routes.Application.test()
             );
         }
+    }
+
+    public Result checkAuth() {
+        if (session().get("username") != null) {
+            User user = userDao.findUserByUsername(session().get("username"));
+
+            ObjectNode json = Json.newObject();
+            json.put("uid", user.getId());
+            json.put("username", user.getUsername());
+            json.put("role", user.getRole().name());
+
+            return ok(json);
+        }
+
+        return unauthorized();
     }
 
     /**

@@ -24,7 +24,8 @@ libraryDependencies ++= Seq(
   "org.kurator" % "kurator-akka" % "1.0.0" exclude("com.typesafe.akka", "akka-actor_2.10") exclude("com.typesafe.akka", "akka-slf4j_2.10"),
   "org.kurator" % "kurator-validation" % "1.0.1-SNAPSHOT",
   "mysql" % "mysql-connector-java" % "5.1.18",
-  "org.webjars" % "requirejs" % "2.1.11-1"
+  "org.webjars" % "requirejs" % "2.1.11-1",
+  "be.objectify" %% "deadbolt-java" % "2.5.4"
 )
 
 libraryDependencies := libraryDependencies.value.map(_.excludeAll(

@@ -6,7 +6,6 @@ define([
 
         routes: {
             "run": 'workflow',
-            "login": 'login',
             "workflow/:name": "run",
             "status": 'status',
             "users": 'users',
@@ -26,7 +25,18 @@ define([
             }
 
             this.currentView = view;
-            $('#container').html(view.render().el);
+
+            console.log("navigate to view");
+            // Check auth before rendering current view
+            var self = this;
+            app.session.checkAuth({
+                success: function(res){
+                    // If auth successful, render inside the page wrapper
+                    $('#container').html(view.render().el);
+                }, error: function(res){
+                    window.location = jsRoutes.controllers.Users.login().url;
+                }
+            });
         }
     });
 

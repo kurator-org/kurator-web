@@ -6,11 +6,13 @@ define([
 
         defaults: {
             logged_in: false,
-            user_id: ''
+            username: '',
+            uid: '',
+            role: ''
         },
 
         url: function(){
-            return jsRoutes.controllers.Application.auth().url;
+            return jsRoutes.controllers.Users.checkAuth().url;
         },
 
         checkAuth: function(callback) {
@@ -18,12 +20,23 @@ define([
 
             this.fetch({
                 success: function(model, response){
-                    console.log(response.user);
-                    callback();
+                    if (response) {
+                        self.set({
+                            logged_in: true,
+                            username: response.username,
+                            uid: response.uid,
+                            role: response.role
+                        });
+                    }
+
+                    if('success' in callback) callback.success(model, response);
+                    if('complete' in callback) callback.complete();
                 },
 
                 error: function(model, response){
                     console.log(response);
+                    if('error' in callback) callback.error(model, response);
+                    if('complete' in callback) callback.complete();
                 }
             });
         },

@@ -38,9 +38,12 @@ require([
     app.router = new WebRouter();
     app.session = new SessionModel({});
 
-    app.session.checkAuth(function() {
+    app.session.checkAuth({
+
         // Start the backbone routing once we have captured a user's auth status
-        Backbone.history.start();
+        complete: function() {
+            Backbone.history.start();
+        }
     });
 
     app.assetsUrl = jsRoutes.controllers.Assets.at('').url;
