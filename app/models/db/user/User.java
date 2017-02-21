@@ -1,17 +1,22 @@
 package models.db.user;
 
+import be.objectify.deadbolt.java.models.Permission;
+import be.objectify.deadbolt.java.models.Role;
+import be.objectify.deadbolt.java.models.Subject;
 import com.avaje.ebean.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Web application user
  */
 @Entity
-public class User extends Model {
+public class User extends Model implements Subject {
     public static Finder<Long, User> find = new Finder<Long,User>(User.class);
 
     @Id
@@ -31,8 +36,11 @@ public class User extends Model {
     private Date createdOn;
     private Date lastActive;
 
-    @NotNull
-    private Role role;
+    @ManyToMany
+    public List<SecurityRole> roles;
+
+    @ManyToMany
+    public List<UserPermission> permissions;
 
     private boolean active;
 
@@ -104,19 +112,34 @@ public class User extends Model {
         this.lastActive = lastActive;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     public boolean isActive() {
         return active;
     }
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public List<? extends Role> getRoles() {
+        return roles;
+    }
+
+    @Override
+    public List<? extends Permission> getPermissions() {
+        return permissions;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return username;
+    }
+
+    public void setRoles(List<SecurityRole> roles) {
+        this.roles = roles;
+    }
+
+    public void setPermissions(List<UserPermission> permissions) {
+        this.permissions = permissions;
     }
 }

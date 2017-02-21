@@ -31,13 +31,13 @@
         <% if (user.username == "admin" || user.id == uid) { %>
 
           <button type="button" class="btn btn-primary btn-xs disabled">
-            <b><span><%= user.role %></span></b>
+            <b><span><%= user.roles[0].name %></span></b>
           </button>
 
         <% } else { %>
 
         <button type="button" class="btn btn-primary btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <b><span id="role_value_<%= user.username %>"><%= user.role %></span></b>
+          <b><span id="role_value_<%= user.username %>"><%= user.roles[0].name %></span></b>
         </button>
         <ul id="role_<%= user.username %>" class="dropdown-menu">
           <li><a href="#">USER</a></li>

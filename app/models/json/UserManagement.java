@@ -1,14 +1,12 @@
 package models.json;
 
-import models.db.user.Role;
-
 /**
  * Created by lowery on 1/25/2017.
  */
 public class UserManagement {
     private String username;
     private boolean active;
-    private Role role;
+    private String role;
 
     public String getUsername() {
         return username;
@@ -26,11 +24,11 @@ public class UserManagement {
         this.active = active;
     }
 
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
     }
 }

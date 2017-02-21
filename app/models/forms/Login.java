@@ -25,7 +25,7 @@ public class Login {
             Http.Session session = Http.Context.current().session();
             session.clear();
             session.put("uid", Long.toString(user.getId()));
-            session.put("user_role", user.getRole().name());
+            session.put("user_role", user.getRoles().get(0).getName());
             session.put("username", user.getUsername());
 
             // TODO: token based auth and session timeout

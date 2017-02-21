@@ -1,10 +1,12 @@
 package controllers;
 
+import be.objectify.deadbolt.java.actions.Group;
+import be.objectify.deadbolt.java.actions.Restrict;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 import dao.UserDao;
-import models.db.user.Role;
+import models.db.user.SecurityRole;
 import models.db.user.User;
 import models.db.user.UserUpload;
 import models.forms.ChangePass;
@@ -94,7 +96,7 @@ public class Users extends Controller {
             ObjectNode json = Json.newObject();
             json.put("uid", user.getId());
             json.put("username", user.getUsername());
-            json.put("role", user.getRole().name());
+            json.put("role", user.getRoles().get(0).getName());
 
             return ok(json);
         }
@@ -131,7 +133,7 @@ public class Users extends Controller {
         flash("message", "New user registration successful! The admin will send an email notification when your " +
                 "account has been activated.");
 
-        List<User> adminUsers = userDao.findUsersByRole(Role.ADMIN);
+        List<User> adminUsers = userDao.findUsersByRole(SecurityRole.ADMIN);
 
         try {
             // TODO: make this work and perhaps factor it out into a service for mailer tasks
@@ -162,6 +164,7 @@ public class Users extends Controller {
         );
     }
 
+    @Restrict({@Group("ADMIN")})
     public Result manage() {
         List<User> users = userDao.findAllUsers();
 
@@ -174,6 +177,7 @@ public class Users extends Controller {
      * Process the data submitted on the user management form (user administration page). Activate or
      * deactivate the user accounts specified and assign role.
      */
+    @Restrict({@Group("ADMIN")})
     public Result manageUsers() {
         UserManagement userMgmt = Json.fromJson(request().body().asJson(), UserManagement.class);
 
