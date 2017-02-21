@@ -1,5 +1,9 @@
 package controllers;
 
+import be.objectify.deadbolt.java.actions.Group;
+import be.objectify.deadbolt.java.actions.Restrict;
+import be.objectify.deadbolt.java.actions.SubjectNotPresent;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
 import config.ConfigManager;
@@ -80,7 +84,7 @@ public class Workflows extends Controller {
         );
     }
 
-    @Security.Authenticated(Secured.class)
+    @Restrict({@Group("ADMIN")})
     public Result deletePackage(String name) {
         boolean success = ConfigManager.getInstance().deletePacakge(name);
 
@@ -98,7 +102,7 @@ public class Workflows extends Controller {
      * @param name The name of the workflow
      * @return json response containing id
      */
-    @Security.Authenticated(Secured.class)
+    @SubjectPresent
     public Result runWorkflow(String name) {
         WorkflowDefinition workflowDef = formDefinitionForWorkflow(name);
 
@@ -170,7 +174,7 @@ public class Workflows extends Controller {
             throw new RuntimeException("Could not create temp file for upload", e);
         }
 
-        UserUpload uploadFile = userDao.createUserUpload(request().username(), filePart.getFilename(),
+        UserUpload uploadFile = userDao.createUserUpload(session().get("username"), filePart.getFilename(),
                 file.getAbsolutePath());
 
 
@@ -203,7 +207,7 @@ public class Workflows extends Controller {
 
             // TODO: save user object in global state somehow
             // Get the current logged in user
-            User user = userDao.findUserByUsername(request().username());
+            User user = userDao.findUserByUsername(session().get("username"));
 
             // Initialize and run the yaml workflow
             WorkflowRunner runner = new YamlStreamWorkflowRunner()
@@ -228,7 +232,7 @@ public class Workflows extends Controller {
      * @param runId identifies the workflow run by id
      * @return the zip archive
      */
-    @Security.Authenticated(Secured.class)
+    @SubjectPresent
     public Result resultArchive(long runId) {
         WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
         return ok(new File(result.getArchivePath()));
@@ -240,7 +244,7 @@ public class Workflows extends Controller {
      * @param runId identifies the workflow run by id
      * @return error log as text file
      */
-    @Security.Authenticated(Secured.class)
+    @SubjectPresent
     public Result errorLog(long runId) {
         response().setHeader("Content-Disposition", "attachment; filename=error_log.txt");
         response().setHeader("Content-Type", "text/plain");
@@ -260,7 +264,7 @@ public class Workflows extends Controller {
      * @param runId identifies the workflow run by id
      * @return output log as text file
      */
-    @Security.Authenticated(Secured.class)
+    @SubjectPresent
     public Result outputLog(long runId) {
         response().setHeader("Content-Disposition", "attachment; filename=output_log.txt");
         response().setHeader("Content-Type", "text/plain");
@@ -274,6 +278,7 @@ public class Workflows extends Controller {
         }
     }
 
+    @SubjectPresent
     public Result removeRun(long workflowRunId) {
         workflowDao.removeWorkflowRun(workflowRunId);
         return ok();
@@ -283,6 +288,7 @@ public class Workflows extends Controller {
      *
      * @return
      */
+    @SubjectPresent
     public Result status(String uid) {
         List<RunResult> results = new ArrayList<>();
         List<WorkflowRun> workflowRuns = workflowDao.findUserWorkflowRuns(uid);
@@ -415,7 +421,7 @@ public class Workflows extends Controller {
         }
     }
 
-    @Security.Authenticated(Secured.class)
+    @Restrict({@Group("ADMIN")})
     public Result deploy() {
         List<PackageData> packages = ConfigManager.getInstance().listPackages();
 
@@ -424,7 +430,7 @@ public class Workflows extends Controller {
         );
     }
 
-    @Security.Authenticated(Secured.class)
+    @Restrict({@Group("ADMIN")})
     public Result deployWorkflows() {
         Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart filePart = body.getFile("filename");
@@ -454,6 +460,7 @@ public class Workflows extends Controller {
         }
     }
 
+    @SubjectPresent
     public Result report(long workflowRunId) throws IOException {
         // TODO: this works for demonstration purposes but should be implemented properly
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
@@ -466,6 +473,7 @@ public class Workflows extends Controller {
         return ok(json);
     }
 
+    @SubjectPresent
     public Result dataset(long workflowRunId) throws IOException {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 

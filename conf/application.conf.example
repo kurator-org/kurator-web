@@ -54,6 +54,11 @@ play.mailer {
     password = "password"
 }
 
+play.modules {
+    enabled += "be.objectify.deadbolt.java.DeadboltModule",
+    enabled += "modules.CustomDeadboltHook"
+}
+
 # Session timeout in minutes
 sessionTimeout=30
 play.http.session.cookieName="KURATOR_WEB_SESSION"

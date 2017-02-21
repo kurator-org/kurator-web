@@ -130,8 +130,8 @@ require([
 
     var WorkflowRuns = Backbone.Collection.extend({
         url : function() {
-            console.log("userid:" + this.uid);
-            return jsRoutes.controllers.Workflows.status(this.uid).url
+            console.log("userid:" + app.session.get('uid'));
+            return jsRoutes.controllers.Workflows.status(app.session.get('uid')).url
         },
         comparator: function(a, b) {
             a = new Date(a.attributes.startDate);
@@ -222,7 +222,7 @@ require([
 
         render: function () {
             console.log(this.collection.models);
-            this.$el.html(this.template({users : this.collection.toJSON()}));
+            this.$el.html(this.template({users : this.collection.toJSON(), uid : app.session.get('uid')}));
 
             var postManageUsers = function(user, active, role, callback) {
                 $.ajax({
@@ -440,7 +440,7 @@ require([
         if (app.view_as) {
             runs.uid = app.view_as;
         } else {
-            runs.uid = window.uid;
+            //runs.uid = window.uid;
         }
 
         var statusView = new WorkflowRunsView({collection: runs });
@@ -455,7 +455,7 @@ require([
     app.router.on("route:runs", function (uid) {
         console.log(uid);
         var runs = new WorkflowRuns();
-        runs.uid = uid;
+        //runs.uid = uid;
 
         var statusView = new WorkflowRunsView({collection: runs});
         this.navigateToView(statusView);
@@ -559,7 +559,7 @@ require([
         // TODO: reset view differently, this is a hack for now
         if (app.router.currentView instanceof WorkflowRunsView) {
             var runs =  new WorkflowRuns();
-            runs.uid = window.uid;
+            //runs.uid = window.uid;
 
             var statusView = new WorkflowRunsView({collection: runs });
             app.router.navigateToView(statusView);

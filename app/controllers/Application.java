@@ -1,5 +1,8 @@
 package controllers;
 
+import be.objectify.deadbolt.java.actions.Group;
+import be.objectify.deadbolt.java.actions.Restrict;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -79,14 +82,14 @@ public class Application extends Controller {
     /**
      * The page for the workflow builder tool.
      */
-    @Security.Authenticated(Secured.class)
+    @SubjectPresent
     public Result builder() {
         return ok(
                 builder.render()
         );
     }
 
-    //@Security.Authenticated(SecuredBackbone.class)
+    @SubjectPresent
     public Result test() {
         return ok(
                 workflows.render()
@@ -105,12 +108,7 @@ public class Application extends Controller {
         );
     }
 
-    public Result auth() {
-        ObjectNode json = Json.newObject();
-        json.put("user", "test");
-        return ok(json);
-    }
-
+    @Restrict({@Group("ADMIN")})
     public Result admin() {
         return ok(
                 admin.render()

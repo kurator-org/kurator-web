@@ -2,6 +2,7 @@ package controllers;
 
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
@@ -62,7 +63,7 @@ public class Users extends Controller {
     /**
      * The logout action.
      */
-    @Security.Authenticated(Secured.class)
+    @SubjectPresent
     public Result logout() {
         session().clear();
 
@@ -189,6 +190,7 @@ public class Users extends Controller {
         return ok(Json.toJson(userMgmt));
     }
 
+    @Restrict({@Group("ADMIN")})
     public Result createWorkshop() {
         Map<String, String[]> form = request().body().asFormUrlEncoded();
 
@@ -204,11 +206,13 @@ public class Users extends Controller {
         );
     }
 
+    @SubjectPresent
     public Result reset() {
         Form form = formFactory.form(ResetPass.class);
         return ok(reset.render(form));
     }
 
+    @SubjectPresent
     public Result resetPassword() {
         Form<ResetPass> form = formFactory.form(ResetPass.class).bindFromRequest();
 
@@ -253,7 +257,7 @@ public class Users extends Controller {
      * @return json containing file upload ids and filenames
      */
     public Result listUploads() {
-        List<UserUpload> uploadList = userDao.findUserUploads(request().username());
+        List<UserUpload> uploadList = userDao.findUserUploads(session().get("username"));
 
         ObjectNode response = Json.newObject();
         ArrayNode uploads = response.putArray("uploads");
@@ -287,7 +291,7 @@ public class Users extends Controller {
                 file = File.createTempFile(filePart.getFilename() + "-", ".csv");
                 FileUtils.copyFile(src, file);
 
-                UserUpload uploadFile = userDao.createUserUpload(request().username(), filePart.getFilename(),
+                UserUpload uploadFile = userDao.createUserUpload(session().get("username"), filePart.getFilename(),
                         file.getAbsolutePath());
 
                 return uploadFile;
