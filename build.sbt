@@ -9,6 +9,8 @@ scalaVersion := "2.11.7"
 
 resolvers += Resolver.mavenLocal
 
+updateOptions := updateOptions.value.withLatestSnapshots(false)
+
 libraryDependencies ++= Seq(
   javaJdbc,
   cache,
@@ -21,8 +23,7 @@ libraryDependencies ++= Seq(
   "commons-io" % "commons-io" % "2.4",
   "org.pac4j" % "play-pac4j" % "2.4.0",
   "org.mindrot" % "jbcrypt" % "0.3m",
-  "org.kurator" % "kurator-akka" % "1.0.0" exclude("com.typesafe.akka", "akka-actor_2.10") exclude("com.typesafe.akka", "akka-slf4j_2.10"),
-  "org.kurator" % "kurator-validation" % "1.0.1-SNAPSHOT",
+  "org.kurator" % "kurator-validation" % "1.0.1-SNAPSHOT" exclude("com.typesafe.akka", "akka-actor_2.10") exclude("com.typesafe.akka", "akka-slf4j_2.10"),
   "mysql" % "mysql-connector-java" % "5.1.18",
   "org.webjars" % "requirejs" % "2.1.11-1",
   "be.objectify" %% "deadbolt-java" % "2.5.4"
