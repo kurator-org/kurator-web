@@ -1,6 +1,6 @@
 # --- !Ups
 
-insert into user (id, username, email, password, active) values(0, 'admin', 'lowery@gmail.com', '$2a$10$TXASsPiH2GhjqsGb8MMPiOkMLiZ5s6l7PO0xTTlXMweMz1PD5JoCa', TRUE);
+insert into user (id, username, email, password, active) values(0, 'admin', 'lowery@gmail.com', '$2a$10$C6PJ9ED16fpZHSPpapJOxOk7AbjLl9w/wWAC6c4mRURUz4pLCbWTi', TRUE);
 
 insert into security_role (id, name) values(0, 'ADMIN');
 insert into security_role (id, name) values(1, 'USER');
