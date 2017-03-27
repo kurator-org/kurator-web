@@ -446,11 +446,16 @@ require([
 
             console.log(measures);
 
-            this.$el.append(this.template({ measures: measures, runId: this.model.runId })); // panel
+            var panel = this.template({ measures: measures, runId: this.model.runId });
+            //this.$el.append(panel);
 
+            var that = this;
             measures.forEach(function(measure, index) {
-                var postprocessor = new FFDQPostProcessor('#chart-' + index, measure);
+                var chart = $('<div></div>');
+                var postprocessor = new FFDQPostProcessor(chart, measure);
+                //console.log($(chart));
                 postprocessor.renderBinarySummary();
+                that.$el.append(chart); // TODO: panel templates should be constructed here instead
             });
 
             $('[data-toggle="popover"]').popover();

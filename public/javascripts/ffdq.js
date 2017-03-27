@@ -2,8 +2,8 @@ define([
     'd3'
 ], function (d3) {
 
-    var FFDQPostProcessor = function (tag, data) {
-        this.tag = tag;
+    var FFDQPostProcessor = function (el, data) {
+        this.el = el;
         this.data = data;
     }
 
@@ -84,7 +84,7 @@ define([
                 }),
 
                 // Create the svg
-                svg = d3.select(this.tag)
+                svg = d3.select($(this.el).get(0))
                     .append('svg')
                     .attr('width', width + margins.left + margins.right)
                     .attr('height', height + margins.top + margins.bottom)
@@ -179,8 +179,6 @@ define([
             svg.append('g')
                 .attr('class', 'axis')
                 .call(yAxis);
-
-            console.log(this.tag);
         },
 
         renderDatasetSpreadsheet: function ($el, summary) {
