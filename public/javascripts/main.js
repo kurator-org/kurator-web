@@ -365,8 +365,8 @@ require([
         template: _.template(reportTpl),
 
         initialize: function () {
-            this.listenTo(this.collection, 'update', this.render);
-            this.collection.fetch();
+            this.listenTo(this.model, 'change', this.render);
+            this.model.fetch();
         },
 
         render: function () {
@@ -375,28 +375,78 @@ require([
             // Tooltip div
             this.$el.append('<div id="tooltip" class="hidden"><p><span id="value">100</span></p></div>');
 
-            var measures = this.collection.toJSON();
+            var dqReport = this.model.toJSON();
 
-                // var measure = {
-                //     "id": 0,
-                //     "title": "Event Date Completeness",
-                //     "specification": "Check that the value of dwc:eventDate is not empty.",
-                //     "mechanism": "Kurator: DateValidator",
-                //
-                //     "before": {
-                //         "assurance": 1,
-                //         "complete": 3,
-                //         "incomplete": 8
-                //     },
-                //     "after": {
-                //         "assurance": 1,
-                //         "complete": 5,
-                //         "incomplete": 6
-                //     },
-                //     "total": 12
-                // };
+            // Create map of test name to assertion metadata in profile
+            var dqProfile = { };
+            dqReport[0].profile.forEach(function (item) {
+                dqProfile[item.name] = item;
+            });
 
-            this.$el.append(this.template({ measures: measures, runId: this.collection.runId })); // panel
+            var total = dqReport[0].report.length;
+            var summary = { };
+
+            dqReport[0].report.forEach(function (item) {
+                item.assertions.forEach(function (assertion, i) {
+
+                    if (assertion.type == "MEASURE") {
+                        var measure;
+
+                        // create entry for measure if it doesn't exist
+                        if (!summary[assertion.name]) {
+                            var profile = dqProfile[assertion.name];
+
+                            measure = {
+                                  "id": i,
+                                  "title": profile.label,
+                                  "specification": profile.specification,
+                                  "mechanism": profile.mechanism,
+
+                                  "before": {
+                                  //    "assurance": 1,
+                                      "complete": 0,
+                                      "incomplete": 0
+                                  },
+                                  "after": {
+                                  //    "assurance": 1,
+                                      "complete": 0,
+                                      "incomplete": 0
+                                  },
+                                  "total": total
+                             };
+
+                            summary[assertion.name] = measure;
+                        } else {
+                            measure = summary[assertion.name];
+                        }
+
+                        // update assertion counts
+                        if (assertion.stage == "PRE_ENHANCEMENT") {
+                            if (assertion.status == "COMPLETE") {
+                                measure.before.complete++;
+                            } else if (assertion.status == "NOT_COMPLETE") {
+                                measure.before.incomplete++;
+                            }
+                        } else if (assertion.stage == "POST_ENHANCEMENT") {
+                            if (assertion.status == "COMPLETE") {
+                                measure.after.complete++;
+                            } else if (assertion.status == "NOT_COMPLETE") {
+                                measure.after.incomplete++;
+                            }
+                        }
+                    }
+
+                });
+            });
+
+            var measures = [];
+            for (test in summary) {
+                measures.push(summary[test]);
+            }
+
+            console.log(measures);
+
+            this.$el.append(this.template({ measures: measures, runId: this.model.runId })); // panel
 
             measures.forEach(function(measure, index) {
                 var postprocessor = new FFDQPostProcessor('#chart-' + index, measure);
@@ -479,7 +529,7 @@ require([
         }
 
         report.runId = runId;
-        var reportView = new ReportView({ collection : report});
+        var reportView = new ReportView({ model : report});
         this.navigateToView(reportView);
     });
 

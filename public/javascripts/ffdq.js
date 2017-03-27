@@ -23,10 +23,12 @@ define([
                 dataset = [{
                     data: [{
                         stage: 'Before',
-                        count: this.data.before.assurance
+                        //count: this.data.before.assurance
+                        count: 0
                     }, {
                         stage: 'After',
-                        count: this.data.after.assurance
+                        //count: this.data.after.assurance
+                        count: 0
                     }],
                     name: 'Assurance'
                 }, {
@@ -177,6 +179,8 @@ define([
             svg.append('g')
                 .attr('class', 'axis')
                 .call(yAxis);
+
+            console.log(this.tag);
         },
 
         renderDatasetSpreadsheet: function ($el, summary) {

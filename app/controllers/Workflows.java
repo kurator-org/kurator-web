@@ -465,12 +465,12 @@ public class Workflows extends Controller {
         // TODO: this works for demonstration purposes but should be implemented properly
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
-        FFDQPostProcessor postProcessor = new FFDQPostProcessor(new FileInputStream(run.getResult().getDqReport()),
+        /*FFDQPostProcessor postProcessor = new FFDQPostProcessor(new FileInputStream(run.getResult().getDqReport()),
                 Workflows.class.getResourceAsStream("/ev-assertions.json"));
 
-        String json = postProcessor.measureSummary();
+        String json = postProcessor.measureSummary();*/
 
-        return ok(json);
+        return ok(new File(run.getResult().getDqReport()));
     }
 
     @SubjectPresent
