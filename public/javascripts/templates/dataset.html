@@ -1,6 +1,8 @@
+<% var xlsx = jsRoutes.controllers.Workflows.dataset(runId).url %>
+
 <div>
   <a class="btn btn-default" href="#report/<%= runId %>" role="button">Measure Summary View</a>
-  <a class="btn btn-success" href="#report/<%= runId %>" role="button">Download XLS</a>
+  <a class="btn btn-success" href="<%= xlsx %>" role="button">Download XLS</a>
 </div>
 <hr />
 

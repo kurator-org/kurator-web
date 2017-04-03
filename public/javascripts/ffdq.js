@@ -181,10 +181,10 @@ define([
                 .call(yAxis);
         },
 
-        renderDatasetSpreadsheet: function ($el, summary) {
-            var dataset = summary.dataset;
-            console.log(dataset.fields);
-            console.log(dataset.records);
+        renderDatasetSpreadsheet: function ($el, report) {
+            //var dataset = summary.dataset;
+            //console.log(dataset.fields);
+            //console.log(dataset.records);
 
             var createTable = function (json) {
                 var cellColor = {
@@ -251,17 +251,16 @@ define([
                 rows: []
             };
 
-            for (var field in dataset.fields) {
+            for (var field in report[0].initialValues) {
                 finalValues.headers.push(field);
                 initialValues.headers.push(field);
             }
 
-            var records = dataset.records;
-            records.forEach(function (record) {
+            report.forEach(function (record) {
                 var finalValsRow = [];
                 var initialValsRow = [];
 
-                for (var field in dataset.fields) {
+                for (var field in report[0].initialValues) {
                     if (field == 'recordId') {
                         finalValsRow.push({ value: record.recordId });
                         initialValsRow.push({ value: record.recordId });
@@ -301,43 +300,48 @@ define([
                 // header
                 json.headers.push('assertion');
 
-                for (var field in dataset.fields) {
+                for (var field in report.fields) {
                     json.headers.push(field);
                 }
 
                 json.headers.push('comment');
                 json.headers.push('status');
 
-                assertions.forEach(function (assertion) {
+                report.forEach(function (record) {
                     var recordId = assertion.recordId;
+                    report.assertions.forEach(function (assertion) {
 
-                    assertion.assertionRows.forEach(function (assertionRow) {
-                        var row = [];
-                        row.push({ value: assertionRow.label });
-                        row.push({ value: recordId });
+                        assertion.assertionRows.forEach(function (assertionRow) {
+                            var row = [];
+                            row.push({ value: assertionRow.label });
+                            row.push({ value: recordId });
 
-                        assertionRow.record.forEach(function (item) {
-                            var colNum = json.headers.indexOf(item.field);
+                            assertionRow.record.forEach(function (item) {
+                                var colNum = json.headers.indexOf(item.field);
 
-                            if (colNum) {
-                                row[colNum] = { value: item.value ? item.value : '&nbsp;', status: item.status };
-                            }
+                                if (colNum) {
+                                    row[colNum] = { value: item.value ? item.value : '&nbsp;', status: item.status };
+                                }
 
-                            //console.log( + item.field + ": " + item.value + " - " + item.status);
-                        });
+                                //console.log( + item.field + ": " + item.value + " - " + item.status);
+                            });
 
-                        row.push({ value: assertionRow.comment });
-                        row.push({ value: assertionRow.status, status: assertionRow.status});
+                            row.push({ value: assertionRow.comment });
+                            row.push({ value: assertionRow.status, status: assertionRow.status});
 
-                        json.rows.push(row);
-                    })
+                            json.rows.push(row);
+                        })
+                    });
                 });
 
+
                 div.append(createTable(json));
+
             };
 
-            assertionsTable($el.find('#validations .spreadsheet-view'), summary.validations);
-            assertionsTable($el.find('#improvements .spreadsheet-view'), summary.improvements);
+            // TODO: Assertions
+            //assertionsTable($el.find('#validations .spreadsheet-view'), summary.validations);
+            //assertionsTable($el.find('#improvements .spreadsheet-view'), summary.improvements);
 
             // Create fixed table headers
             // var target = $('.spreadsheet-view table thead');

@@ -345,12 +345,22 @@ require([
         },
 
         render: function () {
-            this.$el.html(this.template({ runId: this.model.id }));
+            this.$el.html(this.template({ runId: this.model.runId }));
 
-            if (this.model.toJSON().dataset) {
+            console.log(this.model.toJSON());
+            var dqReports = this.model.toJSON();
+            if (!dqReports[0]) {
+                this.$el.append('<p><i>Report unavailable.</i></p>');
+            } else {
+                var dqReport = dqReports[0].report;
+
+                var postprocessor = new FFDQPostProcessor();
+                postprocessor.renderDatasetSpreadsheet(this.$el, dqReport);
+            }
+            /*if (this.model.toJSON().dataset) {
                 var postprocessor = new FFDQPostProcessor();
                 postprocessor.renderDatasetSpreadsheet(this.$el, this.model.toJSON());
-            }
+            }*/
 
             $('#dataset-tabs a').click(function (e) {
                 e.preventDefault()
@@ -447,11 +457,10 @@ require([
                     measures.push(summary[test]);
                 }
 
+                var panel = this.template({measures: measures, runId: this.model.runId});
+                this.$el.append(panel);
+
                 if (measures.length > 0) {
-
-                    var panel = this.template({measures: measures, runId: this.model.runId});
-                    this.$el.append(panel);
-
                     var that = this;
                     measures.forEach(function (measure, index) {
                         var chart = $('<div></div>');
@@ -548,8 +557,10 @@ require([
     });
 
     app.router.on("route:dataset", function (runId) {
+        var report = new ReportSummary();
+        report.runId = runId;
 
-        var datasetView = new DatasetView({ model : new DatasetSummary({ id : runId }) });
+        var datasetView = new DatasetView({ model : report });
         this.navigateToView(datasetView);
     });
 

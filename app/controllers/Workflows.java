@@ -11,6 +11,7 @@ import config.ParameterConfig;
 import dao.UserDao;
 import dao.WorkflowDao;
 import models.db.user.UserUpload;
+import models.db.workflow.ResultFile;
 import org.apache.commons.io.FileUtils;
 import ui.input.BasicField;
 import ui.input.FileInput;
@@ -477,12 +478,13 @@ public class Workflows extends Controller {
     public Result dataset(long workflowRunId) throws IOException {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
-        FFDQPostProcessor postProcessor = new FFDQPostProcessor(new FileInputStream(run.getResult().getDqReport()),
-                Workflows.class.getResourceAsStream("/ev-assertions.json"));
+        List<ResultFile> resultFiles = run.getResult().getResultFiles();
+        for (ResultFile resultFile : resultFiles) {
+            if ("dq_report_xls_file".equalsIgnoreCase(resultFile.getLabel())) {
+                return ok(new File(resultFile.getFileName()));
+            }
+        }
 
-        String json = postProcessor.curatedDataset();
-
-        // DQ report json
 //        try {
 //            InputStream inputStream = new FileInputStream(run.getResult().getDqReport());
 //            BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
@@ -497,6 +499,6 @@ public class Workflows extends Controller {
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
-        return ok(json);
+        return ok();
     }
 }
