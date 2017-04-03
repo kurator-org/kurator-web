@@ -377,86 +377,93 @@ require([
 
             var dqReport = this.model.toJSON();
 
-            // Create map of test name to assertion metadata in profile
-            var dqProfile = { };
-            dqReport[0].profile.forEach(function (item) {
-                dqProfile[item.name] = item;
-            });
-
-            var total = dqReport[0].report.length;
-            var summary = { };
-
-            dqReport[0].report.forEach(function (item) {
-                item.assertions.forEach(function (assertion, i) {
-
-                    if (assertion.type == "MEASURE") {
-                        var measure;
-
-                        // create entry for measure if it doesn't exist
-                        if (!summary[assertion.name]) {
-                            var profile = dqProfile[assertion.name];
-
-                            measure = {
-                                  "id": i,
-                                  "title": profile.label,
-                                  "specification": profile.specification,
-                                  "mechanism": profile.mechanism,
-
-                                  "before": {
-                                  //    "assurance": 1,
-                                      "complete": 0,
-                                      "incomplete": 0
-                                  },
-                                  "after": {
-                                  //    "assurance": 1,
-                                      "complete": 0,
-                                      "incomplete": 0
-                                  },
-                                  "total": total
-                             };
-
-                            summary[assertion.name] = measure;
-                        } else {
-                            measure = summary[assertion.name];
-                        }
-
-                        // update assertion counts
-                        if (assertion.stage == "PRE_ENHANCEMENT") {
-                            if (assertion.status == "COMPLETE") {
-                                measure.before.complete++;
-                            } else if (assertion.status == "NOT_COMPLETE") {
-                                measure.before.incomplete++;
-                            }
-                        } else if (assertion.stage == "POST_ENHANCEMENT") {
-                            if (assertion.status == "COMPLETE") {
-                                measure.after.complete++;
-                            } else if (assertion.status == "NOT_COMPLETE") {
-                                measure.after.incomplete++;
-                            }
-                        }
-                    }
-
+            if (!dqReport[0]) {
+                this.$el.append('<p><i>Report unavailable.</i></p>');
+            } else {
+                // Create map of test name to assertion metadata in profile
+                var dqProfile = {};
+                dqReport[0].profile.forEach(function (item) {
+                    dqProfile[item.name] = item;
                 });
-            });
 
-            var measures = [];
-            for (test in summary) {
-                measures.push(summary[test]);
+                var total = dqReport[0].report.length;
+                var summary = {};
+
+                dqReport[0].report.forEach(function (item) {
+                    item.assertions.forEach(function (assertion, i) {
+
+                        if (assertion.type == "MEASURE") {
+                            var measure;
+
+                            // create entry for measure if it doesn't exist
+                            if (!summary[assertion.name]) {
+                                var profile = dqProfile[assertion.name];
+
+                                measure = {
+                                    "id": i,
+                                    "title": profile.label,
+                                    "specification": profile.specification,
+                                    "mechanism": profile.mechanism,
+
+                                    "before": {
+                                        //    "assurance": 1,
+                                        "complete": 0,
+                                        "incomplete": 0
+                                    },
+                                    "after": {
+                                        //    "assurance": 1,
+                                        "complete": 0,
+                                        "incomplete": 0
+                                    },
+                                    "total": total
+                                };
+
+                                summary[assertion.name] = measure;
+                            } else {
+                                measure = summary[assertion.name];
+                            }
+
+                            // update assertion counts
+                            if (assertion.stage == "PRE_ENHANCEMENT") {
+                                if (assertion.status == "COMPLETE") {
+                                    measure.before.complete++;
+                                } else if (assertion.status == "NOT_COMPLETE") {
+                                    measure.before.incomplete++;
+                                }
+                            } else if (assertion.stage == "POST_ENHANCEMENT") {
+                                if (assertion.status == "COMPLETE") {
+                                    measure.after.complete++;
+                                } else if (assertion.status == "NOT_COMPLETE") {
+                                    measure.after.incomplete++;
+                                }
+                            }
+                        }
+
+                    });
+                });
+
+                var measures = [];
+                for (test in summary) {
+                    measures.push(summary[test]);
+                }
+
+                if (measures.length > 0) {
+
+                    var panel = this.template({measures: measures, runId: this.model.runId});
+                    //this.$el.append(panel);
+
+                    var that = this;
+                    measures.forEach(function (measure, index) {
+                        var chart = $('<div></div>');
+                        var postprocessor = new FFDQPostProcessor(chart, measure);
+                        //console.log($(chart));
+                        postprocessor.renderBinarySummary();
+                        that.$el.append(chart); // TODO: panel templates should be constructed here instead
+                    });
+                } else {
+                    this.$el.append('<p><i>No measure summary available for data quality report.</i></p>');
+                }
             }
-
-            console.log(measures);
-
-            var panel = this.template({ measures: measures, runId: this.model.runId });
-            //this.$el.append(panel);
-
-            var that = this;
-            measures.forEach(function(measure, index) {
-                var chart = $('<div></div>');
-                var postprocessor = new FFDQPostProcessor(chart, measure);
-                //console.log($(chart));
-                postprocessor.renderBinarySummary();
-                that.$el.append(chart); // TODO: panel templates should be constructed here instead
-            });
 
             $('[data-toggle="popover"]').popover();
 
