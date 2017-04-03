@@ -450,15 +450,17 @@ require([
                 if (measures.length > 0) {
 
                     var panel = this.template({measures: measures, runId: this.model.runId});
-                    //this.$el.append(panel);
+                    this.$el.append(panel);
 
                     var that = this;
                     measures.forEach(function (measure, index) {
                         var chart = $('<div></div>');
                         var postprocessor = new FFDQPostProcessor(chart, measure);
                         //console.log($(chart));
+                        var container = that.$el.find('#chart-'+index);
                         postprocessor.renderBinarySummary();
-                        that.$el.append(chart); // TODO: panel templates should be constructed here instead
+                        console.log(container);
+                        container.append(chart);
                     });
                 } else {
                     this.$el.append('<p><i>No measure summary available for data quality report.</i></p>');
