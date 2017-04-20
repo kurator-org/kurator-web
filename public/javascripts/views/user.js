@@ -37,6 +37,11 @@ define([
                     .html('<b>Inactive</b>');
             }
 
+            if (this.model.get('username') == 'admin') {
+                this.$('.role-btn').prop('disabled', true);
+                this.$('.status-btn').prop('disabled', true);
+            }
+
             return this;
         },
 
