@@ -34,8 +34,7 @@ GET     /uploads                                controllers.Users.listUploads()
 # Admin and user management, user accounts and user groups
 # ~~~~
 GET     /admin/users                            controllers.Users.manage()
-POST    /admin/users                            controllers.Users.manageUsers()
-PUT     /admin/users/:id                         controllers.Users.updateUser(id: Long)
+PUT     /admin/users/:id                        controllers.Users.updateUser(id: Long)
 
 POST    /admin/groups                           controllers.Users.createWorkshop()
 

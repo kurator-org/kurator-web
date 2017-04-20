@@ -51,7 +51,6 @@ public class Application extends Controller {
                         routes.javascript.Workflows.deletePackage(),
 
                         routes.javascript.Users.manage(),
-                        routes.javascript.Users.manageUsers(),
                         routes.javascript.Users.registerSubmit(),
                         routes.javascript.Users.createWorkshop(),
 

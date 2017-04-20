@@ -3,6 +3,7 @@ package controllers;
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
@@ -14,7 +15,6 @@ import models.forms.ChangePass;
 import models.forms.Login;
 import models.forms.Register;
 import models.forms.ResetPass;
-import models.json.UserManagement;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import play.data.Form;
@@ -174,29 +174,21 @@ public class Users extends Controller {
         );
     }
 
-    @Restrict({@Group("ADMIN")})
-    public Result updateUser(Long id) {
-        ObjectNode response = Json.newObject();
-
-        System.out.println("userid: " + id);
-
-        return ok(response);
-    }
 
     /**
      * Process the data submitted on the user management form (user administration page). Activate or
      * deactivate the user accounts specified and assign role.
      */
     @Restrict({@Group("ADMIN")})
-    public Result manageUsers() {
-        UserManagement userMgmt = Json.fromJson(request().body().asJson(), UserManagement.class);
+    public Result updateUser(Long id) {
+        ObjectNode response = Json.newObject();
 
+        JsonNode request = request().body().asJson();
+        userDao.updateUserAccess(request.get("username").asText(), request.get("active").asBoolean(), request.get("role").asText());
 
-        userDao.updateUserAccess(userMgmt.getUsername(), userMgmt.getActive(), userMgmt.getRole());
+        // TODO: Add success message to json response or handle errors
 
-        //flash("activate_success", "Updated user(s) active status!");
-
-        return ok(Json.toJson(userMgmt));
+        return ok(response);
     }
 
     @Restrict({@Group("ADMIN")})

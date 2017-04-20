@@ -1,6 +1,7 @@
 package dao;
 
 import com.avaje.ebean.annotation.Transactional;
+import com.fasterxml.jackson.databind.JsonNode;
 import models.db.user.SecurityRole;
 import models.db.user.User;
 import models.db.user.UserUpload;
@@ -95,4 +96,6 @@ public class UserDao {
         user.setRoles(Collections.singletonList(SecurityRole.findByName(role)));
         user.save();
     }
+
+
 }

@@ -23,6 +23,8 @@ require([
     'router',
     'models/session',
     'ffdq',
+    'views/usermgmt',
+    'collections/users',
     'text!templates/workflow.html',
     'text!templates/run.html',
     'text!templates/login.html',
@@ -33,7 +35,7 @@ require([
     'text!templates/deploy.html',
     'text!templates/report.html',
     'text!templates/dataset.html'
-], function (app, WebRouter, SessionModel, FFDQPostProcessor, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, usersTpl, userTpl, registerTpl,
+], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, registerTpl,
              deployTpl, reportTpl, datasetTpl) {
 
     app.router = new WebRouter();
@@ -194,91 +196,6 @@ require([
     var DatasetSummary = Backbone.Model.extend({
         url : function() {
             return jsRoutes.controllers.Workflows.dataset(this.id).url;
-        }
-    });
-
-    var Users = Backbone.Collection.extend({
-        url : jsRoutes.controllers.Users.manage().url,
-
-        modelId: function(attrs) {
-            return attrs.username;
-        }
-    });
-
-    var UserView = Backbone.View.extend({
-        tagName: 'tr',
-        template: _.template(userTpl),
-
-        events: {
-            'click .status-btn' : 'toggleActive',
-            'click .dropdown-menu li a' : 'changeRole'
-        },
-
-        initialize: function () {
-            this.listenTo(this.model, 'change', this.render);
-        },
-
-        render: function () {
-            this.$el.html(this.template(this.model.toJSON()));
-
-            this.$('.dropdown-toggle').dropdown();
-
-            if (this.model.get('active')) {
-                this.$('.status-btn')
-                    .removeClass('btn-warning')
-                    .addClass('btn-success')
-                    .html('<b>Active</b>');
-
-            } else {
-                this.$('.status-btn')
-                    .removeClass('btn-success')
-                    .addClass('btn-warning')
-                    .html('<b>Inactive</b>');
-            }
-
-            return this;
-        },
-
-        toggleActive: function(e) {
-            var isActive = this.model.get('active');
-            this.model.save({ active: !isActive }, {wait: true});
-        },
-
-        changeRole: function (e) {
-            var selectedRole = $(e.target).text();
-
-            if (selectedRole != this.model.get('role')) {
-                this.model.save({ role: selectedRole }, {wait: true});
-            }
-        }
-    });
-
-    var UserManagementView = Backbone.View.extend({
-        template: _.template(usersTpl),
-
-        initialize: function() {
-            //this.listenTo(this.collection, 'add', this.addUser);
-
-            this.listenTo(this.collection, 'all', this.render);
-            this.collection.fetch();
-        },
-
-        addUser: function (user) {
-            console.log(user);
-            var view = new UserView({ model: user });
-            this.$('#user-table').append(view.render().el);
-        },
-
-        render: function() {
-            this.$el.html(this.template());
-
-            var that = this;
-
-            this.collection.each(function (user) {
-                that.addUser(user);
-            });
-
-            return this;
         }
     });
 
