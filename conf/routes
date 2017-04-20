@@ -35,6 +35,7 @@ GET     /uploads                                controllers.Users.listUploads()
 # ~~~~
 GET     /admin/users                            controllers.Users.manage()
 POST    /admin/users                            controllers.Users.manageUsers()
+PUT     /admin/users/:id                         controllers.Users.updateUser(id: Long)
 
 POST    /admin/groups                           controllers.Users.createWorkshop()
 

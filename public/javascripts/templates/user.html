@@ -1,0 +1,24 @@
+<td><%= username %></td>
+<td><%= firstname %> <%= lastname %></td>
+<td><%= email %></td>
+<td><%= affiliation %></td>
+<td><%= new Date(createdOn).toLocaleString() %></td>
+<td><% if (lastActive) { %><%= new Date(lastActive).toLocaleString() %><% } else { %><i style="color: #777">No activity</i><% } %></td>
+
+<td>
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
+            <b><span><%= role %></span></b>
+        </button>
+
+        <ul class="dropdown-menu">
+            <li><a href="#">USER</a></li>
+            <li><a href="#">ADMIN</a></li>
+        </ul>
+    </div>
+</td>
+
+
+<td>
+    <button type="button" class="btn btn-xs status-btn"></button>
+</td>

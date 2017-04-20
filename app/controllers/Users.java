@@ -174,6 +174,15 @@ public class Users extends Controller {
         );
     }
 
+    @Restrict({@Group("ADMIN")})
+    public Result updateUser(Long id) {
+        ObjectNode response = Json.newObject();
+
+        System.out.println("userid: " + id);
+
+        return ok(response);
+    }
+
     /**
      * Process the data submitted on the user management form (user administration page). Activate or
      * deactivate the user accounts specified and assign role.

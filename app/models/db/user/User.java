@@ -4,6 +4,7 @@ import be.objectify.deadbolt.java.models.Permission;
 import be.objectify.deadbolt.java.models.Role;
 import be.objectify.deadbolt.java.models.Subject;
 import com.avaje.ebean.Model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -29,6 +30,8 @@ public class User extends Model implements Subject {
     private String email;
 
     private String username;
+
+    @JsonIgnore
     private String password;
 
     private String affiliation;
@@ -37,6 +40,7 @@ public class User extends Model implements Subject {
     private Date lastActive;
 
     @ManyToMany
+    @JsonIgnore
     public List<SecurityRole> roles;
 
     @ManyToMany
@@ -120,6 +124,10 @@ public class User extends Model implements Subject {
         this.active = active;
     }
 
+    public String getRole() {
+        return roles.get(0).getName();
+    }
+
     @Override
     public List<? extends Role> getRoles() {
         return roles;
@@ -131,6 +139,7 @@ public class User extends Model implements Subject {
     }
 
     @Override
+    @JsonIgnore
     public String getIdentifier() {
         return username;
     }

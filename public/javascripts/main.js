@@ -28,11 +28,12 @@ require([
     'text!templates/login.html',
     'text!templates/status.html',
     'text!templates/users.html',
+    'text!templates/user.html',
     'text!templates/register.html',
     'text!templates/deploy.html',
     'text!templates/report.html',
     'text!templates/dataset.html'
-], function (app, WebRouter, SessionModel, FFDQPostProcessor, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, usersTpl, registerTpl,
+], function (app, WebRouter, SessionModel, FFDQPostProcessor, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, usersTpl, userTpl, registerTpl,
              deployTpl, reportTpl, datasetTpl) {
 
     app.router = new WebRouter();
@@ -128,6 +129,7 @@ require([
         url : function() {
             return jsRoutes.controllers.Workflows.status(app.session.get('uid')).url
         },
+
         comparator: function(a, b) {
             a = new Date(a.attributes.startDate);
             b = new Date(b.attributes.startDate);
@@ -195,7 +197,6 @@ require([
         }
     });
 
-
     var Users = Backbone.Collection.extend({
         url : jsRoutes.controllers.Users.manage().url,
 
@@ -204,95 +205,78 @@ require([
         }
     });
 
-    var UserManagementView = Backbone.View.extend({
-        template: _.template(usersTpl),
+    var UserView = Backbone.View.extend({
+        tagName: 'tr',
+        template: _.template(userTpl),
+
+        events: {
+            'click .status-btn' : 'toggleActive',
+            'click .dropdown-menu li a' : 'changeRole'
+        },
 
         initialize: function () {
-            this.listenTo(this.collection, 'update', this.render);
-            this.collection.fetch();
+            this.listenTo(this.model, 'change', this.render);
         },
 
         render: function () {
-            this.$el.html(this.template({users : this.collection.toJSON(), uid : app.session.get('uid')}));
+            this.$el.html(this.template(this.model.toJSON()));
 
-            var postManageUsers = function(user, active, role, callback) {
-                $.ajax({
-                    type: "POST",
-                    //the url where you want to sent the userName and password to
-                    url: jsRoutes.controllers.Users.manageUsers().url,
-                    dataType: 'json',
-                    async: false,
-                    contentType: 'application/json',
-                    //json object to sent to the authentication url
-                    data: JSON.stringify({username: user.get('username'), active: active, role: role}),
-                    success: callback
-                });
+            this.$('.dropdown-toggle').dropdown();
+
+            if (this.model.get('active')) {
+                this.$('.status-btn')
+                    .removeClass('btn-warning')
+                    .addClass('btn-success')
+                    .html('<b>Active</b>');
+
+            } else {
+                this.$('.status-btn')
+                    .removeClass('btn-success')
+                    .addClass('btn-warning')
+                    .html('<b>Inactive</b>');
             }
 
-                var that = this;
+            return this;
+        },
 
-            $('.dropdown-menu li').on('click', function (event) {
-                var username = $(this).parent().attr('id').substr(5);
-                var user = that.collection.get(username);
+        toggleActive: function(e) {
+            var isActive = this.model.get('active');
+            this.model.save({ active: !isActive }, {wait: true});
+        },
 
-                var role = $(this).text();
+        changeRole: function (e) {
+            var selectedRole = $(e.target).text();
 
-                postManageUsers(user, user.get('active'), role, function (data) {
-                    user.set('role', data.role);
+            if (selectedRole != this.model.get('role')) {
+                this.model.save({ role: selectedRole }, {wait: true});
+            }
+        }
+    });
 
-                    $('#role_value_' + data.username).html('<b>' + data.role + '</b>');
-                });
+    var UserManagementView = Backbone.View.extend({
+        template: _.template(usersTpl),
+
+        initialize: function() {
+            //this.listenTo(this.collection, 'add', this.addUser);
+
+            this.listenTo(this.collection, 'all', this.render);
+            this.collection.fetch();
+        },
+
+        addUser: function (user) {
+            console.log(user);
+            var view = new UserView({ model: user });
+            this.$('#user-table').append(view.render().el);
+        },
+
+        render: function() {
+            this.$el.html(this.template());
+
+            var that = this;
+
+            this.collection.each(function (user) {
+                that.addUser(user);
             });
-
-            $('.status-btn').on('click', function (event) {
-                var username = $(this).attr('id').substr(7);
-                var user = that.collection.get(username);
-
-                var active = user.get('active') ? false : true;
-
-                postManageUsers(user, active, user.get('role'), function (data) {
-                    user.set('active', data.active);
-
-                    if (data.active) {
-                        $('#status_' + data.username)
-                            .removeClass('btn-warning')
-                            .addClass('btn-success')
-                            .html('<b>Active</b>');
-                    } else {
-                        $('#status_' + data.username)
-                            .removeClass('btn-success')
-                            .addClass('btn-warning')
-                            .html('<b>Inactive</b>');
-                    }
-                });
-            });
-
-            // $('#create-workshop-form').submit(function (event) {
-            //     event.preventDefault();
-            //     console.log("submitting form...");
-            //
-            //     //grab all form data
-            //     var formData = new FormData($(this)[0]);
-            //
-            //     $.ajax({
-            //         url: $(this).attr('action'),
-            //         type: 'POST',
-            //         data: formData,
-            //         async: false,
-            //         cache: false,
-            //         contentType: false,
-            //         processData: false,
-            //         success: function (data) {
-            //             console.log(data);
-            //         }
-            //     });
-            //
-            //     return false;
-            // });
-            //
-            $('#create-btn').click(function (event) {
-                $('#create-workshop-form').submit();
-             });
 
             return this;
         }

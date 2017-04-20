@@ -4,7 +4,7 @@
 
 <br />
 
-<table class="table">
+<table class="table" id="user-table">
   <tr>
     <th>Username</th>
     <th>Fullname</th>
@@ -15,65 +15,6 @@
     <th>Role</th>
     <th>Active</th>
   </tr>
-
-  <% _.each(users, function(user) { %>
-
-  <tr>
-    <td><%= user.username %></td>
-    <td><%= user.firstname %> <%= user.lastname %></td>
-    <td><%= user.email %></td>
-    <td><%= user.affiliation %></td>
-    <td><%= new Date(user.createdOn).toLocaleString() %></td>
-    <td><% if (user.lastActive) { %><%= new Date(user.lastActive).toLocaleString() %><% } else { %><i style="color: #777">No activity</i><% } %></td>
-    <td>
-
-      <div class="btn-group">
-        <% if (user.username == "admin" || user.id == uid) { %>
-
-          <button type="button" class="btn btn-primary btn-xs disabled">
-            <b><span><%= user.roles[0].name %></span></b>
-          </button>
-
-        <% } else { %>
-
-        <button type="button" class="btn btn-primary btn-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <b><span id="role_value_<%= user.username %>"><%= user.roles[0].name %></span></b>
-        </button>
-        <ul id="role_<%= user.username %>" class="dropdown-menu">
-          <li><a href="#">USER</a></li>
-          <li><a href="#">ADMIN</a></li>
-        </ul>
-
-        <% } %>
-      </div>
-
-
-
-    </td>
-    <td>
-      <% if (user.username == "admin" || user.id == uid) { %>
-
-        <% if (user.active) { %>
-        <button type="button" class="btn btn-success btn-xs status-btn disabled"><b>Active</b></button>
-        <% } else { %>
-        <button type="button" class="btn btn-warning btn-xs status-btn disabled"><b>Inactive</b></button>
-        <% } %>
-
-      <% } else { %>
-
-        <% if (user.active) { %>
-
-        <button type="button" id="status_<%= user.username %>" class="btn btn-success btn-xs status-btn"><b>Active</b></button>
-        <% } else { %>
-        <button type="button" id="status_<%= user.username %>" class="btn btn-warning btn-xs status-btn"><b>Inactive</b></button>
-        <% } %>
-
-      <% } %>
-    </td>
-  </tr>
-
-  <% }); %>
-
 </table>
 
 <div id="create-workshop-modal" class="modal fade" tabindex="-1">
@@ -97,11 +38,11 @@
             </div>
           </form>
         </div>
-      </p>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button type="button" id="create-btn" class="btn btn-primary">Create</button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" id="create-btn" class="btn btn-primary">Create</button>
+        </div>
       </div>
     </div>
   </div>
