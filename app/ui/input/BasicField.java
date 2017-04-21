@@ -1,5 +1,6 @@
 package ui.input;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ui.handlers.FieldHandler;
 
 /**
@@ -8,7 +9,9 @@ import ui.handlers.FieldHandler;
 public abstract class BasicField<T> {
     public final String type = getClass().getSimpleName();
 
+    @JsonIgnore
     public FieldHandler fieldHandler;
+
     public String name;
     public String label;
     public String tooltip;

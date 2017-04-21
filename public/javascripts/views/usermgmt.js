@@ -23,11 +23,9 @@ define([
         render: function() {
             this.$el.html(this.template());
 
-            var that = this;
-
             this.collection.each(function (user) {
-                that.addUser(user);
-            });
+                this.addUser(user);
+            }, this);
 
             return this;
         }
