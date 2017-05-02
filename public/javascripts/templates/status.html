@@ -32,7 +32,6 @@
       <% } else { %>
 
       <% if (run.hasResult) { %><a href="<%= result %>" data-toggle="tooltip" data-placement="top" title="Download Results"><span class="glyphicon glyphicon-file" style="font-size: 1.3em; color: #777"></span></a><% } %>
-      <% if (run.hasReport) { %><a href="#report/<%= run.id %>" data-toggle="tooltip" data-placement="top" title="View Report"><span class="glyphicon glyphicon-tasks" style="font-size: 1.3em; color: #777"></span></a><% } %>
       <% if (run.hasOutput) { %><a href="<%= output %>" data-toggle="tooltip" data-placement="top" title="Output Log"><span class="glyphicon glyphicon-info-sign" style="font-size: 1.3em; color: #777"></span></a><% } %>
       <% if (run.hasErrors) { %><a href="<%= errors %>" data-toggle="tooltip" data-placement="top" title="Error Log"><span class="glyphicon glyphicon-exclamation-sign" style="font-size: 1.3em; color: #777"></span></a><% } %>
 

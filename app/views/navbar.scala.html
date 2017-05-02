@@ -14,7 +14,6 @@
         @if(session.get("uid") != null) {
 
           <li><a href="@routes.Application.test()#run">Workflows</a></li>
-          <li><a href="@routes.Application.builder()">Builder</a></li>
 
           @if(session.get("user_role").equals("ADMIN")) {
             <li><a href="@routes.Application.admin()#users">Admin</a></li>
