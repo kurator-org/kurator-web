@@ -141,15 +141,19 @@ require([
 
     var WorkflowRunsView = Backbone.View.extend({
         template: _.template(statusTpl),
-
         initialize: function () {
             this.listenTo(this.collection, 'update', this.render);
             //this.listenTo(app.router, 'route', this.beforeClose);
             this.collection.fetch();
+            this.isPaused = false;
 
             var that = this;
             this.timer = setInterval(function() {
-                    that.collection.fetch();
+                    if (!that.isPaused) {
+                        that.collection.fetch();
+                    } else {
+                        console.log("paused");
+                    }
                 }, 5000);
         },
 
@@ -157,8 +161,38 @@ require([
             var runs = this.collection.toJSON();
             this.$el.html(this.template({runs : runs }));
 
+            this.$('#result-modal').on('hidden.bs.modal', function (e) {
+                // result polling for results
+                if (that.timer) {
+                    that.isPaused = false;
+                }
+            });
+
             var that = this;
             runs.forEach(function(run) {
+
+                that.$('#run'+run.id).click(function(event) {
+                    var runId = $(this).attr('id').substr(3);
+                    console.log(runId);
+
+                    // pause result polling timer
+                  if (that.timer) {
+                      that.isPaused = true;
+                  }
+
+                    $.get(jsRoutes.controllers.Workflows.resultArtifacts(run.id).url, function (response) {
+                        console.log(response);
+
+                        var body = $('#result-modal .modal-body');
+                        body.html('<ul></ul>');
+
+                        response.artifacts.forEach(function(artifact) {
+                            body.find('ul').append('<li><a href="' + jsRoutes.controllers.Workflows.resultFile(artifact.id).url + '"><b>' + artifact.label + '</b></a> - ' + artifact.description + '</li> ');
+                        });
+
+                        body.append('<br /><a href="' + jsRoutes.controllers.Workflows.resultArchive(response.id).url + '"><b>[Download Archive]</b></a>');
+                    });
+                });
 
                 switch (run.status) {
                     case "RUNNING":

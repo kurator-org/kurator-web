@@ -13,7 +13,7 @@
 
   <% _.each(runs, function(run) { %>
 
-  <% var result = jsRoutes.controllers.Workflows.resultArchive(run.id).url %>
+  <% var result = jsRoutes.controllers.Workflows.resultArtifacts(run.id).url %>
   <% var output = jsRoutes.controllers.Workflows.outputLog(run.id).url %>
   <% var errors = jsRoutes.controllers.Workflows.errorLog(run.id).url %>
 
@@ -31,11 +31,15 @@
 
       <% } else { %>
 
-      <% if (run.hasResult) { %><a href="<%= result %>" data-toggle="tooltip" data-placement="top" title="Download Results"><span class="glyphicon glyphicon-file" style="font-size: 1.3em; color: #777"></span></a><% } %>
+      <% if (run.hasResult) { %><a href="#" id="run<%= run.id %>" title="View Results"  data-toggle="modal" data-target="#result-modal"><span class="glyphicon glyphicon-file"style="font-size: 1.3em; color: #777"></span></a><% } %>
       <% if (run.hasOutput) { %><a href="<%= output %>" data-toggle="tooltip" data-placement="top" title="Output Log"><span class="glyphicon glyphicon-info-sign" style="font-size: 1.3em; color: #777"></span></a><% } %>
       <% if (run.hasErrors) { %><a href="<%= errors %>" data-toggle="tooltip" data-placement="top" title="Error Log"><span class="glyphicon glyphicon-exclamation-sign" style="font-size: 1.3em; color: #777"></span></a><% } %>
 
       <% } %>
+
+      <div class="result">
+
+      </div>
     </td>
   </tr>
 
@@ -46,3 +50,24 @@
 <% } else { %>
 <p><i>No workflow runs</i></p>
 <% } %>
+
+<!-- Modal -->
+<div id="result-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Modal Header</h4>
+      </div>
+      <div class="modal-body">
+        <p>Some text in the modal.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -41,7 +41,10 @@ public class Application extends Controller {
                         routes.javascript.Workflows.runWorkflow(),
                         routes.javascript.Workflows.status(),
 
+                        routes.javascript.Workflows.resultArtifacts(),
                         routes.javascript.Workflows.resultArchive(),
+                        routes.javascript.Workflows.resultFile(),
+
                         routes.javascript.Workflows.outputLog(),
                         routes.javascript.Workflows.errorLog(),
                         routes.javascript.Workflows.report(),

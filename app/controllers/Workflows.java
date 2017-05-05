@@ -4,6 +4,7 @@ import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import be.objectify.deadbolt.java.actions.SubjectNotPresent;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
 import config.ConfigManager;
@@ -13,6 +14,7 @@ import dao.WorkflowDao;
 import models.db.user.UserUpload;
 import models.db.workflow.ResultFile;
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.atlas.json.JsonObject;
 import ui.input.BasicField;
 import ui.input.FileInput;
 import ui.input.SelectField;
@@ -145,7 +147,7 @@ public class Workflows extends Controller {
                 workflowDef.getYamlFile());
 
         // Run the workflow
-        long runId = runYamlWorkflow(runName, workflow, settings);
+        long runId = runYamlWorkflow(runName, workflow, workflowDef, settings);
 
         // The response json contains the workflow run id for later reference
         ObjectNode response = Json.newObject();
@@ -186,10 +188,10 @@ public class Workflows extends Controller {
      * Helper method for running yaml workflows using an instance of WorkflowRunner.
      *
      * @param workflow Workflow definition object
-     * @param settings A map of the settings provided as input to the runner
-     * @return json containing the id of this run
+     * @param workflowDef
+     *@param settings A map of the settings provided as input to the runner  @return json containing the id of this run
      */
-    private long runYamlWorkflow(String name, Workflow workflow, Map<String, Object> settings) {
+    private long runYamlWorkflow(String name, Workflow workflow, WorkflowDefinition workflowDef, Map<String, Object> settings) {
         // Load workflow yaml
         InputStream yamlStream = loadYamlStream(workflow.getYamlFile());
 
@@ -214,7 +216,7 @@ public class Workflows extends Controller {
             WorkflowRunner runner = new YamlStreamWorkflowRunner()
                     .yamlStream(yamlStream).configure(config);
 
-            runnable.init(name, workflow, user, runner, errStream, outStream);
+            runnable.init(name, workflow, workflowDef, user, runner, errStream, outStream);
 
             runner.apply(settings)
                     .outputStream(new PrintStream(outStream))
@@ -227,6 +229,50 @@ public class Workflows extends Controller {
         return runnable.getRunId();
     }
 
+    @SubjectPresent
+    public Result resultArtifacts(long runId) {
+        ObjectNode response = Json.newObject();
+
+        WorkflowRun run = workflowDao.findWorkflowRunById(runId);
+        WorkflowResult result = run.getResult();
+
+        for (ResultFile file : result.getResultFiles()) {
+            response.put("id", run.getId());
+            response.put("name", run.getName());
+            response.put("workflow", run.getWorkflow().getTitle());
+            response.put("yaml", run.getWorkflow().getYamlFile());
+            response.put("startTime", run.getStartTime().getTime());
+            response.put("endTime", run.getEndTime().getTime());
+            response.put("archive", result.getArchivePath());
+
+            ArrayNode artifactsArr = Json.newArray();
+            for (ResultFile resultFile : result.getResultFiles()) {
+                ObjectNode artifactObj = Json.newObject();
+                artifactObj.put("label", resultFile.getLabel());
+                artifactObj.put("filename", resultFile.getFileName());
+                artifactObj.put("description", resultFile.getDescription());
+                artifactObj.put("id", resultFile.getId());
+
+                artifactsArr.add(artifactObj);
+            }
+
+            response.put("artifacts", artifactsArr);
+        }
+
+        return ok(response);
+
+        //return ok(new File(result.getArchivePath()));
+    }
+
+    @SubjectPresent
+    public Result resultFile(long resultFileId) {
+        ResultFile resultFile = workflowDao.findResultFileById(resultFileId);
+        File file = new File(resultFile.getFileName());
+        response().setHeader("Content-Disposition", "attachment; filename=" + file.getName());
+
+        return ok(file);
+    }
+
     /**
      * Return the result archive containing artifacts produced by the workflow run.
      *
@@ -235,7 +281,9 @@ public class Workflows extends Controller {
      */
     @SubjectPresent
     public Result resultArchive(long runId) {
-        WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
+        WorkflowRun run = workflowDao.findWorkflowRunById(runId);
+        WorkflowResult result = run.getResult();
+
         return ok(new File(result.getArchivePath()));
     }
 
@@ -250,7 +298,8 @@ public class Workflows extends Controller {
         response().setHeader("Content-Disposition", "attachment; filename=error_log.txt");
         response().setHeader("Content-Type", "text/plain");
 
-        WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
+        WorkflowRun run = workflowDao.findWorkflowRunById(runId);
+        WorkflowResult result = run.getResult();
 
         if (result != null) {
             return ok(result.getErrorText());
@@ -270,7 +319,8 @@ public class Workflows extends Controller {
         response().setHeader("Content-Disposition", "attachment; filename=output_log.txt");
         response().setHeader("Content-Type", "text/plain");
 
-        WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
+        WorkflowRun run = workflowDao.findWorkflowRunById(runId);
+        WorkflowResult result = run.getResult();
 
         if (result != null) {
             return ok(result.getOutputText());

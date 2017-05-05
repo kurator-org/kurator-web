@@ -52,7 +52,10 @@ POST    /workflows/delete                       controllers.Workflows.deletePack
 # ~~~~
 GET     /run/status                             controllers.Workflows.status(uid : String)
 
-GET     /run/result/*id                         controllers.Workflows.resultArchive(id : Long)
+GET     /run/result/*id                         controllers.Workflows.resultArtifacts(id : Long)
+GET     /run/archive/*id                        controllers.Workflows.resultArchive(id : Long)
+GET     /run/file/*id                           controllers.Workflows.resultFile(id : Long)
+
 GET     /run/report/*id                         controllers.Workflows.report(id : Long)
 GET     /run/dataset/*id                        controllers.Workflows.dataset(id: Long)
 

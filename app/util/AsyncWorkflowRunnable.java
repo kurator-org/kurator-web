@@ -1,8 +1,10 @@
 package util;
 
+import config.Artifact;
 import dao.WorkflowDao;
 import models.db.user.User;
 import models.db.workflow.*;
+import models.json.WorkflowDefinition;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.data.WorkflowProduct;
 import play.Logger;
@@ -11,6 +13,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -24,6 +27,7 @@ public class AsyncWorkflowRunnable implements Runnable {
     private WorkflowRun run;
 
     private String workflow;
+    private WorkflowDefinition workflowDef;
     private String yamlFile;
 
     private Date startTime;
@@ -35,12 +39,13 @@ public class AsyncWorkflowRunnable implements Runnable {
     private List<ResultFile> resultFiles = new ArrayList<>();
     private String dqReportFile;
 
-    public synchronized void init(String name, Workflow workflow, User user, WorkflowRunner runner, ByteArrayOutputStream errStream, ByteArrayOutputStream outStream) {
+    public synchronized void init(String name, Workflow workflow, WorkflowDefinition workflowDef, User user, WorkflowRunner runner, ByteArrayOutputStream errStream, ByteArrayOutputStream outStream) {
         this.errStream = errStream;
         this.outStream = outStream;
         this.runner = runner;
 
         this.workflow = workflow.getTitle();
+        this.workflowDef = workflowDef;
         this.yamlFile = workflow.getYamlFile();
         this.startTime = new Date(); // Workflow run start time
 
@@ -53,6 +58,7 @@ public class AsyncWorkflowRunnable implements Runnable {
 
     public void run() {
         endTime = new Date(); // Workflow run end time
+        Map<String, Artifact> artifactDefs = workflowDef.getArtifacts();
 
         try {
             // Process workflow artifacts
@@ -66,9 +72,14 @@ public class AsyncWorkflowRunnable implements Runnable {
                         dqReportFile = file.getAbsolutePath();
                     }
 
+                    // Include descriptive text
+                    Artifact artifactDef = artifactDefs.get(product.label);
+                    String description = artifactDef.getDescription();
+
                     // Create a result file from the workflow product and persist it to the db
-                    ResultFile resultFile = workflowDao.createResultFile(product.label, String.valueOf(product.value));
+                    ResultFile resultFile = workflowDao.createResultFile(product.label, description, String.valueOf(product.value));
                     resultFiles.add(resultFile);
+
                 } else {
                     Logger.error("artifact specified does not exist: " + fileName);
                 }
@@ -114,7 +125,7 @@ public class AsyncWorkflowRunnable implements Runnable {
         writer.write(content);
         writer.close();
 
-        return workflowDao.createResultFile(prefix, file.getAbsolutePath());
+        return workflowDao.createResultFile(prefix, null, file.getAbsolutePath());
     }
 
     private ResultFile createReadmeFile(String workflow, Date startTime, Date endTime) throws IOException {
@@ -127,7 +138,7 @@ public class AsyncWorkflowRunnable implements Runnable {
 
         readme.close();
 
-        return workflowDao.createResultFile("readme", readmeFile.getAbsolutePath());
+        return workflowDao.createResultFile("readme", null, readmeFile.getAbsolutePath());
     }
 
     private File createArchive(List<ResultFile> resultFiles) throws IOException {
