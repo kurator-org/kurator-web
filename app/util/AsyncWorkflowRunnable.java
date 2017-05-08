@@ -60,9 +60,6 @@ public class AsyncWorkflowRunnable implements Runnable {
     }
 
     public void run() {
-        System.out.println("Runnable");
-        System.out.println(runner.getWorkflowProducts().size());
-        System.out.println("Got products");
         endTime = new Date(); // Workflow run end time
 
         try {
@@ -72,7 +69,6 @@ public class AsyncWorkflowRunnable implements Runnable {
                 File file = new File(fileName);
                 if (file.exists()) {
                     // if one of the products is a dq report save it for later
-                    System.out.println(product.type);
                     if (product.type.equals("DQ_REPORT")) {
                         dqReportFile = file.getAbsolutePath();
                     }
@@ -81,7 +77,7 @@ public class AsyncWorkflowRunnable implements Runnable {
                     String description = artifactDefs.get(product.label);
 
                     // Create a result file from the workflow product and persist it to the db
-                    ResultFile resultFile = workflowDao.createResultFile(product.label, description, String.valueOf(product.value));
+                    ResultFile resultFile = workflowDao.createResultFile(file.getName(), description, String.valueOf(product.value));
                     resultFiles.add(resultFile);
 
                 } else {
