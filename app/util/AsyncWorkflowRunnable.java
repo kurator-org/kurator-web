@@ -4,6 +4,7 @@ import config.Artifact;
 import dao.WorkflowDao;
 import models.db.user.User;
 import models.db.workflow.*;
+import models.json.ArtifactDef;
 import models.json.WorkflowDefinition;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.data.WorkflowProduct;
@@ -28,6 +29,7 @@ public class AsyncWorkflowRunnable implements Runnable {
 
     private String workflow;
     private WorkflowDefinition workflowDef;
+    private Map<String, String> artifactDefs;
     private String yamlFile;
 
     private Date startTime;
@@ -39,13 +41,14 @@ public class AsyncWorkflowRunnable implements Runnable {
     private List<ResultFile> resultFiles = new ArrayList<>();
     private String dqReportFile;
 
-    public synchronized void init(String name, Workflow workflow, WorkflowDefinition workflowDef, User user, WorkflowRunner runner, ByteArrayOutputStream errStream, ByteArrayOutputStream outStream) {
+    public synchronized void init(String name, Workflow workflow, WorkflowDefinition workflowDef, Map<String, String> artifactDefs, User user, WorkflowRunner runner, ByteArrayOutputStream errStream, ByteArrayOutputStream outStream) {
         this.errStream = errStream;
         this.outStream = outStream;
         this.runner = runner;
 
         this.workflow = workflow.getTitle();
         this.workflowDef = workflowDef;
+        this.artifactDefs = artifactDefs;
         this.yamlFile = workflow.getYamlFile();
         this.startTime = new Date(); // Workflow run start time
 
@@ -57,24 +60,25 @@ public class AsyncWorkflowRunnable implements Runnable {
     }
 
     public void run() {
+        System.out.println("Runnable");
+        System.out.println(runner.getWorkflowProducts().size());
+        System.out.println("Got products");
         endTime = new Date(); // Workflow run end time
-        Map<String, Artifact> artifactDefs = workflowDef.getArtifacts();
 
         try {
             // Process workflow artifacts
             for (WorkflowProduct product : runner.getWorkflowProducts()) {
                 String fileName = String.valueOf(product.value);
                 File file = new File(fileName);
-
                 if (file.exists()) {
                     // if one of the products is a dq report save it for later
+                    System.out.println(product.type);
                     if (product.type.equals("DQ_REPORT")) {
                         dqReportFile = file.getAbsolutePath();
                     }
 
                     // Include descriptive text
-                    Artifact artifactDef = artifactDefs.get(product.label);
-                    String description = artifactDef.getDescription();
+                    String description = artifactDefs.get(product.label);
 
                     // Create a result file from the workflow product and persist it to the db
                     ResultFile resultFile = workflowDao.createResultFile(product.label, description, String.valueOf(product.value));
@@ -99,6 +103,7 @@ public class AsyncWorkflowRunnable implements Runnable {
 
             // Package result files in archive
             File archive = createArchive(resultFiles);
+            System.out.println("created archive");
 
             // Persist the result to the db and update the workflow run
             WorkflowResult workflowResult = workflowDao.createWorkflowResult(resultFiles, archive.getAbsolutePath(),
@@ -142,6 +147,7 @@ public class AsyncWorkflowRunnable implements Runnable {
     }
 
     private File createArchive(List<ResultFile> resultFiles) throws IOException {
+        System.out.println("about to create archive");
             File archive = File.createTempFile("artifacts_", ".zip");
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(archive));
 

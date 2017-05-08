@@ -13,6 +13,7 @@ import dao.UserDao;
 import dao.WorkflowDao;
 import models.db.user.UserUpload;
 import models.db.workflow.ResultFile;
+import models.json.ArtifactDef;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.atlas.json.JsonObject;
 import ui.input.BasicField;
@@ -216,7 +217,13 @@ public class Workflows extends Controller {
             WorkflowRunner runner = new YamlStreamWorkflowRunner()
                     .yamlStream(yamlStream).configure(config);
 
-            runnable.init(name, workflow, workflowDef, user, runner, errStream, outStream);
+
+            Map<String, String> artifactDefs = new HashMap<>();
+            for (ArtifactDef artifactDef : workflowDef.getArtifacts().values()) {
+                artifactDefs.put(artifactDef.getName(), artifactDef.getDescription());
+            }
+
+            runnable.init(name, workflow, workflowDef, artifactDefs, user, runner, errStream, outStream);
 
             runner.apply(settings)
                     .outputStream(new PrintStream(outStream))

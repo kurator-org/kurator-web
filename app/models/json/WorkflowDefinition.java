@@ -12,7 +12,7 @@ import java.util.*;
  * workflow for display on the form.
  */
 public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
-    private Map<String, Artifact> artifacts = new HashMap<>();
+    private Map<String, ArtifactDef> artifacts = new HashMap<>();
     private List<BasicField> fields = new ArrayList<>();
     private String title;
     private String name;
@@ -34,7 +34,8 @@ public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
         this.summary = workflow.getSummary();
 
         for (Artifact artifact : workflow.getArtifacts()) {
-            this.artifacts.put(artifact.getName(), artifact);
+            ArtifactDef artifactDef = new ArtifactDef(artifact.getName(), artifact.getDescription(), artifact.getLabel(), artifact.getType());
+            this.artifacts.put(artifact.getName(), artifactDef);
         }
     }
 
@@ -108,11 +109,11 @@ public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
         this.summary = summary;
     }
 
-    public Map<String, Artifact> getArtifacts() {
+    public Map<String, ArtifactDef> getArtifacts() {
         return artifacts;
     }
 
-    public void setArtifacts(Map<String, Artifact> artifacts) {
+    public void setArtifacts(Map<String, ArtifactDef> artifacts) {
         this.artifacts = artifacts;
     }
 
