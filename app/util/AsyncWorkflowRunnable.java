@@ -77,7 +77,7 @@ public class AsyncWorkflowRunnable implements Runnable {
                     String description = artifactDefs.get(product.label);
 
                     // Create a result file from the workflow product and persist it to the db
-                    ResultFile resultFile = workflowDao.createResultFile(file.getName(), description, String.valueOf(product.value));
+                    ResultFile resultFile = workflowDao.createResultFile(product.label, file.getName(), description, String.valueOf(product.value));
                     resultFiles.add(resultFile);
 
                 } else {
@@ -126,7 +126,7 @@ public class AsyncWorkflowRunnable implements Runnable {
         writer.write(content);
         writer.close();
 
-        return workflowDao.createResultFile(prefix, null, file.getAbsolutePath());
+        return workflowDao.createResultFile(prefix, prefix, "", file.getAbsolutePath());
     }
 
     private ResultFile createReadmeFile(String workflow, Date startTime, Date endTime) throws IOException {
@@ -139,7 +139,7 @@ public class AsyncWorkflowRunnable implements Runnable {
 
         readme.close();
 
-        return workflowDao.createResultFile("readme", null, readmeFile.getAbsolutePath());
+        return workflowDao.createResultFile("readme","readme", "", readmeFile.getAbsolutePath());
     }
 
     private File createArchive(List<ResultFile> resultFiles) throws IOException {

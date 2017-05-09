@@ -26,6 +26,7 @@ require([
     'views/usermgmt',
     'collections/users',
     'text!templates/workflow.html',
+    'text!templates/artifacts.html',
     'text!templates/run.html',
     'text!templates/login.html',
     'text!templates/status.html',
@@ -35,7 +36,7 @@ require([
     'text!templates/deploy.html',
     'text!templates/report.html',
     'text!templates/dataset.html'
-], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, registerTpl,
+], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, workflowTpl, artifactsTpl, runWorkflowTpl, loginTpl, statusTpl, registerTpl,
              deployTpl, reportTpl, datasetTpl) {
 
     app.router = new WebRouter();
@@ -139,6 +140,26 @@ require([
         }
     });
 
+    var ArtifactsModel = Backbone.Model.extend({
+        url: function() {
+           return jsRoutes.controllers.Workflows.resultFile(artifact.id).url;
+        }
+    });
+
+    var ArtifactsView = Backbone.View.extend({
+        template: _.template(artifactsTpl),
+        initialize: function () {
+            this.listenTo(this.model, 'change', this.render);
+            this.collection.fetch();
+        },
+
+        render: function () {
+
+
+            return this;
+        }
+    });
+
     var WorkflowRunsView = Backbone.View.extend({
         template: _.template(statusTpl),
         initialize: function () {
@@ -188,6 +209,7 @@ require([
 
                         response.artifacts.forEach(function(artifact) {
                             body.find('ul').append('<li><a href="' + jsRoutes.controllers.Workflows.resultFile(artifact.id).url + '"><b>' + artifact.label + '</b></a> - ' + artifact.description + '</li> ');
+                            console.log(artifact.type + " " + artifact.info);
                         });
 
                         body.append('<br /><a href="' + jsRoutes.controllers.Workflows.resultArchive(response.id).url + '"><b>[Download Archive]</b></a>');

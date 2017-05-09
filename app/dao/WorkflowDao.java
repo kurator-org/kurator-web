@@ -41,8 +41,9 @@ public class WorkflowDao {
     }
 
     @Transactional
-    public ResultFile createResultFile(String label, String description, String filename) {
+    public ResultFile createResultFile(String name, String label, String description, String filename) {
         ResultFile resultFile = new ResultFile();
+        resultFile.setName(name);
         resultFile.setLabel(label);
         resultFile.setDescription(description);
         resultFile.setFileName(filename);

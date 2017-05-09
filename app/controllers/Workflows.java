@@ -243,7 +243,9 @@ public class Workflows extends Controller {
         WorkflowRun run = workflowDao.findWorkflowRunById(runId);
         WorkflowResult result = run.getResult();
 
-        for (ResultFile file : result.getResultFiles()) {
+        WorkflowDefinition workflowDef = formDefinitionForWorkflow(run.getWorkflow().getName());
+        Map<String, ArtifactDef> artifactDefs = workflowDef.getArtifacts();
+
             response.put("id", run.getId());
             response.put("name", run.getName());
             response.put("workflow", run.getWorkflow().getTitle());
@@ -252,19 +254,27 @@ public class Workflows extends Controller {
             response.put("endTime", run.getEndTime().getTime());
             response.put("archive", result.getArchivePath());
 
+            System.out.println("workflow: " + run.getWorkflow().getName());
+            System.out.println();
+
             ArrayNode artifactsArr = Json.newArray();
             for (ResultFile resultFile : result.getResultFiles()) {
-                ObjectNode artifactObj = Json.newObject();
-                artifactObj.put("label", resultFile.getLabel());
-                artifactObj.put("filename", resultFile.getFileName());
-                artifactObj.put("description", resultFile.getDescription());
-                artifactObj.put("id", resultFile.getId());
+                ArtifactDef artifactDef = artifactDefs.get(resultFile.getName());
+                System.out.println(resultFile.getName());
 
-                artifactsArr.add(artifactObj);
+                if (artifactDef != null) {
+                    ObjectNode artifactObj = Json.newObject();
+                    artifactObj.put("type", artifactDef.getType());
+                    artifactObj.put("label", resultFile.getLabel());
+                    artifactObj.put("filename", resultFile.getFileName());
+                    artifactObj.put("description", artifactDef.getDescription());
+                    artifactObj.put("info", artifactDef.getInfo());
+                    artifactObj.put("id", resultFile.getId());
+                    artifactsArr.add(artifactObj);
+                }
             }
 
             response.put("artifacts", artifactsArr);
-        }
 
         return ok(response);
 

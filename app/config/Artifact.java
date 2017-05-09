@@ -12,6 +12,7 @@ public class Artifact {
     private String description;
     private String label;
     private String type;
+    private String info;
 
     protected Artifact(String name, Config config) {
         this.name = name;
@@ -32,5 +33,9 @@ public class Artifact {
 
     public String getType() {
         return config.hasPath("type") ? config.getString("type") : null;
+    }
+
+    public String getInfo() {
+        return config.hasPath("info") ? config.getString("info") : null;
     }
 }

@@ -34,7 +34,7 @@ public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
         this.summary = workflow.getSummary();
 
         for (Artifact artifact : workflow.getArtifacts()) {
-            ArtifactDef artifactDef = new ArtifactDef(artifact.getName(), artifact.getDescription(), artifact.getLabel(), artifact.getType());
+            ArtifactDef artifactDef = new ArtifactDef(artifact.getName(), artifact.getDescription(), artifact.getLabel(), artifact.getType(), artifact.getInfo());
             this.artifacts.put(artifact.getName(), artifactDef);
         }
     }
