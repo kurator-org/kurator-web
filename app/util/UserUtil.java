@@ -16,7 +16,6 @@ public class UserUtil {
 
     public static User authenticate(User user, String password) {
         if (user != null && BCrypt.checkpw(password, user.getPassword())) {
-        if (user != null) {
             return user;
         } else {
             return null;
