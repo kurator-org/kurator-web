@@ -30,10 +30,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import ui.input.BasicField;
-import ui.input.FileInput;
-import ui.input.SelectField;
-import ui.input.TextField;
+import ui.input.*;
 import util.AsyncWorkflowRunnable;
 import util.ClasspathStreamHandler;
 import util.ConfigurableStreamHandlerFactory;
@@ -426,6 +423,9 @@ public class Workflows extends Controller {
                             SelectField selectField = new SelectField();
                             selectField.options = parameter.getOptions();
                             field = selectField;
+                            break;
+                        case "tokenfield":
+                            field = new TokenField();
                             break;
                         case "upload":
                             field = new FileInput();
