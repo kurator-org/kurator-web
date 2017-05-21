@@ -2,8 +2,10 @@ require.config({
 
     paths: {
         'jquery'                : 'lib/jquery/jquery-min',
+        'jquery-ui'             : 'lib/jquery-ui/jquery-ui.min',
         'underscore'            : 'lib/underscore/underscore-min',
         'backbone'              : 'lib/backbone/backbone-min',
+        'bootstrap-tokenfield'  : 'lib/bootstrap-tokenfield/bootstrap-tokenfield.min',
         'paper'                 : 'lib/paper/paper-core',
         'text'                  : 'lib/requirejs-text/text',
         'd3'                    : 'http://d3js.org/d3.v3.min'
@@ -13,6 +15,7 @@ require.config({
     shim: {
         'underscore'            : { exports  : '_' },
         'backbone'              : { deps : ['underscore', 'jquery'], exports : 'Backbone' },
+        'bootstrap-tokenfield'  : { exports : 'Tokenfield' },
         'paper'                 : { exports: 'paper' }
     }
 
@@ -34,9 +37,11 @@ require([
     'text!templates/register.html',
     'text!templates/deploy.html',
     'text!templates/report.html',
-    'text!templates/dataset.html'
+    'text!templates/dataset.html',
+    'bootstrap-tokenfield',
+    'jquery-ui'
 ], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, registerTpl,
-             deployTpl, reportTpl, datasetTpl) {
+             deployTpl, reportTpl, datasetTpl, TokenField, JQueryUI) {
 
     app.router = new WebRouter();
     app.session = new SessionModel({});
@@ -122,6 +127,54 @@ require([
             });
 
             $('#run-modal').modal({show: true});
+
+
+
+            /*var processData = function(e) {
+                var re = /\r\n|\n/;
+                var allText = e.target.result;
+                console.log(re.exec(allText));
+                console.log(re.exec(allText));
+                console.log(re.exec(allText));
+                //console.log(allText.indexOf('\n'));
+                //var allTextLines = allText.split(/\r\n|\n/);
+                /*var headers = allTextLines[0].split(',');
+                console.log(headers);
+
+                $('#tokenfield').tokenfield({
+                    autocomplete: {
+                        source: headers,
+                        delay: 100,
+                    },
+                    showAutocompleteOnFocus: true
+                });
+            };*/
+
+            $('#inputfile').on("change", function(){
+
+                var myfile = $('#inputfile')[0].files[0];
+
+                console.log(myfile);
+
+                Papa.parse(myfile, {
+                    preview: 1,
+                    complete: function(results) {
+                        var header = results.data[0];
+                        console.log(header);
+                        
+                        $('#tokenfield').tokenfield({
+                            autocomplete: {
+                                source: header,
+                                delay: 100,
+                            },
+                            showAutocompleteOnFocus: true
+                        });
+                    }
+                });
+                //var reader = new FileReader();
+                //reader.readAsText(myfile);
+                //$(reader).on('load', processData);
+            });
 
             //this.$el.html(this.template(this.model.toJSON()));
         }

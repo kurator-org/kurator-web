@@ -232,3 +232,8 @@ html, body {
     left: 12px;
     animation-delay: 500ms;
 }
+
+/* display JQuery ui autocomplete above modal */
+.ui-autocomplete {
+    z-index: 99999;
+}

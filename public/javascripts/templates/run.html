@@ -22,6 +22,10 @@
   <% } else if (field.type == 'TextField') { %>
   <input type="text" class="form-control" name="<%= field.name %>">
 
+    <!-- Token field -->
+    <% } else if (field.type == 'TokenField') { %>
+    <input  id="tokenfield" type="text" class="form-control" name="<%= field.name %>">
+
   <!-- Radio group -->
   <% } else if (field.type == 'RadioGroup') { %>
   <div>

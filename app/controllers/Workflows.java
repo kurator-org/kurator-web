@@ -13,10 +13,7 @@ import dao.WorkflowDao;
 import models.db.user.UserUpload;
 import models.db.workflow.ResultFile;
 import org.apache.commons.io.FileUtils;
-import ui.input.BasicField;
-import ui.input.FileInput;
-import ui.input.SelectField;
-import ui.input.TextField;
+import ui.input.*;
 import models.PackageData;
 import models.db.user.User;
 import models.db.workflow.Workflow;
@@ -355,6 +352,9 @@ public class Workflows extends Controller {
                             SelectField selectField = new SelectField();
                             selectField.options = parameter.getOptions();
                             field = selectField;
+                            break;
+                        case "tokenfield":
+                            field = new TokenField();
                             break;
                         case "upload":
                             field = new FileInput();
