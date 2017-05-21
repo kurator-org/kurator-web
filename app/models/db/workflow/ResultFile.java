@@ -18,6 +18,8 @@ public class ResultFile extends Model {
 
     private String label;
     private String fileName;
+    private String description;
+    private String name;
 
     public Long getId() {
         return id;
@@ -37,5 +39,21 @@ public class ResultFile extends Model {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

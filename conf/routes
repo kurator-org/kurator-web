@@ -48,11 +48,16 @@ POST    /workflows/deploy                       controllers.Workflows.deployWork
 GET     /workflows/list                         controllers.Workflows.list()
 POST    /workflows/delete                       controllers.Workflows.deletePackage(name : String)
 
+GET     /workflows/yaml                         controllers.Workflows.workflowYaml(name : String)
+
 # Workflow run routes for managing user runs and artifacts (result, report, logs)
 # ~~~~
 GET     /run/status                             controllers.Workflows.status(uid : String)
 
-GET     /run/result/*id                         controllers.Workflows.resultArchive(id : Long)
+GET     /run/result/*id                         controllers.Workflows.resultArtifacts(id : Long)
+GET     /run/archive/*id                        controllers.Workflows.resultArchive(id : Long)
+GET     /run/file/*id                           controllers.Workflows.resultFile(id : Long)
+
 GET     /run/report/*id                         controllers.Workflows.report(id : Long)
 GET     /run/dataset/*id                        controllers.Workflows.dataset(id: Long)
 

@@ -29,6 +29,7 @@ require([
     'views/usermgmt',
     'collections/users',
     'text!templates/workflow.html',
+    'text!templates/artifacts.html',
     'text!templates/run.html',
     'text!templates/login.html',
     'text!templates/status.html',
@@ -40,7 +41,7 @@ require([
     'text!templates/dataset.html',
     'bootstrap-tokenfield',
     'jquery-ui'
-], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, workflowTpl, runWorkflowTpl, loginTpl, statusTpl, registerTpl,
+], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, workflowTpl, artifactsTpl, runWorkflowTpl, loginTpl, statusTpl, registerTpl,
              deployTpl, reportTpl, datasetTpl, TokenField, JQueryUI) {
 
     app.router = new WebRouter();
@@ -161,7 +162,7 @@ require([
                     complete: function(results) {
                         var header = results.data[0];
                         console.log(header);
-                        
+
                         $('#tokenfield').tokenfield({
                             autocomplete: {
                                 source: header,
@@ -192,17 +193,41 @@ require([
         }
     });
 
+    var ArtifactsModel = Backbone.Model.extend({
+        url: function() {
+           return jsRoutes.controllers.Workflows.resultFile(artifact.id).url;
+        }
+    });
+
+    var ArtifactsView = Backbone.View.extend({
+        template: _.template(artifactsTpl),
+        initialize: function () {
+            this.listenTo(this.model, 'change', this.render);
+            this.collection.fetch();
+        },
+
+        render: function () {
+
+
+            return this;
+        }
+    });
+
     var WorkflowRunsView = Backbone.View.extend({
         template: _.template(statusTpl),
-
         initialize: function () {
             this.listenTo(this.collection, 'update', this.render);
             //this.listenTo(app.router, 'route', this.beforeClose);
             this.collection.fetch();
+            this.isPaused = false;
 
             var that = this;
             this.timer = setInterval(function() {
-                    that.collection.fetch();
+                    if (!that.isPaused) {
+                        that.collection.fetch();
+                    } else {
+                        console.log("paused");
+                    }
                 }, 5000);
         },
 
@@ -210,8 +235,49 @@ require([
             var runs = this.collection.toJSON();
             this.$el.html(this.template({runs : runs }));
 
+            this.$('#result-modal').on('hidden.bs.modal', function (e) {
+                // result polling for results
+                if (that.timer) {
+                    that.isPaused = false;
+                }
+            });
+
             var that = this;
             runs.forEach(function(run) {
+
+                that.$('#run'+run.id).click(function(event) {
+                    var runId = $(this).attr('id').substr(3);
+                    console.log(runId);
+
+                    // pause result polling timer
+                  if (that.timer) {
+                      that.isPaused = true;
+                  }
+
+                    $.get(jsRoutes.controllers.Workflows.resultArtifacts(run.id).url, function (response) {
+                        console.log(response);
+
+                        $('#result-modal .modal-title').html('Results for "' + response.name + '"');
+
+                        var body = $('#result-modal .modal-body');
+                        body.html('<table><tr><td><b>Workflow: </b></td><td>&nbsp;' + response.workflow + '</td></tr>' +
+                            '<tr><td><b>Start Time: </b></td><td>&nbsp;' + new Date(response.startTime).toLocaleString() + '</td></tr><tr><td><b>End Time: </b></td><td>&nbsp;' + new Date(response.endTime).toLocaleString() + '</td></tr>' +
+                            '</table><hr /><a class="btn btn-primary" href="' + jsRoutes.controllers.Workflows.resultArchive(response.id).url + '"><b>Download Archive</b></a>' +
+                            '&nbsp;&nbsp;<a class="btn btn-default" href="' + jsRoutes.controllers.Workflows.workflowYaml(response.workflowName).url  + '"><b>Download Yaml Config</b></a><hr /><ul class="list-group"></ul>');
+
+                        response.artifacts.forEach(function(artifact) {
+                            var artifactInfo = '';
+
+                            if (artifact.info) {
+                                artifactInfo = '</a><a target="_blank" href="' + artifact.info +'"> <b>[View Info]</b></a> - ';
+                            }
+
+                            body.find('ul').append('<li class="list-group-item"><table width="100%"><tr><td><span class="glyphicon glyphicon-file"></span> </td><td><b>' + artifact.label + '</b></td><td style="text-align: right">' + artifactInfo + '<a href="' + jsRoutes.controllers.Workflows.resultFile(artifact.id).url + '"><b>[Download File]</b></a>' +
+                                '</td></tr><tr><td></td><td colspan="2">' + artifact.description + '</td></tr></table></li>');
+                            console.log(artifact.type + " " + artifact.info);
+                        });
+                    });
+                });
 
                 switch (run.status) {
                     case "RUNNING":

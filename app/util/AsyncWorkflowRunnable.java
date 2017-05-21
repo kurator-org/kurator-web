@@ -1,8 +1,11 @@
 package util;
 
+import config.Artifact;
 import dao.WorkflowDao;
 import models.db.user.User;
 import models.db.workflow.*;
+import models.json.ArtifactDef;
+import models.json.WorkflowDefinition;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.data.WorkflowProduct;
 import play.Logger;
@@ -11,6 +14,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -24,6 +28,8 @@ public class AsyncWorkflowRunnable implements Runnable {
     private WorkflowRun run;
 
     private String workflow;
+    private WorkflowDefinition workflowDef;
+    private Map<String, String> artifactDefs;
     private String yamlFile;
 
     private Date startTime;
@@ -35,12 +41,14 @@ public class AsyncWorkflowRunnable implements Runnable {
     private List<ResultFile> resultFiles = new ArrayList<>();
     private String dqReportFile;
 
-    public synchronized void init(String name, Workflow workflow, User user, WorkflowRunner runner, ByteArrayOutputStream errStream, ByteArrayOutputStream outStream) {
+    public synchronized void init(String name, Workflow workflow, WorkflowDefinition workflowDef, Map<String, String> artifactDefs, User user, WorkflowRunner runner, ByteArrayOutputStream errStream, ByteArrayOutputStream outStream) {
         this.errStream = errStream;
         this.outStream = outStream;
         this.runner = runner;
 
         this.workflow = workflow.getTitle();
+        this.workflowDef = workflowDef;
+        this.artifactDefs = artifactDefs;
         this.yamlFile = workflow.getYamlFile();
         this.startTime = new Date(); // Workflow run start time
 
@@ -59,16 +67,19 @@ public class AsyncWorkflowRunnable implements Runnable {
             for (WorkflowProduct product : runner.getWorkflowProducts()) {
                 String fileName = String.valueOf(product.value);
                 File file = new File(fileName);
-
                 if (file.exists()) {
                     // if one of the products is a dq report save it for later
                     if (product.type.equals("DQ_REPORT")) {
                         dqReportFile = file.getAbsolutePath();
                     }
 
+                    // Include descriptive text
+                    String description = artifactDefs.get(product.label);
+
                     // Create a result file from the workflow product and persist it to the db
-                    ResultFile resultFile = workflowDao.createResultFile(product.label, String.valueOf(product.value));
+                    ResultFile resultFile = workflowDao.createResultFile(product.label, file.getName(), description, String.valueOf(product.value));
                     resultFiles.add(resultFile);
+
                 } else {
                     Logger.error("artifact specified does not exist: " + fileName);
                 }
@@ -88,6 +99,7 @@ public class AsyncWorkflowRunnable implements Runnable {
 
             // Package result files in archive
             File archive = createArchive(resultFiles);
+            System.out.println("created archive");
 
             // Persist the result to the db and update the workflow run
             WorkflowResult workflowResult = workflowDao.createWorkflowResult(resultFiles, archive.getAbsolutePath(),
@@ -114,7 +126,7 @@ public class AsyncWorkflowRunnable implements Runnable {
         writer.write(content);
         writer.close();
 
-        return workflowDao.createResultFile(prefix, file.getAbsolutePath());
+        return workflowDao.createResultFile(prefix, prefix, "", file.getAbsolutePath());
     }
 
     private ResultFile createReadmeFile(String workflow, Date startTime, Date endTime) throws IOException {
@@ -127,10 +139,11 @@ public class AsyncWorkflowRunnable implements Runnable {
 
         readme.close();
 
-        return workflowDao.createResultFile("readme", readmeFile.getAbsolutePath());
+        return workflowDao.createResultFile("readme","readme", "", readmeFile.getAbsolutePath());
     }
 
     private File createArchive(List<ResultFile> resultFiles) throws IOException {
+        System.out.println("about to create archive");
             File archive = File.createTempFile("artifacts_", ".zip");
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(archive));
 

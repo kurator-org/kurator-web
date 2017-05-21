@@ -41,16 +41,18 @@ public class WorkflowDao {
     }
 
     @Transactional
-    public ResultFile createResultFile(String label, String filename) {
+    public ResultFile createResultFile(String name, String label, String description, String filename) {
         ResultFile resultFile = new ResultFile();
+        resultFile.setName(name);
         resultFile.setLabel(label);
+        resultFile.setDescription(description);
         resultFile.setFileName(filename);
         return resultFile;
     }
 
-    public WorkflowResult findResultByWorkflowId(long id) {
+    public WorkflowRun findWorkflowRunById(long id) {
         WorkflowRun run = WorkflowRun.find.where().eq("id", id).findUnique();
-        return run.getResult();
+        return run;
     }
 
     public List<WorkflowRun> findUserWorkflowRuns(String uid) {
@@ -106,5 +108,9 @@ public class WorkflowDao {
                 result.delete();
             }
         }
+    }
+
+    public ResultFile findResultFileById(long resultFileId) {
+        return ResultFile.find.where().eq("id", resultFileId).findUnique();
     }
 }

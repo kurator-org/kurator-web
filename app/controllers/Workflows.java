@@ -2,26 +2,25 @@ package controllers;
 
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
-import be.objectify.deadbolt.java.actions.SubjectNotPresent;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
 import config.ConfigManager;
 import config.ParameterConfig;
 import dao.UserDao;
 import dao.WorkflowDao;
-import models.db.user.UserUpload;
-import models.db.workflow.ResultFile;
-import org.apache.commons.io.FileUtils;
-import ui.input.*;
 import models.PackageData;
 import models.db.user.User;
+import models.db.user.UserUpload;
+import models.db.workflow.ResultFile;
 import models.db.workflow.Workflow;
 import models.db.workflow.WorkflowResult;
 import models.db.workflow.WorkflowRun;
+import models.json.ArtifactDef;
 import models.json.RunResult;
 import models.json.WorkflowDefinition;
-import org.datakurator.postprocess.FFDQPostProcessor;
+import org.apache.commons.io.FileUtils;
 import org.kurator.akka.WorkflowConfig;
 import org.kurator.akka.WorkflowRunner;
 import org.kurator.akka.YamlStreamWorkflowRunner;
@@ -31,7 +30,10 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Security;
+import ui.input.BasicField;
+import ui.input.FileInput;
+import ui.input.SelectField;
+import ui.input.TextField;
 import util.AsyncWorkflowRunnable;
 import util.ClasspathStreamHandler;
 import util.ConfigurableStreamHandlerFactory;
@@ -44,12 +46,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import views.html.*;
-
 /**
  * This controller deals with actions related to running a workflow, uploading files, checking the status of a run, and
  * obtaining artifacts produced by the run.
- *
  */
 @Singleton
 public class Workflows extends Controller {
@@ -142,7 +141,7 @@ public class Workflows extends Controller {
                 workflowDef.getYamlFile());
 
         // Run the workflow
-        long runId = runYamlWorkflow(runName, workflow, settings);
+        long runId = runYamlWorkflow(runName, workflow, workflowDef, settings);
 
         // The response json contains the workflow run id for later reference
         ObjectNode response = Json.newObject();
@@ -182,11 +181,11 @@ public class Workflows extends Controller {
     /**
      * Helper method for running yaml workflows using an instance of WorkflowRunner.
      *
-     * @param workflow Workflow definition object
-     * @param settings A map of the settings provided as input to the runner
-     * @return json containing the id of this run
+     * @param workflow    Workflow definition object
+     * @param workflowDef
+     * @param settings    A map of the settings provided as input to the runner  @return json containing the id of this run
      */
-    private long runYamlWorkflow(String name, Workflow workflow, Map<String, Object> settings) {
+    private long runYamlWorkflow(String name, Workflow workflow, WorkflowDefinition workflowDef, Map<String, Object> settings) {
         // Load workflow yaml
         InputStream yamlStream = loadYamlStream(workflow.getYamlFile());
 
@@ -211,7 +210,13 @@ public class Workflows extends Controller {
             WorkflowRunner runner = new YamlStreamWorkflowRunner()
                     .yamlStream(yamlStream).configure(config);
 
-            runnable.init(name, workflow, user, runner, errStream, outStream);
+
+            Map<String, String> artifactDefs = new HashMap<>();
+            for (ArtifactDef artifactDef : workflowDef.getArtifacts().values()) {
+                artifactDefs.put(artifactDef.getName(), artifactDef.getDescription());
+            }
+
+            runnable.init(name, workflow, workflowDef, artifactDefs, user, runner, errStream, outStream);
 
             runner.apply(settings)
                     .outputStream(new PrintStream(outStream))
@@ -224,6 +229,70 @@ public class Workflows extends Controller {
         return runnable.getRunId();
     }
 
+    @SubjectPresent
+    public Result resultArtifacts(long runId) {
+        ObjectNode response = Json.newObject();
+
+        WorkflowRun run = workflowDao.findWorkflowRunById(runId);
+        WorkflowResult result = run.getResult();
+
+        WorkflowDefinition workflowDef = formDefinitionForWorkflow(run.getWorkflow().getName());
+        Map<String, ArtifactDef> artifactDefs = workflowDef.getArtifacts();
+
+        response.put("id", run.getId());
+        response.put("name", run.getName());
+        response.put("workflow", run.getWorkflow().getTitle());
+        response.put("workflowName", run.getWorkflow().getName());
+        response.put("yaml", run.getWorkflow().getYamlFile());
+        response.put("startTime", run.getStartTime().getTime());
+        response.put("endTime", run.getEndTime().getTime());
+        response.put("archive", result.getArchivePath());
+
+        System.out.println("workflow: " + run.getWorkflow().getName());
+        System.out.println();
+
+        ArrayNode artifactsArr = Json.newArray();
+        for (ResultFile resultFile : result.getResultFiles()) {
+            ArtifactDef artifactDef = artifactDefs.get(resultFile.getName());
+            System.out.println(resultFile.getName());
+
+            if (artifactDef != null) {
+                ObjectNode artifactObj = Json.newObject();
+                artifactObj.put("type", artifactDef.getType());
+                artifactObj.put("label", resultFile.getLabel());
+                artifactObj.put("filename", resultFile.getFileName());
+                artifactObj.put("description", artifactDef.getDescription());
+                artifactObj.put("info", artifactDef.getInfo());
+                artifactObj.put("id", resultFile.getId());
+                artifactsArr.add(artifactObj);
+            }
+        }
+
+        response.put("artifacts", artifactsArr);
+
+        return ok(response);
+
+        //return ok(new File(result.getArchivePath()));
+    }
+
+    @SubjectPresent
+    public Result workflowYaml(String name) {
+        WorkflowDefinition workflowDef = formDefinitionForWorkflow(name);
+        File file = new File(workflowDef.getYamlFile());
+        response().setHeader("Content-Disposition", "attachment; filename=" + file.getName());
+
+        return ok(file);
+    }
+
+    @SubjectPresent
+    public Result resultFile(long resultFileId) {
+        ResultFile resultFile = workflowDao.findResultFileById(resultFileId);
+        File file = new File(resultFile.getFileName());
+        response().setHeader("Content-Disposition", "attachment; filename=" + file.getName());
+
+        return ok(file);
+    }
+
     /**
      * Return the result archive containing artifacts produced by the workflow run.
      *
@@ -232,7 +301,9 @@ public class Workflows extends Controller {
      */
     @SubjectPresent
     public Result resultArchive(long runId) {
-        WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
+        WorkflowRun run = workflowDao.findWorkflowRunById(runId);
+        WorkflowResult result = run.getResult();
+
         return ok(new File(result.getArchivePath()));
     }
 
@@ -247,7 +318,8 @@ public class Workflows extends Controller {
         response().setHeader("Content-Disposition", "attachment; filename=error_log.txt");
         response().setHeader("Content-Type", "text/plain");
 
-        WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
+        WorkflowRun run = workflowDao.findWorkflowRunById(runId);
+        WorkflowResult result = run.getResult();
 
         if (result != null) {
             return ok(result.getErrorText());
@@ -267,7 +339,8 @@ public class Workflows extends Controller {
         response().setHeader("Content-Disposition", "attachment; filename=output_log.txt");
         response().setHeader("Content-Type", "text/plain");
 
-        WorkflowResult result = workflowDao.findResultByWorkflowId(runId);
+        WorkflowRun run = workflowDao.findWorkflowRunById(runId);
+        WorkflowResult result = run.getResult();
 
         if (result != null) {
             return ok(result.getOutputText());
@@ -282,7 +355,8 @@ public class Workflows extends Controller {
         return ok();
     }
 
-    /** REST endopint returns a json object with metadata about the status of all of a current users workflow runs.
+    /**
+     * REST endopint returns a json object with metadata about the status of all of a current users workflow runs.
      *
      * @return
      */
@@ -352,9 +426,6 @@ public class Workflows extends Controller {
                             SelectField selectField = new SelectField();
                             selectField.options = parameter.getOptions();
                             field = selectField;
-                            break;
-                        case "tokenfield":
-                            field = new TokenField();
                             break;
                         case "upload":
                             field = new FileInput();
@@ -437,7 +508,7 @@ public class Workflows extends Controller {
         Http.MultipartFormData.FilePart filePart = body.getFile("filename");
 
         if (filePart != null) {
-           ConfigManager configManager = ConfigManager.getInstance();
+            ConfigManager configManager = ConfigManager.getInstance();
 
             char[] keystorePassword = ConfigFactory.defaultApplication().getString("keystore.password").toCharArray();
             String keystoreLocation = ConfigFactory.defaultApplication().getString("keystore.location");

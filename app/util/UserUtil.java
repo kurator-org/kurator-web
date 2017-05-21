@@ -3,6 +3,9 @@ package util;
 import models.db.user.User;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -37,9 +40,31 @@ public class UserUtil {
         return new String(buf);
     }
 
+    /**
+     * Utility for generating guest accounts and sql statements for adding them to the db.
+     */
     public static void main(String[] args) {
         String pass = generatePassword();
-        System.out.println(pass);
-        System.out.println(BCrypt.hashpw(pass, BCrypt.gensalt()));
+
+        Map<String, String> users = new LinkedHashMap<>();
+
+        for (int i = 0; i < 25; i++) {
+            String uid = new Integer(i+8).toString();
+
+            String password = generatePassword();
+            String hash = BCrypt.hashpw(pass, BCrypt.gensalt());
+
+            users.put("user_" + (i + 1), password);
+
+            System.out.println("insert into user (id, firstname, lastname, email, username, password, affiliation, active) values(" + uid + ", '', '', '', 'user_" + (i + 1) + "', '" + hash + "', 'Kurator', TRUE);");
+            System.out.println("insert into user_security_role (user_id, security_role_id) values(" + uid + ", 2);");
+
+        }
+
+        System.out.println();
+
+        for (String username : users.keySet()) {
+            System.out.println(username + " : " + users.get(username));
+        }
     }
 }

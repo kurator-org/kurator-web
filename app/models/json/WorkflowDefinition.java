@@ -1,17 +1,18 @@
 package models.json;
 
+import config.Artifact;
 import config.WorkflowConfig;
 import ui.input.BasicField;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * The form definition object contains a list of form fields and their values. It also contains metadata about the
  * workflow for display on the form.
  */
 public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
+    private Map<String, ArtifactDef> artifacts = new HashMap<>();
     private List<BasicField> fields = new ArrayList<>();
     private String title;
     private String name;
@@ -31,6 +32,11 @@ public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
         this.documentation = workflow.getDocumentation();
         this.instructions = workflow.getInstructions();
         this.summary = workflow.getSummary();
+
+        for (Artifact artifact : workflow.getArtifacts()) {
+            ArtifactDef artifactDef = new ArtifactDef(artifact.getName(), artifact.getDescription(), artifact.getLabel(), artifact.getType(), artifact.getInfo());
+            this.artifacts.put(artifact.getName(), artifactDef);
+        }
     }
 
     public void addField(BasicField field) {
@@ -101,6 +107,14 @@ public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public Map<String, ArtifactDef> getArtifacts() {
+        return artifacts;
+    }
+
+    public void setArtifacts(Map<String, ArtifactDef> artifacts) {
+        this.artifacts = artifacts;
     }
 
     @Override

@@ -12,6 +12,7 @@ public class Artifact {
     private String description;
     private String label;
     private String type;
+    private String info;
 
     protected Artifact(String name, Config config) {
         this.name = name;
@@ -23,14 +24,18 @@ public class Artifact {
     }
 
     public String getDescription() {
-        return config.getString("description");
+        return config.hasPath("description") ? config.getString("description") : null;
     }
 
     public String getLabel() {
-        return config.getString("label");
+        return config.hasPath("label") ? config.getString("label") : null;
     }
 
     public String getType() {
-        return config.getString("type");
+        return config.hasPath("type") ? config.getString("type") : null;
+    }
+
+    public String getInfo() {
+        return config.hasPath("info") ? config.getString("info") : null;
     }
 }
