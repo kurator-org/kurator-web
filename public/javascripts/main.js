@@ -129,28 +129,6 @@ require([
 
             $('#run-modal').modal({show: true});
 
-
-
-            /*var processData = function(e) {
-                var re = /\r\n|\n/;
-                var allText = e.target.result;
-                console.log(re.exec(allText));
-                console.log(re.exec(allText));
-                console.log(re.exec(allText));
-                //console.log(allText.indexOf('\n'));
-                //var allTextLines = allText.split(/\r\n|\n/);
-                /*var headers = allTextLines[0].split(',');
-                console.log(headers);
-
-                $('#tokenfield').tokenfield({
-                    autocomplete: {
-                        source: headers,
-                        delay: 100,
-                    },
-                    showAutocompleteOnFocus: true
-                });
-            };*/
-
             $('#inputfile').on("change", function(){
 
                 var myfile = $('#inputfile')[0].files[0];
@@ -172,9 +150,6 @@ require([
                         });
                     }
                 });
-                //var reader = new FileReader();
-                //reader.readAsText(myfile);
-                //$(reader).on('load', processData);
             });
 
             //this.$el.html(this.template(this.model.toJSON()));
