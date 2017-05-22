@@ -24,7 +24,9 @@
 
     <!-- Token field -->
     <% } else if (field.type == 'TokenField') { %>
-    <input  id="tokenfield" type="text" class="form-control" name="<%= field.name %>">
+    <div class="ui-front">
+      <input  id="tokenfield" type="text" class="form-control" name="<%= field.name %>">
+    </div>
 
   <!-- Radio group -->
   <% } else if (field.type == 'RadioGroup') { %>
