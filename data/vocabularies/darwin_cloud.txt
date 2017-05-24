@@ -246,7 +246,7 @@ GEOREFERENCEREMARKS	georeferenceRemarks	1	dwc
 GEOREFERENCESOURCES	georeferenceSources	1	dwc		
 GEOREFERENCEVERIFICATIONSTATUS	georeferenceVerificationStatus	1	dwc		
 GROUP	group	1	dwc
-GUID    occurrenceID    1   Arctos
+GUID	occurrenceID	1	Arctos
 HABITAT	habitat	1	dwc		
 HIGHERCLASSIFICATION	higherClassification	1	dwc		
 HIGHERGEOGRAPHY	higherGeography	1	dwc		
