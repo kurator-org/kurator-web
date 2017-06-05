@@ -5,8 +5,8 @@
       <array>
         <option value="play.api.data.Field" />
         <option value="play.data._" />
-        <option value="scala.collection.JavaConversions._" />
         <option value="play.api.templates.PlayMagic._" />
+        <option value="scala.collection.JavaConversions._" />
         <option value="java.lang._" />
         <option value="play.mvc._" />
         <option value="play.core.j.PlayMagicForJava._" />

@@ -1,0 +1,11 @@
+.classpath
+.project
+.settings
+.idea
+*.iml
+target
+packages
+jython
+workspace_*
+conf/application.conf
+project/project/
