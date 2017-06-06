@@ -45,4 +45,4 @@ libraryDependencies += "org.springframework" % "spring-context" % "3.1.2.RELEASE
 
 playEbeanModels in Compile := Seq("models.*")
 
-pipelineStages := Seq(rjs)
+/* pipelineStages := Seq(rjs) */
