@@ -4,13 +4,16 @@ name := "kurator-web"
 
 version := "1.0.2-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean, SbtWeb)
-scalaVersion := "2.11.7"
-
-resolvers += Resolver.mavenLocal
-resolvers += "geotoolkit repo" at "http://download.osgeo.org/webdav/geotools/"
+fullResolvers :=  Seq(
+  "Open Source Geospatial Foundation Repository" at "http://download.osgeo.org/webdav/geotools/",
+  "public" at "https://repo1.maven.org/maven2/", // default repo
+  Resolver.mavenLocal
+)
 
 updateOptions := updateOptions.value.withLatestSnapshots(false)
+
+lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean, SbtWeb)
+scalaVersion := "2.11.7"
 
 libraryDependencies ++= Seq(
   javaJdbc,
