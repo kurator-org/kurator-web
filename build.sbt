@@ -8,6 +8,7 @@ lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean, SbtWeb
 scalaVersion := "2.11.7"
 
 resolvers += Resolver.mavenLocal
+resolvers += "geotoolkit repo" at "http://download.osgeo.org/webdav/geotools/"
 
 updateOptions := updateOptions.value.withLatestSnapshots(false)
 
