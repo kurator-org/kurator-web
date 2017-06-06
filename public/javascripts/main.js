@@ -8,7 +8,7 @@ require.config({
         'bootstrap-tokenfield'  : 'lib/bootstrap-tokenfield/bootstrap-tokenfield.min',
         'paper'                 : 'lib/paper/paper-core',
         'text'                  : 'lib/requirejs-text/text',
-        'd3'                    : 'http://d3js.org/d3.v3.min'
+        'd3'                    : 'lib/d3/d3.min'
     },
 
     // non-AMD lib
@@ -16,7 +16,8 @@ require.config({
         'underscore'            : { exports  : '_' },
         'backbone'              : { deps : ['underscore', 'jquery'], exports : 'Backbone' },
         'bootstrap-tokenfield'  : { exports : 'Tokenfield' },
-        'paper'                 : { exports: 'paper' }
+        'paper'                 : { exports: 'paper' },
+        'd3'                    : { exports: 'd3' }
     }
 
 });
