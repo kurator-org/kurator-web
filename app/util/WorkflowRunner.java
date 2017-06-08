@@ -18,6 +18,8 @@ package util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import models.db.workflow.Status;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +32,13 @@ public class WorkflowRunner {
     final static Logger logger = LoggerFactory.getLogger(WorkflowRunner.class);
 
     private static String JAVA_BIN = System.getProperty("java.home") + "/bin/java";
-    private static String KURATOR_JAR = "/home/lowery/IdeaProjects/kurator-validation/target/kurator-validation-1.0.1-SNAPSHOT-jar-with-dependencies.jar";
+    private static String KURATOR_JAR = System.getenv("KURATOR_JAR");
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String yamlFile = "/home/lowery/IdeaProjects/kurator-validation/packages/kurator_dwca/workflows/file_term_values.yaml";
 
         // Create a workspace
-        Path path = Paths.get("/home/lowery/workspace", "workspace_" + UUID.randomUUID());
+        Path path = Paths.get("/home/lowery/IdeaProjects/kurator-web/workspace", "workspace_" + UUID.randomUUID());
         path.toFile().mkdir();
 
         Map<String, String> parameters = new HashMap<>();
@@ -55,41 +57,57 @@ public class WorkflowRunner {
         RunOptions options = new RunOptions(yamlFile, parameters, config, logLevel);
 
         WorkflowRunner runner = new WorkflowRunner();
-        runner.run(options);
+        RunResult result = runner.run(options);
+
+        System.out.println(result.getOptions().toJsonString());
+        System.out.println(result.getWorkspaceDirectory().getAbsolutePath());
     }
 
-    public int run(RunOptions options) throws IOException, InterruptedException {
+    public RunResult run(RunOptions options) throws IOException, InterruptedException {
+        // The process builder will run the kurator jar in a separate process
         ProcessBuilder builder = new ProcessBuilder(JAVA_BIN, "-cp", KURATOR_JAR, "org.kurator.akka.KuratorWeb");
 
-        // Redirect the stderr and stdout logs to a temp file
-        File runlog = File.createTempFile("kurator-runlog-", ".log");
+        // Create run result, retain a copy of the input options and set initial status to running
+        RunResult result = new RunResult();
+        result.setOptions(options);
+        result.setStatus(Status.RUNNING);
+
+        // Redirect stderr and stdout to a log file in the workspace directory
+        File runlog = result.createWorkspaceFile("runlog.log");
         builder.redirectError(runlog);
 
+        // Start the workflow run as a process and get the input and output streams
         Process process = builder.start();
 
         OutputStream stdin = process.getOutputStream();
         InputStream stdout = process.getInputStream();
 
-        ObjectMapper mapper = new ObjectMapper();
-        String opt = mapper.writeValueAsString(options);
-        System.out.println("input options: " + opt);
+        // Serialize input options as json and send via stdin to the kurator process
+        byte[] opt = options.toJsonString().getBytes();
 
-        stdin.write(opt.getBytes());
+        stdin.write(opt);
         stdin.flush();
         stdin.close();
 
+        // Block until the process exits
         process.waitFor();
 
-        System.out.println("exit code: " + process.exitValue());
-        System.out.println("run log: " + runlog.getAbsolutePath());
-
-        List<WorkflowArtifact> artifacts = mapper.readValue(stdout, new TypeReference<ArrayList<WorkflowArtifact>>() { });
-
-
-        for (WorkflowArtifact artifact : artifacts) {
-            System.out.println(artifact.getName() + " - " + artifact.getPath());
+        // Determine run result status based on the exit code
+        switch (process.exitValue()) {
+            case 0:
+                result.setStatus(Status.SUCCESS);
+                break;
+            case 1:
+            case 2:
+                result.setStatus(Status.ERRORS);
+                break;
         }
 
-        return process.exitValue();
+        // Deserialize json output and add workflow artifacts to the run result
+        ObjectMapper mapper = new ObjectMapper();
+        List<WorkflowArtifact> artifacts = mapper.readValue(stdout, new TypeReference<ArrayList<WorkflowArtifact>>() { });
+        result.setArtifacts(artifacts);
+
+        return result;
     }
 }
