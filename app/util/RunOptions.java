@@ -62,7 +62,7 @@ public class RunOptions {
 
     public String toJsonString() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(this);
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
     }
 
     public String getWorkspace() {

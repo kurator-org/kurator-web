@@ -54,13 +54,32 @@ public class WorkflowRunner {
 
         String logLevel = "DEBUG";
 
-        RunOptions options = new RunOptions(yamlFile, parameters, config, logLevel);
+        // Lambda Runnable
+        Runnable workflowTask = () -> {
+            System.out.println("Started workflow run...");
+            WorkflowRunner runner = new WorkflowRunner();
 
-        WorkflowRunner runner = new WorkflowRunner();
-        RunResult result = runner.run(options);
+            try {
+                RunOptions options = new RunOptions(yamlFile, parameters, config, logLevel);
+                RunResult result = runner.run(options);
 
-        System.out.println(result.getOptions().toJsonString());
-        System.out.println(result.getWorkspaceDirectory().getAbsolutePath());
+                // TODO: write results to db
+                System.out.println(result.getOptions().toJsonString());
+                System.out.println(result.getWorkspaceDirectory().getAbsolutePath());
+
+                for (WorkflowArtifact artifact : result.getArtifacts()) {
+                    System.out.println(artifact.getName() + " - " + artifact.getPath());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("Ended workflow run...");
+        };
+
+        // start the thread
+        new Thread(workflowTask).start();
+        System.out.println("TEST!");
     }
 
     public RunResult run(RunOptions options) throws IOException, InterruptedException {
@@ -78,7 +97,6 @@ public class WorkflowRunner {
 
         // Start the workflow run as a process and get the input and output streams
         Process process = builder.start();
-
         OutputStream stdin = process.getOutputStream();
         InputStream stdout = process.getInputStream();
 
