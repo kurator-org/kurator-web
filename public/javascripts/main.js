@@ -31,6 +31,7 @@ require([
     'collections/users',
     'text!templates/workflow.html',
     'text!templates/artifacts.html',
+    'text!templates/result.html',
     'text!templates/run.html',
     'text!templates/login.html',
     'text!templates/status.html',
@@ -42,8 +43,8 @@ require([
     'text!templates/dataset.html',
     'bootstrap-tokenfield',
     'jquery-ui'
-], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, workflowTpl, artifactsTpl, runWorkflowTpl, loginTpl, statusTpl, registerTpl,
-             deployTpl, reportTpl, datasetTpl, TokenField, JQueryUI) {
+], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, workflowTpl, artifactsTpl, resultTpl,
+             runWorkflowTpl, loginTpl, statusTpl, registerTpl, deployTpl, reportTpl, datasetTpl, TokenField, JQueryUI) {
 
     app.router = new WebRouter();
     app.session = new SessionModel({});
@@ -233,25 +234,13 @@ require([
                     $.get(jsRoutes.controllers.Workflows.resultArtifacts(run.id).url, function (response) {
                         console.log(response);
 
+                        // TODO: modal close might still be buggy
                         $('#result-modal .modal-title').html('Results for "' + response.name + '"');
 
                         var body = $('#result-modal .modal-body');
-                        body.html('<table><tr><td><b>Workflow: </b></td><td>&nbsp;' + response.workflow + '</td></tr>' +
-                            '<tr><td><b>Start Time: </b></td><td>&nbsp;' + new Date(response.startTime).toLocaleString() + '</td></tr><tr><td><b>End Time: </b></td><td>&nbsp;' + new Date(response.endTime).toLocaleString() + '</td></tr>' +
-                            '</table><hr /><a class="btn btn-primary" href="' + jsRoutes.controllers.Workflows.resultArchive(response.id).url + '"><b>Download Archive</b></a>' +
-                            '&nbsp;&nbsp;<a class="btn btn-default" href="' + jsRoutes.controllers.Workflows.workflowYaml(response.workflowName).url  + '"><b>Download Yaml Config</b></a><hr /><ul class="list-group"></ul>');
+                        var resultTemplate = _.template(resultTpl);
 
-                        response.artifacts.forEach(function(artifact) {
-                            var artifactInfo = '';
-
-                            if (artifact.info) {
-                                artifactInfo = '</a><a target="_blank" href="' + artifact.info +'"> <b>[View Info]</b></a> - ';
-                            }
-
-                            body.find('ul').append('<li class="list-group-item"><table width="100%"><tr><td><span class="glyphicon glyphicon-file"></span> </td><td><b>' + artifact.label + '</b></td><td style="text-align: right">' + artifactInfo + '<a href="' + jsRoutes.controllers.Workflows.resultFile(artifact.id).url + '"><b>[Download File]</b></a>' +
-                                '</td></tr><tr><td></td><td colspan="2">' + artifact.description + '</td></tr></table></li>');
-                            console.log(artifact.type + " " + artifact.info);
-                        });
+                        body.html(resultTemplate(response));
                     });
                 });
 
