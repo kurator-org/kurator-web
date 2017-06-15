@@ -67,11 +67,21 @@ public class WorkflowConfig {
         return config.getString("workflows");
     }
 
-    public Collection<Artifact> getArtifacts() {
+    public Collection<Artifact> getResultArtifacts() {
         List<Artifact> artifacts = new ArrayList<>();
 
-        for (String name : config.getObject("artifacts").keySet()) {
-            artifacts.add(new Artifact(name, config.getConfig("artifacts").getConfig(name)));
+        for (String name : config.getConfig("artifacts").getObject("results").keySet()) {
+            artifacts.add(new Artifact(name, config.getConfig("artifacts").getConfig("results").getConfig(name)));
+        }
+
+        return Collections.unmodifiableCollection(artifacts);
+    }
+
+    public Collection<Artifact> getOtherArtifacts() {
+        List<Artifact> artifacts = new ArrayList<>();
+
+        for (String name : config.getObject("artifacts.other").keySet()) {
+            artifacts.add(new Artifact(name, config.getConfig("artifacts.other").getConfig(name)));
         }
 
         return Collections.unmodifiableCollection(artifacts);
