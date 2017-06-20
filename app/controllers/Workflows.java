@@ -22,6 +22,7 @@ import be.objectify.deadbolt.java.actions.SubjectPresent;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
+import config.Artifact;
 import config.ConfigManager;
 import config.ParameterConfig;
 import dao.UserDao;
@@ -256,6 +257,7 @@ public class Workflows extends Controller {
 
         WorkflowDefinition workflowDef = formDefinitionForWorkflow(run.getWorkflow().getName());
         Map<String, ArtifactDef> resultArtifacts = workflowDef.getResultArtifacts();
+        Map<String, ArtifactDef> otherArtifacts = workflowDef.getOtherArtifacts();
 
         response.put("id", run.getId());
         response.put("name", run.getName());
@@ -269,28 +271,50 @@ public class Workflows extends Controller {
         System.out.println("workflow: " + run.getWorkflow().getName());
         System.out.println();
 
-        ArrayNode artifactsArr = Json.newArray();
+        ArrayNode resultsArr = Json.newArray();
+        ArrayNode otherArr = Json.newArray();
+
         for (ResultFile resultFile : result.getResultFiles()) {
-            ArtifactDef artifactDef = resultArtifacts.get(resultFile.getName());
+
             System.out.println(resultFile.getName());
 
-            if (artifactDef != null) {
-                ObjectNode artifactObj = Json.newObject();
-                artifactObj.put("type", artifactDef.getType());
-                artifactObj.put("label", resultFile.getLabel());
-                artifactObj.put("filename", resultFile.getFileName());
-                artifactObj.put("description", artifactDef.getDescription());
-                artifactObj.put("info", artifactDef.getInfo());
-                artifactObj.put("id", resultFile.getId());
-                artifactsArr.add(artifactObj);
+            if (resultArtifacts.containsKey(resultFile.getName())) {
+                ArtifactDef artifactDef = resultArtifacts.get(resultFile.getName());
+
+                if (artifactDef != null) {
+                    resultsArr.add(artifactJson(artifactDef, resultFile));
+                }
+            } else if (otherArtifacts.containsKey(resultFile.getName())) {
+                ArtifactDef artifactDef = otherArtifacts.get(resultFile.getName());
+
+                if (artifactDef != null) {
+                    otherArr.add(artifactJson(artifactDef, resultFile));
+                }
             }
+
         }
 
-        response.put("artifacts", artifactsArr);
+        ObjectNode artifactsObj = Json.newObject();
+        artifactsObj.put("results", resultsArr);
+        artifactsObj.put("others", otherArr);
+
+        response.put("artifacts", artifactsObj);
 
         return ok(response);
 
         //return ok(new File(result.getArchivePath()));
+    }
+
+    private ObjectNode artifactJson(ArtifactDef artifactDef, ResultFile resultFile) {
+        ObjectNode artifactObj = Json.newObject();
+        artifactObj.put("type", artifactDef.getType());
+        artifactObj.put("label", resultFile.getLabel());
+        artifactObj.put("filename", resultFile.getFileName());
+        artifactObj.put("description", artifactDef.getDescription());
+        artifactObj.put("info", artifactDef.getInfo());
+        artifactObj.put("id", resultFile.getId());
+
+        return artifactObj;
     }
 
     @SubjectPresent
