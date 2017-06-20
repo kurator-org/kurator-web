@@ -16,7 +16,7 @@ GET     /auth                                   controllers.Users.checkAuth()
 
 GET     /admin                                  controllers.Application.admin()
 
-GET     /async                                  controllers.AsyncController.scheduleRun()
+POST     /async/*name                         controllers.AsyncController.scheduleRun(name: String)
 
 # User authentication and user data routes, login, registration, password reset
 # ~~~~

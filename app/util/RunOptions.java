@@ -24,19 +24,19 @@ import java.util.Map;
 
 public class RunOptions {
     private String yamlFile;
-    private Map<String, String> parameters;
+    private Map<String, Object> parameters;
     private Map<String, String> config;
     private String logLevel;
     private String workspace;
 
-    public RunOptions(String yamlFile, Map<String, String> parameters, Map<String, String> config, String logLevel) {
+    public RunOptions(String yamlFile, Map<String, Object> parameters, Map<String, String> config, String logLevel) {
         this.yamlFile = yamlFile;
         this.parameters = parameters;
         this.config = config;
         this.logLevel = logLevel;
 
         if (parameters.containsKey("workspace")) {
-            this.workspace = parameters.get("workspace");
+            this.workspace = (String) parameters.get("workspace");
         }
     }
 
@@ -46,7 +46,7 @@ public class RunOptions {
     }
 
     @JsonProperty("parameters")
-    public Map<String, String> getParameters() {
+    public Map<String, Object> getParameters() {
         return parameters;
     }
 

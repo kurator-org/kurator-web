@@ -429,7 +429,7 @@ public class Workflows extends Controller {
      * @param name workflow name
      * @return the form definition object
      */
-    private WorkflowDefinition formDefinitionForWorkflow(String name) {
+    public static WorkflowDefinition formDefinitionForWorkflow(String name) {
         List<WorkflowDefinition> workflowDefs = loadWorkflowFormDefinitions();
 
         for (WorkflowDefinition workflowDef : workflowDefs) {
@@ -494,7 +494,7 @@ public class Workflows extends Controller {
         return workflowDefs;
     }
 
-    private InputStream loadYamlStream(String yamlFile) {
+    private static InputStream loadYamlStream(String yamlFile) {
         try {
             return new FileInputStream(yamlFile);
         } catch (Exception e) {
@@ -509,7 +509,7 @@ public class Workflows extends Controller {
      * @param form form definition of the workflow being run
      * @return a map of the settings
      */
-    private Map<String, String> settingsFromConfig(WorkflowDefinition form) {
+    public static Map<String, String> settingsFromConfig(WorkflowDefinition form) {
         try {
             Map<String, String> settings = new HashMap<String, String>();
 

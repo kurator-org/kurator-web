@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,7 +33,7 @@ public class RunResult {
     private Status status;
     private File runlog;
     private RunOptions options;
-    private List<WorkflowArtifact> artifacts;
+    private List<WorkflowArtifact> artifacts = new ArrayList<>();
 
     public Status getStatus() {
         return status;

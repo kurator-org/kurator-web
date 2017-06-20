@@ -41,7 +41,7 @@ public class WorkflowRunner {
         Path path = Paths.get("/home/lowery/IdeaProjects/kurator-web/workspace", "workspace_" + UUID.randomUUID());
         path.toFile().mkdir();
 
-        Map<String, String> parameters = new HashMap<>();
+        Map<String, Object> parameters = new HashMap<>();
 
         parameters.put("workspace", path.toString());
         parameters.put("inputfile", "/home/lowery/IdeaProjects/kurator-validation/packages/kurator_dwca/data/tests/test_onslow_vertnet.csv");
@@ -83,9 +83,21 @@ public class WorkflowRunner {
     }
 
     public RunResult run(RunOptions options) throws IOException, InterruptedException {
+        if (KURATOR_JAR == null) {
+            // Try a JVM property
+            String prop = System.getProperty("kurator.jar");
+
+            if (prop != null) {
+                KURATOR_JAR = prop;
+            } else {
+                throw new RuntimeException("Missing KURATOR_JAR environment variable. Configure to point to the location of your kurator jar (i.e. kurator-validation.jar)");
+            }
+        }
+
         // The process builder will run the kurator jar in a separate process
         ProcessBuilder builder = new ProcessBuilder(JAVA_BIN, "-cp", KURATOR_JAR, "org.kurator.akka.KuratorWeb");
-
+        System.out.println("Running workflow via: " + JAVA_BIN + " -cp " + KURATOR_JAR + " org.kurator.akka.KuratorWeb");
+        System.out.println(options.toJsonString());
         // Create run result, retain a copy of the input options and set initial status to running
         RunResult result = new RunResult();
         result.setOptions(options);
@@ -94,6 +106,7 @@ public class WorkflowRunner {
         // Redirect stderr and stdout to a log file in the workspace directory
         File runlog = result.createWorkspaceFile("runlog.log");
         builder.redirectError(runlog);
+        result.setRunlog(runlog);
 
         // Start the workflow run as a process and get the input and output streams
         Process process = builder.start();
@@ -114,6 +127,12 @@ public class WorkflowRunner {
         switch (process.exitValue()) {
             case 0:
                 result.setStatus(Status.SUCCESS);
+
+                // Deserialize json output and add workflow artifacts to the run result
+                ObjectMapper mapper = new ObjectMapper();
+                List<WorkflowArtifact> artifacts = mapper.readValue(stdout, new TypeReference<ArrayList<WorkflowArtifact>>() { });
+                result.setArtifacts(artifacts);
+
                 break;
             case 1:
             case 2:
@@ -121,11 +140,7 @@ public class WorkflowRunner {
                 break;
         }
 
-        // Deserialize json output and add workflow artifacts to the run result
-        ObjectMapper mapper = new ObjectMapper();
-        List<WorkflowArtifact> artifacts = mapper.readValue(stdout, new TypeReference<ArrayList<WorkflowArtifact>>() { });
-        result.setArtifacts(artifacts);
-
+        System.out.println("Workflow run status: " + result.getStatus());
         return result;
     }
 }
