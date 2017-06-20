@@ -80,8 +80,8 @@ public class WorkflowConfig {
     public Collection<Artifact> getOtherArtifacts() {
         List<Artifact> artifacts = new ArrayList<>();
 
-        for (String name : config.getObject("artifacts.other").keySet()) {
-            artifacts.add(new Artifact(name, config.getConfig("artifacts.other").getConfig(name)));
+        for (String name : config.getConfig("artifacts").getObject("other").keySet()) {
+            artifacts.add(new Artifact(name, config.getConfig("artifacts").getConfig("other").getConfig(name)));
         }
 
         return Collections.unmodifiableCollection(artifacts);

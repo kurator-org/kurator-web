@@ -42,7 +42,8 @@ public class AsyncWorkflowRunnable implements Runnable {
 
     private String workflow;
     private WorkflowDefinition workflowDef;
-    private Map<String, String> artifactDefs;
+    private Map<String, String> resultDefs;
+    private Map<String, String> otherDefs;
     private String yamlFile;
 
     private Date startTime;
@@ -54,14 +55,15 @@ public class AsyncWorkflowRunnable implements Runnable {
     private List<ResultFile> resultFiles = new ArrayList<>();
     private String dqReportFile;
 
-    public synchronized void init(String name, Workflow workflow, WorkflowDefinition workflowDef, Map<String, String> artifactDefs, User user, WorkflowRunner runner, ByteArrayOutputStream errStream, ByteArrayOutputStream outStream) {
+    public synchronized void init(String name, Workflow workflow, WorkflowDefinition workflowDef, Map<String, String> resultDefs, Map<String, String> otherDefs, User user, WorkflowRunner runner, ByteArrayOutputStream errStream, ByteArrayOutputStream outStream) {
         this.errStream = errStream;
         this.outStream = outStream;
         this.runner = runner;
 
         this.workflow = workflow.getTitle();
         this.workflowDef = workflowDef;
-        this.artifactDefs = artifactDefs;
+        this.resultDefs = resultDefs;
+        this.otherDefs = otherDefs;
         this.yamlFile = workflow.getYamlFile();
         this.startTime = new Date(); // Workflow run start time
 
@@ -87,7 +89,13 @@ public class AsyncWorkflowRunnable implements Runnable {
                     }
 
                     // Include descriptive text
-                    String description = artifactDefs.get(product.label);
+                    String description = "";
+
+                    if (resultDefs.containsKey(product.label)) {
+                        description = resultDefs.get(product.label);
+                    } else if (otherDefs.containsKey(product.label)) {
+                        description = otherDefs.get(product.label);
+                    }
 
                     // Create a result file from the workflow product and persist it to the db
                     ResultFile resultFile = workflowDao.createResultFile(product.label, file.getName(), description, String.valueOf(product.value));

@@ -28,7 +28,8 @@ import java.util.*;
  * workflow for display on the form.
  */
 public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
-    private Map<String, ArtifactDef> artifacts = new HashMap<>();
+    private Map<String, ArtifactDef> results = new HashMap<>();
+    private Map<String, ArtifactDef> other = new HashMap<>();
     private List<BasicField> fields = new ArrayList<>();
     private String title;
     private String name;
@@ -51,7 +52,12 @@ public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
 
         for (Artifact artifact : workflow.getResultArtifacts()) {
             ArtifactDef artifactDef = new ArtifactDef(artifact.getName(), artifact.getDescription(), artifact.getLabel(), artifact.getType(), artifact.getInfo());
-            this.artifacts.put(artifact.getName(), artifactDef);
+            this.results.put(artifact.getName(), artifactDef);
+        }
+
+        for (Artifact artifact : workflow.getOtherArtifacts()) {
+            ArtifactDef artifactDef = new ArtifactDef(artifact.getName(), artifact.getDescription(), artifact.getLabel(), artifact.getType(), artifact.getInfo());
+            this.other.put(artifact.getName(), artifactDef);
         }
     }
 
@@ -125,13 +131,23 @@ public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
         this.summary = summary;
     }
 
-    public Map<String, ArtifactDef> getArtifacts() {
-        return artifacts;
+    public Map<String, ArtifactDef> getResultArtifacts() {
+        return results;
     }
 
-    public void setArtifacts(Map<String, ArtifactDef> artifacts) {
-        this.artifacts = artifacts;
+    public void setResultArtifacts(Map<String, ArtifactDef> artifacts) {
+        this.results = artifacts;
     }
+
+
+    public Map<String, ArtifactDef> getOtherArtifacts() {
+        return other;
+    }
+
+    public void setOtherArtifacts(Map<String, ArtifactDef> artifacts) {
+        this.other = artifacts;
+    }
+
 
     @Override
     public int compareTo(@NotNull WorkflowDefinition o) {

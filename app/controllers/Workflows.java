@@ -224,12 +224,17 @@ public class Workflows extends Controller {
                     .yamlStream(yamlStream).configure(config);
 
 
-            Map<String, String> artifactDefs = new HashMap<>();
-            for (ArtifactDef artifactDef : workflowDef.getArtifacts().values()) {
-                artifactDefs.put(artifactDef.getName(), artifactDef.getDescription());
+            Map<String, String> resultDefs = new HashMap<>();
+            Map<String, String> otherDefs = new HashMap<>();
+            for (ArtifactDef artifactDef : workflowDef.getResultArtifacts().values()) {
+                resultDefs.put(artifactDef.getName(), artifactDef.getDescription());
             }
 
-            runnable.init(name, workflow, workflowDef, artifactDefs, user, runner, errStream, outStream);
+            for (ArtifactDef artifactDef : workflowDef.getOtherArtifacts().values()) {
+                otherDefs.put(artifactDef.getName(), artifactDef.getDescription());
+            }
+
+            runnable.init(name, workflow, workflowDef, resultDefs, otherDefs, user, runner, errStream, outStream);
 
             runner.apply(settings)
                     .outputStream(new PrintStream(outStream))
@@ -250,7 +255,7 @@ public class Workflows extends Controller {
         WorkflowResult result = run.getResult();
 
         WorkflowDefinition workflowDef = formDefinitionForWorkflow(run.getWorkflow().getName());
-        Map<String, ArtifactDef> artifactDefs = workflowDef.getArtifacts();
+        Map<String, ArtifactDef> resultArtifacts = workflowDef.getResultArtifacts();
 
         response.put("id", run.getId());
         response.put("name", run.getName());
@@ -266,7 +271,7 @@ public class Workflows extends Controller {
 
         ArrayNode artifactsArr = Json.newArray();
         for (ResultFile resultFile : result.getResultFiles()) {
-            ArtifactDef artifactDef = artifactDefs.get(resultFile.getName());
+            ArtifactDef artifactDef = resultArtifacts.get(resultFile.getName());
             System.out.println(resultFile.getName());
 
             if (artifactDef != null) {
