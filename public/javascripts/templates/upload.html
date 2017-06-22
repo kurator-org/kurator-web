@@ -1,0 +1,5 @@
+<div class="list-group">
+    <% _.each(uploads, function(upload) { %>
+        <a href="<%= jsRoutes.controllers.Users.downloadFile(upload.id).url %>" class="list-group-item"><%= upload.filename %></a>
+    <% }); %>
+</div>

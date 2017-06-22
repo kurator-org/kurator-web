@@ -12,6 +12,7 @@ define([
             "runs/:uid": "runs",
             "deploy": 'deploy',
             "report/:runId": 'report',
+            "upload": 'upload',
             "dataset/:runId": 'dataset'
             //"*actions": "defaultRoute"
         },

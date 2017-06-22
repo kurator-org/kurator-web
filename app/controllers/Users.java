@@ -280,42 +280,20 @@ public class Users extends Controller {
             ObjectNode upload = Json.newObject();
             upload.put("id", userUpload.getId());
             upload.put("filename", userUpload.getFileName());
+            upload.put("path", userUpload.getAbsolutePath());
             uploads.add(upload);
         }
 
         return ok(uploads);
     }
 
-    /**
-     * Helper method creates temp filea from the multipart form data and persists the upload file metadata to the
-     * database
-     *
-     * @return an instance of UploadFile that has been persisted to the db
-     */
-    private UserUpload uploadFile() {
-        Http.MultipartFormData body = request().body().asMultipartFormData();
+    public Result downloadFile(long uploadId) {
+        UserUpload upload = userDao.findUserUploadById(uploadId);
 
-        for (Object obj : body.getFiles()) {
-            Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
+        File file = new File(upload.getAbsolutePath());
+        response().setHeader("Content-Disposition", "attachment; filename=" + file.getName());
 
-            File src = (File) filePart.getFile();
-
-            File file = null;
-            try {
-                file = File.createTempFile(filePart.getFilename() + "-", ".csv");
-                FileUtils.copyFile(src, file);
-
-                UserUpload uploadFile = userDao.createUserUpload(session().get("username"), filePart.getFilename(),
-                        file.getAbsolutePath());
-
-                return uploadFile;
-            } catch (IOException e) {
-                throw new RuntimeException("Could not create temp file for upload", e);
-            }
-        }
-
-        // No files present in the body of the request
-        throw new RuntimeException("File part is not present in multipart form data from request");
+        return ok(file);
     }
 
     /**

@@ -29,6 +29,8 @@ require([
     'ffdq',
     'views/usermgmt',
     'collections/users',
+    'collections/uploads',
+    'views/uploads',
     'text!templates/workflow.html',
     'text!templates/artifacts.html',
     'text!templates/result.html',
@@ -43,7 +45,7 @@ require([
     'text!templates/dataset.html',
     'bootstrap-tokenfield',
     'jquery-ui'
-], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, workflowTpl, artifactsTpl, resultTpl,
+], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, Uploads, UploadsView, workflowTpl, artifactsTpl, resultTpl,
              runWorkflowTpl, loginTpl, statusTpl, registerTpl, deployTpl, reportTpl, datasetTpl, TokenField, JQueryUI) {
 
     app.router = new WebRouter();
@@ -539,6 +541,20 @@ require([
         report.runId = runId;
         var reportView = new ReportView({ model : report});
         this.navigateToView(reportView);
+    });
+
+    app.router.on("route:upload", function () {
+        $(".nav-pills li").removeClass("active");
+        $('.upload-pill').addClass('active');
+
+        $('.breadcrumb .active').remove();
+        $('.breadcrumb').append('<li class="active"><a href="#upload">Upload</a></li>');
+
+        var uploads = new Uploads();
+        uploads.url = jsRoutes.controllers.Users.listUploads(app.session.get('uid')).url;
+
+        var uploadView = new UploadsView({ collection : uploads});
+        this.navigateToView(uploadView);
     });
 
     app.router.on("route:dataset", function (runId) {

@@ -205,7 +205,7 @@ public class Workflows extends Controller {
             throw new RuntimeException("Could not create temp file for upload", e);
         }
 
-        UserUpload uploadFile = userDao.createUserUpload(session().get("username"), filePart.getFilename(),
+        UserUpload uploadFile = userDao.createUserUpload(session().get("username"), file.getName(),
                 file.getAbsolutePath());
 
 

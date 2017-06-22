@@ -74,7 +74,8 @@ public class Application extends Controller {
                         routes.javascript.Users.manage(),
                         routes.javascript.Users.registerSubmit(),
                         routes.javascript.Users.createWorkshop(),
-
+                        routes.javascript.Users.listUploads(),
+                        routes.javascript.Users.downloadFile(),
                         routes.javascript.Users.login(),
                         routes.javascript.Users.authenticate(),
 
