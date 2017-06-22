@@ -80,6 +80,10 @@ public class AsyncController extends Controller {
             fileInputField.setValue(uploadFile);
         }
 
+        // TODO: save user object in global state somehow
+        // Get the current logged in user
+        User user = userDao.findUserByUsername(session().get("username"));
+
         //  Set the form definition field values from the request data
         Map<String, String[]> data = body.asFormUrlEncoded();
         String runName = null;
@@ -100,14 +104,14 @@ public class AsyncController extends Controller {
             settings.put(field.name, field.value());
         }
 
-        settings.putAll(Workflows.settingsFromConfig(workflowDef));
+        settings.putAll(Workflows.settingsFromConfig(workflowDef, user));
 
         // Update the workflow model object and persist to the db
         Workflow workflow = workflowDao.updateWorkflow(workflowDef.getName(), workflowDef.getTitle(),
                 workflowDef.getYamlFile());
 
         // Run the workflow
-        long runId = runYamlWorkflow(runName, workflow, workflowDef, settings);
+        long runId = runYamlWorkflow(runName, workflow, workflowDef, settings, user);
 
         // The response json contains the workflow run id for later reference
         ObjectNode response = Json.newObject();
@@ -116,15 +120,11 @@ public class AsyncController extends Controller {
         return ok(response);
     }
 
-    private long runYamlWorkflow(String runName, Workflow workflow, WorkflowDefinition workflowDef, Map<String, Object> parameters) {
+    private long runYamlWorkflow(String runName, Workflow workflow, WorkflowDefinition workflowDef, Map<String, Object> parameters, User user) {
         // Set up workflow runner configuration
         Map<String, String> config = new HashMap<>();
         config.put("jython_home", JYTHON_HOME);
         config.put("jython_path", JYTHON_PATH);
-
-        // TODO: save user object in global state somehow
-        // Get the current logged in user
-        User user = userDao.findUserByUsername(session().get("username"));
 
         Date startTime = new Date(); // Workflow run start time
         WorkflowRun run = workflowDao.createWorkflowRun(runName, workflow, user, startTime);

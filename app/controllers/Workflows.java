@@ -117,12 +117,16 @@ public class Workflows extends Controller {
     public Result runWorkflow(String name) {
         WorkflowDefinition workflowDef = formDefinitionForWorkflow(name);
 
+        // TODO: save user object in global state somehow
+        // Get the current logged in user
+        User user = userDao.findUserByUsername(session().get("username"));
+
         // Process form submission as multipart form data
         Http.MultipartFormData body = request().body().asMultipartFormData();
 
         for (Object obj : body.getFiles()) {
             Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
-            UserUpload userUpload = uploadFile(filePart);
+            UserUpload userUpload = uploadFile(filePart, user);
 
             BasicField fileInputField = workflowDef.getField(filePart.getKey());
             fileInputField.setValue(userUpload);
@@ -148,14 +152,14 @@ public class Workflows extends Controller {
             settings.put(field.name, field.value());
         }
 
-        settings.putAll(settingsFromConfig(workflowDef));
+        settings.putAll(settingsFromConfig(workflowDef, user));
 
         // Update the workflow model object and persist to the db
         Workflow workflow = workflowDao.updateWorkflow(workflowDef.getName(), workflowDef.getTitle(),
                 workflowDef.getYamlFile());
 
         // Run the workflow
-        long runId = runYamlWorkflow(runName, workflow, workflowDef, settings);
+        long runId = runYamlWorkflow(runName, workflow, workflowDef, settings, user);
 
         // The response json contains the workflow run id for later reference
         ObjectNode response = Json.newObject();
@@ -175,11 +179,27 @@ public class Workflows extends Controller {
      * @param filePart data from the form submission
      * @return an instance of UploadFile that has been persisted to the db
      */
-    private UserUpload uploadFile(Http.MultipartFormData.FilePart filePart) {
+    private UserUpload uploadFile(Http.MultipartFormData.FilePart filePart, User user) {
         File src = (File) filePart.getFile();
         File file = null;
         try {
-            file = File.createTempFile(filePart.getFilename() + "-", ".csv");
+            Path path = Paths.get(WORKSPACE_DIR, user.getUsername(), "uploaded_files");
+            if (!path.toFile().exists()) {
+                path.toFile().mkdirs();
+            }
+
+            file = path.resolve(filePart.getFilename()).toFile();
+
+            // If the file exists create a new file and add a number
+            int i = 0;
+            while (file.exists()) {
+                String filename = filePart.getFilename();
+                file = path.resolve(filename.substring(0, filename.lastIndexOf('.')) +
+                        '_' + i + filename.substring(filename.lastIndexOf('.'))).toFile();
+
+                i++;
+            }
+
             FileUtils.copyFile(src, file);
         } catch (IOException e) {
             throw new RuntimeException("Could not create temp file for upload", e);
@@ -199,7 +219,7 @@ public class Workflows extends Controller {
      * @param workflowDef
      * @param settings    A map of the settings provided as input to the runner  @return json containing the id of this run
      */
-    private long runYamlWorkflow(String name, Workflow workflow, WorkflowDefinition workflowDef, Map<String, Object> settings) {
+    private long runYamlWorkflow(String name, Workflow workflow, WorkflowDefinition workflowDef, Map<String, Object> settings, User user) {
         // Load workflow yaml
         InputStream yamlStream = loadYamlStream(workflow.getYamlFile());
 
@@ -215,10 +235,6 @@ public class Workflows extends Controller {
             Map<String, Object> config = new HashMap<String, Object>();
             config.put("jython_home", JYTHON_HOME);
             config.put("jython_path", JYTHON_PATH);
-
-            // TODO: save user object in global state somehow
-            // Get the current logged in user
-            User user = userDao.findUserByUsername(session().get("username"));
 
             // Initialize and run the yaml workflow
             WorkflowRunner runner = new YamlStreamWorkflowRunner()
@@ -509,7 +525,7 @@ public class Workflows extends Controller {
      * @param form form definition of the workflow being run
      * @return a map of the settings
      */
-    public static Map<String, String> settingsFromConfig(WorkflowDefinition form) {
+    public static Map<String, String> settingsFromConfig(WorkflowDefinition form, User user) {
         try {
             Map<String, String> settings = new HashMap<String, String>();
 
@@ -521,9 +537,9 @@ public class Workflows extends Controller {
 
             WorkflowConfig workflowConfig = springContext.getBean(WorkflowConfig.class);
 
-            // Create a workspace
-            Path path = Paths.get(WORKSPACE_DIR, "workspace_" + UUID.randomUUID());
-            path.toFile().mkdir();
+            // Create a workspace in the current user's directory
+            Path path = Paths.get(WORKSPACE_DIR, user.getUsername(), "workspace_" + UUID.randomUUID());
+            path.toFile().mkdirs();
 
             // If the "workspace" parameter is present in the workflow set it to the path defined in the config
             if (workflowConfig.getParameters().containsKey("workspace")) {
