@@ -1,12 +1,11 @@
 <h3>Upload</h3>
 
-<form id="upload-file" action="<%= jsRoutes.controllers.Workflows.upload().url %>" method="POST" enctype="multipart/form-data">
+<form id="upload-file" enctype="multipart/form-data">
     <div class="form-group">
         <label for="upload">Upload File</label>
         <input type="file" id="upload" name="upload">
     </div>
-
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary upload-btn">Submit</button> <i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; color: #337ab7; display:inline-block; vertical-align:middle"></i>
 </form>
 
 <hr />

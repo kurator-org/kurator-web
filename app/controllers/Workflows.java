@@ -179,12 +179,19 @@ public class Workflows extends Controller {
         // Process form submission as multipart form data
         Http.MultipartFormData body = request().body().asMultipartFormData();
 
+        UserUpload userUpload = null;
+
         for (Object obj : body.getFiles()) {
             Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
-            UserUpload userUpload = uploadFile(filePart, user);
+            userUpload = uploadFile(filePart, user);
         }
 
-        return ok();
+        if (userUpload != null) {
+            return ok("{ 'filename' : " + userUpload.getFileName() + "}");
+        } else {
+            return internalServerError("{ }");
+        }
+
     }
 
     /**
