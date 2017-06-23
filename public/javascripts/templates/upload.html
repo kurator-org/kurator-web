@@ -1,3 +1,18 @@
+<h3>Upload</h3>
+
+<form id="upload-file" action="<%= jsRoutes.controllers.Workflows.upload().url %>" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="upload">Upload File</label>
+        <input type="file" id="upload" name="upload">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<hr />
+
+<h3>Files</h3>
+
 <div class="list-group">
     <% _.each(uploads, function(upload) { %>
         <a href="<%= jsRoutes.controllers.Users.downloadFile(upload.id).url %>" class="list-group-item"><%= upload.filename %></a>

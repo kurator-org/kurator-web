@@ -52,6 +52,7 @@ GET     /workflows/list                         controllers.Workflows.list()
 POST    /workflows/delete                       controllers.Workflows.deletePackage(name : String)
 
 GET     /workflows/yaml                         controllers.Workflows.workflowYaml(name : String)
+POST    /workflows/upload                       controllers.Workflows.upload()
 
 # Workflow run routes for managing user runs and artifacts (result, report, logs)
 # ~~~~

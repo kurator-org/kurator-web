@@ -55,6 +55,7 @@ public class Application extends Controller {
 
                         routes.javascript.Workflows.list(),
                         routes.javascript.Workflows.runWorkflow(),
+                        routes.javascript.Workflows.upload(),
                         //routes.javascript.AsyncController.scheduleRun(),
                         routes.javascript.Workflows.status(),
 

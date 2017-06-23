@@ -172,6 +172,21 @@ public class Workflows extends Controller {
         return ok(response);
     }
 
+    public Result upload() {
+        // Get the current logged in user
+        User user = userDao.findUserByUsername(session().get("username"));
+
+        // Process form submission as multipart form data
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+
+        for (Object obj : body.getFiles()) {
+            Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
+            UserUpload userUpload = uploadFile(filePart, user);
+        }
+
+        return ok();
+    }
+
     /**
      * Helper method creates a temp file from the multipart form data and persists the upload file metadata to the
      * database
