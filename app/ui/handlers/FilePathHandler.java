@@ -16,16 +16,27 @@
  */
 package ui.handlers;
 
+import dao.UserDao;
 import models.db.user.UserUpload;
+
+import java.io.File;
 
 /**
  * Transform a file input object to its absolute path.
  */
 public class FilePathHandler implements FieldHandler<String> {
-    public String transform(Object obj) {
-        if (obj instanceof UserUpload) {
-            UserUpload file = (UserUpload) obj;
+    private final UserDao userDao = new UserDao();
 
+    public String transform(Object obj) {
+        if (obj instanceof File) {
+            File file = (File) obj;
+
+            return file.getAbsolutePath();
+        } else if (obj instanceof String[]) {
+            String[] files = (String[]) obj;
+            UserUpload file = userDao.findUserUploadById(Long.parseLong(files[0]));
+
+            System.out.println(file.getAbsolutePath());
             return file.getAbsolutePath();
         } else {
             throw new UnsupportedOperationException("Could not transfrom instance of " + obj.getClass());

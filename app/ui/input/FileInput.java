@@ -22,10 +22,10 @@ import models.db.user.UserUpload;
 /**
  * File input field abstraction class
  */
-public class FileInput extends BasicField<UserUpload> {
+public class FileInput extends BasicField<Object> {
     public boolean multiple;
 
-    public UserUpload value;
+    public Object value;
 
     public FileInput() {
         fieldHandler = new FilePathHandler();
@@ -36,7 +36,7 @@ public class FileInput extends BasicField<UserUpload> {
     }
 
     @Override
-    public void setValue(UserUpload value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 }

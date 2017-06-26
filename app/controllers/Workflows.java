@@ -126,10 +126,9 @@ public class Workflows extends Controller {
 
         for (Object obj : body.getFiles()) {
             Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
-            UserUpload userUpload = uploadFile(filePart, user);
 
             BasicField fileInputField = workflowDef.getField(filePart.getKey());
-            fileInputField.setValue(userUpload);
+            fileInputField.setValue(filePart.getFile());
         }
 
         //  Set the form definition field values from the request data
