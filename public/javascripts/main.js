@@ -89,6 +89,8 @@ require([
         template: _.template(runWorkflowTpl),
 
         render: function () {
+            //this.model.set('uploads', []); TODO: this was just a test, make a subview for the file select
+
             //console.log(this.model.toJSON());
             $('#run-modal-title').html(this.model.get('title'));
            $('#run-modal-body').html(this.template(this.model.toJSON()));

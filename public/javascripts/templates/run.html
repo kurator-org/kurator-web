@@ -16,6 +16,14 @@
 
   <!-- File input field -->
   <% if (field.type == 'FileInput') { %>
+
+    <!--TODO: this was a test for now, make a subview for the file select see public/javascripts/main.js as well
+    <!--<select class="form-control" name="file-select">
+      <% _.each(uploads, function(upload) { %>
+      <option value="<%= upload %>"><%= upload %></option>
+      <% }); %>
+    </select>-->
+
   <input type="file" id="<%= field.name %>" name="<%= field.name %>">
 
   <!-- Text input field -->
