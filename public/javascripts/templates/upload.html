@@ -1,11 +1,20 @@
 <h3>Upload</h3>
 
 <form id="upload-file" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="upload">Upload File</label>
-        <input type="file" id="upload" name="upload">
+
+    <button type="submit" class="btn btn-primary upload-btn disabled">Submit</button>
+
+            <div class="form-group" style="display: inline-block">
+                <input type="file" id="upload" name="upload">
+            </div>
+
+    <i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; color: #337ab7; display:inline-block; vertical-align:middle"></i>
+
+    <div class="progress">
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width: 0%">
+
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary upload-btn">Submit</button> <i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; color: #337ab7; display:inline-block; vertical-align:middle"></i>
 </form>
 
 <hr />
