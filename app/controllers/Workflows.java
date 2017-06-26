@@ -120,6 +120,7 @@ public class Workflows extends Controller {
         // TODO: save user object in global state somehow
         // Get the current logged in user
         User user = userDao.findUserByUsername(session().get("username"));
+        Map<String, Object> settings = settingsFromConfig(workflowDef, user);
 
         // Process form submission as multipart form data
         Http.MultipartFormData body = request().body().asMultipartFormData();
@@ -128,7 +129,9 @@ public class Workflows extends Controller {
             Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
 
             BasicField fileInputField = workflowDef.getField(filePart.getKey());
-            fileInputField.setValue(filePart.getFile());
+            File file = createWorkspaceFile(settings, filePart);
+
+            fileInputField.setValue(file);
         }
 
         //  Set the form definition field values from the request data
@@ -145,13 +148,11 @@ public class Workflows extends Controller {
         }
 
         // Transfer form field data to workflow settings map
-        Map<String, Object> settings = new HashMap<>();
-
         for (BasicField field : workflowDef.getFields()) {
             settings.put(field.name, field.value());
         }
 
-        settings.putAll(settingsFromConfig(workflowDef, user));
+        System.out.println(settings);
 
         // Update the workflow model object and persist to the db
         Workflow workflow = workflowDao.updateWorkflow(workflowDef.getName(), workflowDef.getTitle(),
@@ -169,6 +170,23 @@ public class Workflows extends Controller {
         );*/
 
         return ok(response);
+    }
+
+    private File createWorkspaceFile(Map<String, Object> settings, Http.MultipartFormData.FilePart src) {
+        String workspace = (String) settings.get("workspace");
+
+        if (workspace == null) {
+            throw new RuntimeException("Workspace parameter not present in settings! Nowhere to put the inputfile.");
+        }
+
+        try {
+            File workspaceFile = Paths.get(workspace, src.getFilename()).toFile();
+            FileUtils.copyFile((File) src.getFile(), workspaceFile);
+
+            return workspaceFile;
+        } catch (IOException e) {
+            throw new RuntimeException("Error copying uploaded file to workspace: " + workspace, e);
+        }
     }
 
     public Result upload() {
@@ -546,9 +564,9 @@ public class Workflows extends Controller {
      * @param form form definition of the workflow being run
      * @return a map of the settings
      */
-    public static Map<String, String> settingsFromConfig(WorkflowDefinition form, User user) {
+    public static Map<String, Object> settingsFromConfig(WorkflowDefinition form, User user) {
         try {
-            Map<String, String> settings = new HashMap<String, String>();
+            Map<String, Object> settings = new HashMap<>();
 
             // Load workflow yaml file to check parameters
             GenericApplicationContext springContext = new GenericApplicationContext();
