@@ -31,6 +31,7 @@ require([
     'collections/users',
     'collections/uploads',
     'views/uploads',
+    'views/fileselect',
     'text!templates/workflow.html',
     'text!templates/artifacts.html',
     'text!templates/result.html',
@@ -45,7 +46,7 @@ require([
     'text!templates/dataset.html',
     'bootstrap-tokenfield',
     'jquery-ui'
-], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, Uploads, UploadsView, workflowTpl, artifactsTpl, resultTpl,
+], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, Uploads, UploadsView, FileSelectView, workflowTpl, artifactsTpl, resultTpl,
              runWorkflowTpl, loginTpl, statusTpl, registerTpl, deployTpl, reportTpl, datasetTpl, TokenField, JQueryUI) {
 
     app.router = new WebRouter();
@@ -95,6 +96,14 @@ require([
             $('#run-modal-title').html(this.model.get('title'));
            $('#run-modal-body').html(this.template(this.model.toJSON()));
 
+           this.$('.fileinput').each(function () {
+               var uploads = new Uploads();
+               uploads.url = jsRoutes.controllers.Users.listUploads(app.session.get('uid')).url;
+
+               var fileSelectView = new FileSelectView({ fieldName: $(this).attr('id'), collection: uploads});
+               $(this).html(fileSelectView.el);
+           });
+
             $('#run-workflow').submit(function (event) {
                 event.preventDefault();
 
@@ -135,9 +144,10 @@ require([
 
             $('#run-modal').modal({show: true});
 
-            $('#inputfile').on("change", function(){
+            // TODO: fix autocomplete and add support for file upload selection
+            /*$('#inputfile').on("change", function(){
 
-                var myfile = $('#inputfile')[0].files[0];
+                var myfile = $('#inputfile input')[0].files[0];
 
                 console.log(myfile);
 
@@ -156,7 +166,7 @@ require([
                         });
                     }
                 });
-            });
+            });*/
 
             //this.$el.html(this.template(this.model.toJSON()));
         }

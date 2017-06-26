@@ -16,15 +16,7 @@
 
   <!-- File input field -->
   <% if (field.type == 'FileInput') { %>
-
-    <!--TODO: this was a test for now, make a subview for the file select see public/javascripts/main.js as well
-    <!--<select class="form-control" name="file-select">
-      <% _.each(uploads, function(upload) { %>
-      <option value="<%= upload %>"><%= upload %></option>
-      <% }); %>
-    </select>-->
-
-  <input type="file" id="<%= field.name %>" name="<%= field.name %>">
+  <div class="fileinput" id="<%= field.name %>">File input...</div>
 
   <!-- Text input field -->
   <% } else if (field.type == 'TextField') { %>
@@ -59,7 +51,7 @@
     <% } %>
   </select>
 
-  <% } %> <p class="help-block"><%= field.tooltip %></p></div> <% }); %>
+  <% } %><p class="help-block"><%= field.tooltip %></p></div> <% }); %>
 
   <div class="progress" style="display: none; width="200px >
     <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
