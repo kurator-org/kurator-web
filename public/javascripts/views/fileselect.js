@@ -27,8 +27,9 @@ define([
             this.$input = this.$file; // default element is file upload
 
             this.listenTo(this.collection, 'update', this.updateSelect);
-            this.listenTo(this.collection, 'update', this.render);
+            //this.listenTo(this.collection, 'update', this.render);
 
+            this.render();
             this.collection.fetch();
         },
 
@@ -43,6 +44,8 @@ define([
 
         updateSelect: function (evt) {
             // Populate file select from the collection of uploaded files
+            this.$select.html('');
+
             this.collection.each(function (upload) {
                 console.log(this.$select);
 
