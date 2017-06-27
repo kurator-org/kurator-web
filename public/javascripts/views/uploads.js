@@ -34,6 +34,7 @@ define([
             var progressBar = this.$('.progress-bar');
             spinner.show();
             uploadBtn.addClass('disabled');
+            uploadBtn.prop('disabled', true);
 
             event.preventDefault();
 
@@ -76,6 +77,7 @@ define([
         fileSelected: function (event) {
             if (event.target.length != 0 ) {
                 this.$('.upload-btn').removeClass('disabled');
+                this.$('.upload-btn').prop('disabled', false);
             }
         }
     });
