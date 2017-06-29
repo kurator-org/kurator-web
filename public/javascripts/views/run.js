@@ -11,10 +11,12 @@ define([
         template: _.template(runTpl),
 
         events: {
-
+            'change .run-checkbox': 'toggleSelected',
+            'click  .result-btn': 'viewResult'
         },
 
         initialize: function () {
+            this.selected = false; // unchecked by default
             this.listenTo(this.model, 'change', this.render);
         },
 
@@ -47,9 +49,18 @@ define([
             }
 
             this.$el.html(this.template({ run: run, jsRoutes: jsRoutes }));
+            this.$('.run-checkbox').prop('checked', this.selected);
             this.$('.run-status').append($status);
 
             return this;
+        },
+        
+        toggleSelected: function (evt) {
+            this.selected = $(evt.target).prop('checked');
+        },
+
+        viewResult: function (evt) {
+            console.log('view result');
         }
 
     });
