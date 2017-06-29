@@ -2,12 +2,12 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'collections/runs',
-    'text!templates/runstatus.html'
-], function ($, _, Backbone, Runs, runstatusTpl) {
+    'views/run',
+    'text!templates/runs.html'
+], function ($, _, Backbone, RunView, statusTpl) {
 
     var RunStatusView = Backbone.View.extend({
-        template: _.template(runstatusTpl),
+        template: _.template(statusTpl),
 
         events: {
 
@@ -21,8 +21,19 @@ define([
         render: function () {
             this.$el.html(this.template({runs: this.collection.toJSON()}));
 
+            this.collection.each(function (run) {
+                this.addRun(run);
+            }, this);
+
             return this;
+        },
+
+        addRun: function (run) {
+            var view = new RunView({ model: run });
+            this.$('tbody').append(view.render().el);
         }
+
+
 
     });
 

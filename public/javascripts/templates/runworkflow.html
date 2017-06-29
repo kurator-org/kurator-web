@@ -1,0 +1,62 @@
+<form id="run-workflow" action="<%= jsRoutes.controllers.Workflows.runWorkflow(name).url %>" method="POST" enctype="multipart/form-data">
+
+  <div class="form-group">
+    <label for="run-name">Workflow Run Name</label>
+    <input type="text" class="form-control" id="run-name" name="run-name">
+    <p class="help-block">Name your workflow run (optional)</p>
+  </div>
+
+  <hr />
+
+  <i><%= instructions %></i>
+
+  <% _.each(fields, function(field) { %>
+  <div class="form-group workflow-form-field">
+    <label for="<%= field.name %>"><%= field.label %></label>
+
+  <!-- File input field -->
+  <% if (field.type == 'FileInput') { %>
+  <div class="fileinput" id="<%= field.name %>">File input...</div>
+
+  <!-- Text input field -->
+  <% } else if (field.type == 'TextField') { %>
+  <input type="text" class="form-control" name="<%= field.name %>">
+
+    <!-- Token field -->
+    <% } else if (field.type == 'TokenField') { %>
+    <div class="ui-front">
+      <input  id="tokenfield" type="text" class="form-control" name="<%= field.name %>">
+    </div>
+
+  <!-- Radio group -->
+  <% } else if (field.type == 'RadioGroup') { %>
+  <div>
+    <% for (value in field.options) { %>
+    <input type="radio" class="form-control" name="<%= field.name %>" value="<%= field.value %>"
+      <% if (field.selected == field.value) { %> checked="checked" <% } %>>
+      <%= field.label %>
+    </input>
+    <% } %>
+  </div>
+
+  <!-- Checkbox -->
+  <% } else if (field.type == 'CheckBox') { %>
+  <input type="checkbox" class="form-control" name="<%= field.name %>"> <%= field.label %>
+
+  <!-- Select field -->
+  <% } else if (field.type == 'SelectField') { %>
+  <select class="form-control" name="<%= field.name %>">
+    <% for (value in field.options) { %>
+    <option value="<%= value %>"><%= field.options[value] %></option>
+    <% } %>
+  </select>
+
+  <% } %><p class="help-block"><%= field.tooltip %></p></div> <% }); %>
+
+  <div class="progress" style="display: none; width="200px >
+    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+      <span class="sr-only">Initializing...</span>
+    </div>
+  </div>
+
+</form>

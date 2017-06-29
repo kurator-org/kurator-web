@@ -27,6 +27,8 @@ require([
     'router',
     'models/session',
     'ffdq',
+    'collections/runs',
+    'views/runstatus',
     'views/usermgmt',
     'collections/users',
     'collections/uploads',
@@ -35,7 +37,7 @@ require([
     'text!templates/workflow.html',
     'text!templates/artifacts.html',
     'text!templates/result.html',
-    'text!templates/run.html',
+    'text!templates/runworkflow.html',
     'text!templates/login.html',
     'text!templates/status.html',
     'text!templates/users.html',
@@ -46,7 +48,7 @@ require([
     'text!templates/dataset.html',
     'bootstrap-tokenfield',
     'jquery-ui'
-], function (app, WebRouter, SessionModel, FFDQPostProcessor, UserManagementView, Users, Uploads, UploadsView, FileSelectView, workflowTpl, artifactsTpl, resultTpl,
+], function (app, WebRouter, SessionModel, FFDQPostProcessor, Runs, RunStatusView, UserManagementView, Users, Uploads, UploadsView, FileSelectView, workflowTpl, artifactsTpl, resultTpl,
              runWorkflowTpl, loginTpl, statusTpl, registerTpl, deployTpl, reportTpl, datasetTpl, TokenField, JQueryUI) {
 
     app.router = new WebRouter();
@@ -488,15 +490,16 @@ require([
         $('.breadcrumb .active').remove();
         $('.breadcrumb').append('<li class="active"><a href="#status">Status</a></li>');
 
-        var runs =  new WorkflowRuns();
+        var runs =  new Runs();
+        runs.url = jsRoutes.controllers.Workflows.status(app.session.get('uid')).url;
 
-        if (app.view_as) {
-            runs.uid = app.view_as;
-        } else {
+        //if (app.view_as) {
+        //    runs.uid = app.view_as;
+        //} else {
             //runs.uid = window.uid;
-        }
+        //}
 
-        var statusView = new WorkflowRunsView({collection: runs });
+        var statusView = new RunStatusView({collection: runs });
         this.navigateToView(statusView);
     });
 

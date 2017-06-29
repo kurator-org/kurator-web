@@ -1,62 +1,37 @@
-<form id="run-workflow" action="<%= jsRoutes.controllers.Workflows.runWorkflow(name).url %>" method="POST" enctype="multipart/form-data">
+<td><input type="checkbox"></td>
+<td><%= run.name ? run.name : "Workflow Run #" + run.id %></td>
+<td><%= run.workflow %></td>
+<td><%= new Date(run.startDate).toLocaleString() %></td>
+<td><% if (run.endDate) { %><%= new Date(run.endDate).toLocaleString() %><% } else { %><i style="color: #777">Unavailable</i><% } %></td>
+<td class="run-status"></td>
+<td>
+    <% if (run.status == "RUNNING") { %>
 
-  <div class="form-group">
-    <label for="run-name">Workflow Run Name</label>
-    <input type="text" class="form-control" id="run-name" name="run-name">
-    <p class="help-block">Name your workflow run (optional)</p>
-  </div>
+    <div class="loading-pulse" style="height: 1.3em; margin-left: 12px;"></div>
 
-  <hr />
+    <% } else { %>
 
-  <i><%= instructions %></i>
+        <% if (run.hasResult) { %>
+        <a href="#" title="View Results" data-toggle="modal" data-target="#result-modal">
+            <span class="glyphicon glyphicon-file"style="font-size: 1.3em; color: #777"></span>
+        </a>
+        <% } %>
 
-  <% _.each(fields, function(field) { %>
-  <div class="form-group workflow-form-field">
-    <label for="<%= field.name %>"><%= field.label %></label>
+        <% if (run.hasOutput) { %>
+        <a href="<%= jsRoutes.controllers.Workflows.outputLog(run.id).url %>" data-toggle="tooltip" data-placement="top" title="Output Log">
+            <span class="glyphicon glyphicon-info-sign" style="font-size: 1.3em; color: #777"></span>
+        </a>
+        <% } %>
 
-  <!-- File input field -->
-  <% if (field.type == 'FileInput') { %>
-  <div class="fileinput" id="<%= field.name %>">File input...</div>
+        <% if (run.hasErrors) { %>
+        <a href="<%= jsRoutes.controllers.Workflows.errorLog(run.id).url %>" data-toggle="tooltip" data-placement="top" title="Error Log">
+            <span class="glyphicon glyphicon-exclamation-sign" style="font-size: 1.3em; color: #777"></span>
+        </a>
+        <% } %>
 
-  <!-- Text input field -->
-  <% } else if (field.type == 'TextField') { %>
-  <input type="text" class="form-control" name="<%= field.name %>">
-
-    <!-- Token field -->
-    <% } else if (field.type == 'TokenField') { %>
-    <div class="ui-front">
-      <input  id="tokenfield" type="text" class="form-control" name="<%= field.name %>">
-    </div>
-
-  <!-- Radio group -->
-  <% } else if (field.type == 'RadioGroup') { %>
-  <div>
-    <% for (value in field.options) { %>
-    <input type="radio" class="form-control" name="<%= field.name %>" value="<%= field.value %>"
-      <% if (field.selected == field.value) { %> checked="checked" <% } %>>
-      <%= field.label %>
-    </input>
     <% } %>
-  </div>
 
-  <!-- Checkbox -->
-  <% } else if (field.type == 'CheckBox') { %>
-  <input type="checkbox" class="form-control" name="<%= field.name %>"> <%= field.label %>
+    <div class="result">
 
-  <!-- Select field -->
-  <% } else if (field.type == 'SelectField') { %>
-  <select class="form-control" name="<%= field.name %>">
-    <% for (value in field.options) { %>
-    <option value="<%= value %>"><%= field.options[value] %></option>
-    <% } %>
-  </select>
-
-  <% } %><p class="help-block"><%= field.tooltip %></p></div> <% }); %>
-
-  <div class="progress" style="display: none; width="200px >
-    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-      <span class="sr-only">Initializing...</span>
     </div>
-  </div>
-
-</form>
+</td>
