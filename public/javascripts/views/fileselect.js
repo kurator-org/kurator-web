@@ -68,7 +68,7 @@ define([
 
             console.log("hello");
             this.render();
-        },
+        }
 
     });
 
