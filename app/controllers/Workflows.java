@@ -447,9 +447,19 @@ public class Workflows extends Controller {
     }
 
     @SubjectPresent
-    public Result removeRun(long workflowRunId) {
-        workflowDao.removeWorkflowRun(workflowRunId);
-        return ok();
+    public Result removeRuns() {
+        System.out.println(request().body().asJson());
+        ArrayNode runs = (ArrayNode) request().body().asJson().get("runs");
+
+        ArrayNode response = Json.newArray();
+        for (int i = 0; i < runs.size(); i++) {
+            //System.out.println("removing run: " + runs.get(i).get("id"));
+            long runId = runs.get(i).get("id").asLong();
+            workflowDao.removeWorkflowRun(runs.get(i).get("id").asLong());
+            response.add(runId);
+        }
+
+        return ok(response);
     }
 
     /**

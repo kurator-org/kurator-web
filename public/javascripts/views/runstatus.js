@@ -46,8 +46,25 @@ define([
         },
 
         removeRuns: function (evt) {
+            var runs = [];
             this.collection.where({selected: true}).forEach(function (run) {
-                console.log('deleting: ' + run.id);
+                runs.push(run.toJSON());
+            });
+
+            var that = this;
+            var onSuccess = function(data) {
+                console.log(data);
+                that.collection.remove(data);
+            };
+
+            $.ajax({
+                type: "POST",
+                url: jsRoutes.controllers.Workflows.removeRuns().url,
+                data: JSON.stringify({ runs: runs }),
+                dataType: "json",
+                contentType: "application/json",
+                success: onSuccess
+                //dataType: dataType
             });
         },
 

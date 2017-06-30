@@ -68,7 +68,7 @@ GET     /run/dataset/*id                        controllers.Workflows.dataset(id
 GET     /run/error/*id                          controllers.Workflows.errorLog(id : Long)
 GET     /run/output/*id                         controllers.Workflows.outputLog(id : Long)
 
-POST    /run/remove/*id                         controllers.Workflows.removeRun(id : Long)
+POST    /run/remove                             controllers.Workflows.removeRuns()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                           controllers.Assets.at(path="/public", file)
