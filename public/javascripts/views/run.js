@@ -16,7 +16,6 @@ define([
         },
 
         initialize: function () {
-            this.selected = false; // unchecked by default
             this.listenTo(this.model, 'change', this.render);
         },
 
@@ -49,14 +48,14 @@ define([
             }
 
             this.$el.html(this.template({ run: run, jsRoutes: jsRoutes }));
-            this.$('.run-checkbox').prop('checked', this.selected);
+            this.$('.run-checkbox').prop('checked', this.model.get('selected'));
             this.$('.run-status').append($status);
 
             return this;
         },
         
         toggleSelected: function (evt) {
-            this.selected = $(evt.target).prop('checked');
+            this.model.set('selected', $(evt.target).prop('checked'));
         },
 
         viewResult: function (evt) {
