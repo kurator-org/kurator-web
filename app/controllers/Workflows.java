@@ -25,6 +25,7 @@ import com.typesafe.config.ConfigFactory;
 import config.Artifact;
 import config.ConfigManager;
 import config.ParameterConfig;
+import config.Variable;
 import dao.UserDao;
 import dao.WorkflowDao;
 import models.PackageData;
@@ -515,7 +516,11 @@ public class Workflows extends Controller {
     public static List<WorkflowDefinition> loadWorkflowFormDefinitions() {
         List<WorkflowDefinition> workflowDefs = new ArrayList<>();
 
-        Collection<config.WorkflowConfig> workflows = ConfigManager.getInstance().getWorkflowConfigs();
+        ConfigManager configManager = ConfigManager.getInstance();
+        Collection<config.WorkflowConfig> workflows = configManager.getWorkflowConfigs();
+
+        List<Variable> variables = configManager.getVariables();
+        // TODO: add ability to set workflow variables as user config
 
         for (config.WorkflowConfig workflow : workflows) {
             WorkflowDefinition workflowDef = new WorkflowDefinition(workflow);

@@ -18,14 +18,12 @@ package config;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValue;
 import models.PackageData;
 import play.Logger;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -41,6 +39,42 @@ public class ConfigManager {
         }
 
         return instance;
+    }
+
+    public List<Variable> getVariables() {
+        List<Variable> variables = new ArrayList<>();
+        File file = new File(jythonPath);
+
+        String[] packages = file.list();
+
+        if (packages == null) {
+            // No workflow packages deployed, return empty list
+            return variables;
+        }
+
+        for (String packageName : packages) {
+            File packageDir = new File(file.getAbsolutePath() + File.separator + packageName);
+
+            if (packageDir.isDirectory()) {
+                File workflowsDir = new File(packageDir.getAbsolutePath() + File.separator + "workflows");
+                File confFile = new File(workflowsDir.getAbsolutePath() + File.separator + "workflows.conf");
+
+                if (confFile.exists()) {
+                    Config config = ConfigFactory.parseFile(confFile);
+
+                    if (config.hasPath("variables")) {
+                        for (ConfigValue value : config.getObject("variables").values()) {
+                            Map map = (Map) value.unwrapped();
+                            variables.add(new Variable(map.get("name").toString(), map.get("description").toString(),
+                                  map.get("actor").toString(), map.get("parameter").toString(), map.get("type").toString()));
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return variables;
     }
 
     public List<WorkflowConfig> getWorkflowConfigs() {
