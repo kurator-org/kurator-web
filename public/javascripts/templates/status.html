@@ -1,73 +1,25 @@
-<% if (runs.length > 0) { %>
-<table class="table">
-  <tbody>
-  <tr>
-    <th></th>
-    <th>Name</th>
-    <th>Workflow</th>
-    <th>Start Time</th>
-    <th>End Time</th>
-    <th>Status</th>
-    <th>Results</th>
-  </tr>
+<div id="run-controls">
+  <button type="button" class="btn btn-danger remove-btn" disabled="disabled">Remove Selected</button>
+  <button type="button" class="btn btn-success share-btn" disabled="disabled">Share Selected</button>
+</div>
+<hr />
 
-  <% _.each(runs, function(run) { %>
+<div>
 
-  <% var result = jsRoutes.controllers.Workflows.resultArtifacts(run.id).url %>
-  <% var output = jsRoutes.controllers.Workflows.outputLog(run.id).url %>
-  <% var errors = jsRoutes.controllers.Workflows.errorLog(run.id).url %>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#user-runs" class="runs-tab" aria-controls="home" role="tab" data-toggle="tab">My Runs</a></li>
+    <li role="presentation"><a href="#shared-runs" class="runs-tab" aria-controls="profile" role="tab" data-toggle="tab">Shared Runs</a></li>
+  </ul>
 
-  <tr>
-    <td><input type="checkbox"></td>
-    <td><%= run.name ? run.name : "Workflow Run #" + run.id %></td>
-    <td><%= run.workflow %></td>
-    <td><%= new Date(run.startDate).toLocaleString() %></td>
-    <td><% if (run.endDate) { %><%= new Date(run.endDate).toLocaleString() %><% } else { %><i style="color: #777">Unavailable</i><% } %></td>
-    <td id="status<%= run.id %>"></td>
-    <td>
-      <% if (run.status == "RUNNING") { %>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="user-runs">
 
-      <div class="loading-pulse" style="height: 1.3em; margin-left: 12px;"></div>
-
-      <% } else { %>
-
-      <% if (run.hasResult) { %><a href="#" id="run<%= run.id %>" title="View Results"  data-toggle="modal" data-target="#result-modal"><span class="glyphicon glyphicon-file"style="font-size: 1.3em; color: #777"></span></a><% } %>
-      <% if (run.hasOutput) { %><a href="<%= output %>" data-toggle="tooltip" data-placement="top" title="Output Log"><span class="glyphicon glyphicon-info-sign" style="font-size: 1.3em; color: #777"></span></a><% } %>
-      <% if (run.hasErrors) { %><a href="<%= errors %>" data-toggle="tooltip" data-placement="top" title="Error Log"><span class="glyphicon glyphicon-exclamation-sign" style="font-size: 1.3em; color: #777"></span></a><% } %>
-
-      <% } %>
-
-      <div class="result">
-
-      </div>
-    </td>
-  </tr>
-
-  <% }); %>
-
-</table>
-
-<% } else { %>
-<p><i>No workflow runs</i></p>
-<% } %>
-
-<!-- Modal -->
-<div id="result-modal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title"></h4>
-      </div>
-      <div class="modal-body">
-        
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
     </div>
+    <div role="tabpanel" class="tab-pane" id="shared-runs">
 
+    </div>
   </div>
+
 </div>

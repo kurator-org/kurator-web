@@ -389,16 +389,13 @@ require([
         $('.breadcrumb .active').remove();
         $('.breadcrumb').append('<li class="active"><a href="#status">Status</a></li>');
 
-        var runs =  new Runs();
-        runs.url = jsRoutes.controllers.Workflows.status(app.session.get('uid')).url;
-
         //if (app.view_as) {
         //    runs.uid = app.view_as;
         //} else {
             //runs.uid = window.uid;
         //}
 
-        var statusView = new RunStatusView({collection: runs });
+        var statusView = new RunStatusView({ uid: app.session.get('uid') });
         this.navigateToView(statusView);
     });
 

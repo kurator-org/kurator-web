@@ -2,123 +2,56 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'models/result',
-    'views/result',
-    'views/run',
-    'text!templates/runs.html'
-], function ($, _, Backbone, ResultModel, ResultView, RunView, statusTpl) {
+    'collections/runs',
+    'collections/shared',
+    'views/runs',
+    'views/shared',
+    'text!templates/status.html'
+], function ($, _, Backbone, Runs, SharedRuns, RunsView, SharedView, statusTpl) {
 
     var RunStatusView = Backbone.View.extend({
         template: _.template(statusTpl),
 
         events: {
             'click .remove-btn': 'removeRuns',
-            'click .share-btn': 'shareResults',
+            'click .share-btn': 'shareRuns',
             'shown.bs.tab a[data-toggle="tab"]': 'toggleTab'
         },
 
-        initialize: function () {
-            this.views = [];
-
-            this.selected = [];
+        initialize: function (options) {
             this.activeTab = '#user-runs';
+            this.options = options;
 
-            this.listenTo(this.collection, 'update', this.render);
-            this.collection.fetch();
-
-            var that = this;
-            this.timer = setInterval(function() {
-                that.collection.fetch();
-            }, 5000);
+            //this.listenTo(this.runsView, 'selectionChange', this.render);
         },
 
         render: function () {
+            this.$el.html(this.template({}));
 
-            // clean up the subviews before rendering new ones
-            _.invoke(this.views, 'destroy');
-            this.views.length = 0;
+            var runs = new Runs({ 'uid': this.options.uid });
+            this.runsView = new RunsView({ collection: runs, el: this.$('#user-runs') });
+            this.listenTo(this.runsView, 'selectionChange', this.renderControls);
 
-            this.$el.html(this.template({runs: this.collection.toJSON()}));
-
-            this.collection.each(function (run) {
-                if (this.selected.includes(run)) {
-                    run.set('selected', true);
-                }
-
-                this.addRun(run);
-            }, this);
-
-            this.$('a[href="' + this.activeTab + '"]').tab('show');
+            var shared = new SharedRuns();
+            this.sharedView = new SharedView({ collection: shared, el: this.$('#shared-runs') });
 
             return this;
         },
 
-        addRun: function (run) {
-            var view = new RunView({ model: run, parent: this });
-            this.listenTo(view, 'runChecked', this.runChecked);
-            this.listenTo(view, 'viewResult', this.viewResult);
-
-            this.views.push(view);
-
-            this.$('#user-runs').find('tbody').append(view.render().el);
+        renderControls: function (selected) {
+            this.$('#run-controls button').prop('disabled', !selected.length);
         },
 
-        removeRuns: function (evt) {
-            var runs = [];
-            this.collection.where({selected: true}).forEach(function (run) {
-                runs.push(run.toJSON());
-            });
-
-            var that = this;
-            var onSuccess = function(data) {
-                console.log(data);
-                that.collection.remove(data);
-            };
-
-            $.ajax({
-                type: "POST",
-                url: jsRoutes.controllers.Workflows.removeRuns().url,
-                data: JSON.stringify({ runs: runs }),
-                dataType: "json",
-                contentType: "application/json",
-                success: onSuccess
-                //dataType: dataType
-            });
+        removeRuns: function () {
+            this.runsView.removeSelected();
         },
 
         toggleTab: function (evt) {
             this.activeTab = $(evt.target).attr('href');
         },
 
-        shareResults: function (evt) {
+        shareRuns: function (evt) {
 
-        },
-
-        runChecked: function (evt) {
-            if (evt.get('selected')) {
-                this.selected.push(evt.id);
-            } else {
-                this.selected.pop(evt.id);
-            }
-
-            // TODO: should this be a separate view?
-            if (this.selected.length) {
-                this.$('#run-controls button').prop('disabled', false);
-            } else {
-                this.$('#run-controls button').prop('disabled', true);
-            }
-
-        },
-
-        viewResult: function (run) {
-            var view = new ResultView({ run: run });
-            $('#dialog').append(view.$el);
-        },
-
-        onBeforeClose: function () {
-            if (this.timer) {
-                clearInterval(this.timer);
-            }
         }
     });
 
