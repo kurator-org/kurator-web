@@ -1,22 +1,59 @@
-<div>
-    <button type="button" class="btn btn-default remove-btn">Remove Runs</button>
-    <!--<button type="button" class="btn btn-default share-btn">Share Results</button> TODO: For sharing of results -->
+<div id="run-controls">
+    <button type="button" class="btn btn-danger remove-btn" disabled="disabled">Remove Selected</button>
+    <button type="button" class="btn btn-success share-btn" disabled="disabled">Share Selected</button>
 </div>
 <hr />
 
-<table class="table">
-    <thead>
-    <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Workflow</th>
-        <th>Start Time</th>
-        <th>End Time</th>
-        <th>Status</th>
-        <th>Results</th>
-    </tr>
-    </thead>
-    <tbody>
-        <!-- runs status entries will go here -->
-    </tbody>
-</table>
+<div>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#user-runs" class="runs-tab" aria-controls="home" role="tab" data-toggle="tab">My Runs</a></li>
+        <li role="presentation"><a href="#shared-runs" class="runs-tab" aria-controls="profile" role="tab" data-toggle="tab">Shared Runs</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="user-runs">
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Workflow</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Status</th>
+                    <th>Results</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- runs status entries will go here -->
+                </tbody>
+            </table>
+
+        </div>
+        <div role="tabpanel" class="tab-pane" id="shared-runs">
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Workflow</th>
+                    <th>Owner</th>
+                    <th>Date Shared</th>
+                    <th>Status</th>
+                    <th>Results</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- runs status entries will go here -->
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>

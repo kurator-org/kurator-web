@@ -56,12 +56,12 @@ define([
         
         toggleSelected: function (evt) {
             this.model.set('selected', $(evt.target).prop('checked'));
+            this.trigger("runChecked", this.model);
         },
 
         viewResult: function (evt) {
             console.log('view result');
         }
-
     });
 
     return RunView;

@@ -11,10 +11,14 @@ define([
 
         events: {
             'click .remove-btn': 'removeRuns',
-            //'click .share-btn': 'shareResults' TODO: for sharing of results
+            'click .share-btn': 'shareResults',
+            'shown.bs.tab a[data-toggle="tab"]': 'toggleTab'
         },
 
         initialize: function () {
+            this.selected = [];
+            this.activeTab = '#user-runs';
+
             this.listenTo(this.collection, 'update', this.render);
             this.collection.fetch();
 
@@ -25,24 +29,27 @@ define([
         },
 
         render: function () {
+            console.log('render...');
             this.$el.html(this.template({runs: this.collection.toJSON()}));
 
-            var selected = this.collection.where({selected: true});
-
             this.collection.each(function (run) {
-                if (selected.includes(run)) {
+                if (this.selected.includes(run)) {
                     run.set('selected', true);
                 }
 
                 this.addRun(run);
             }, this);
 
+            this.$('a[href="' + this.activeTab + '"]').tab('show');
+
             return this;
         },
 
         addRun: function (run) {
             var view = new RunView({ model: run });
-            this.$('tbody').append(view.render().el);
+            this.listenTo(view, 'runChecked', this.runChecked);
+
+            this.$('#user-runs').find('tbody').append(view.render().el);
         },
 
         removeRuns: function (evt) {
@@ -68,8 +75,27 @@ define([
             });
         },
 
+        toggleTab: function (evt) {
+            this.activeTab = $(evt.target).attr('href');
+        },
+
         shareResults: function (evt) {
 
+        },
+
+        runChecked: function (evt) {
+            if (evt.get('selected')) {
+                this.selected.push(evt.id);
+            } else {
+                this.selected.pop(evt.id);
+            }
+
+            // TODO: should this be a separate view?
+            if (this.selected.length) {
+                this.$('#run-controls button').prop('disabled', false);
+            } else {
+                this.$('#run-controls button').prop('disabled', true);
+            }
         }
 
 
