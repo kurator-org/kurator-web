@@ -60,7 +60,7 @@ define([
         },
 
         viewResult: function (evt) {
-            console.log('view result');
+            this.trigger("viewResult", this.model);
         }
     });
 

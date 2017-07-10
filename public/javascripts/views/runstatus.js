@@ -2,9 +2,11 @@ define([
     'jquery',
     'underscore',
     'backbone',
+    'models/result',
+    'views/result',
     'views/run',
     'text!templates/runs.html'
-], function ($, _, Backbone, RunView, statusTpl) {
+], function ($, _, Backbone, ResultModel, ResultView, RunView, statusTpl) {
 
     var RunStatusView = Backbone.View.extend({
         template: _.template(statusTpl),
@@ -16,6 +18,8 @@ define([
         },
 
         initialize: function () {
+            this.views = [];
+
             this.selected = [];
             this.activeTab = '#user-runs';
 
@@ -29,7 +33,11 @@ define([
         },
 
         render: function () {
-            console.log('render...');
+
+            // clean up the subviews before rendering new ones
+            _.invoke(this.views, 'destroy');
+            this.views.length = 0;
+
             this.$el.html(this.template({runs: this.collection.toJSON()}));
 
             this.collection.each(function (run) {
@@ -46,8 +54,11 @@ define([
         },
 
         addRun: function (run) {
-            var view = new RunView({ model: run });
+            var view = new RunView({ model: run, parent: this });
             this.listenTo(view, 'runChecked', this.runChecked);
+            this.listenTo(view, 'viewResult', this.viewResult);
+
+            this.views.push(view);
 
             this.$('#user-runs').find('tbody').append(view.render().el);
         },
@@ -96,10 +107,19 @@ define([
             } else {
                 this.$('#run-controls button').prop('disabled', true);
             }
+
+        },
+
+        viewResult: function (run) {
+            var view = new ResultView({ run: run });
+            $('#dialog').append(view.$el);
+        },
+
+        onBeforeClose: function () {
+            if (this.timer) {
+                clearInterval(this.timer);
+            }
         }
-
-
-
     });
 
     return RunStatusView;

@@ -1,112 +1,132 @@
-<table>
-    <tr>
-        <td><b>Workflow: </b></td>
-        <td><%= workflow %></td>
-    </tr>
-    <tr>
-        <td><b>Start Time: </b></td>
-        <td>&nbsp;<%= new Date(startTime).toLocaleString() %></td>
-    </tr>
-    <tr>
-        <td><b>End Time: </b></td>
-        <td>&nbsp;<%= new Date(endTime).toLocaleString() %></td>
-    </tr>
-</table>
+<div id="result-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
 
-<hr />
-
-<a class="btn btn-primary" href="<%= jsRoutes.controllers.Workflows.resultArchive(id).url %>"><b>Download Archive</b></a>&nbsp;&nbsp;
-<a class="btn btn-default" href="<%= jsRoutes.controllers.Workflows.workflowYaml(workflowName).url %>"><b>Download Yaml Config</b></a>
-
-<hr />
-
-<div class="panel-group" id="accordion" role="tablist">
-    <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="headingResults">
-            <h4 class="panel-title">
-                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseResults">
-                    Result Files
-                </a>
-            </h4>
-        </div>
-        <div id="collapseResults" class="panel-collapse collapse in" role="tabpanel">
-            <div class="panel-body">
-
-                <ul class="list-group">
-
-                    <% _.each(artifacts.results, function(artifact) { %>
-
-                    <li class="list-group-item">
-                        <table width="100%">
-                            <tr>
-                                <td><span class="glyphicon glyphicon-file"></span></td>
-                                <td><b><%= artifact.label %></b></td>
-
-                                <td style="text-align: right">
-                                    <% if (artifact.info) { %>
-                                    </a><a target="_blank" href="<%= artifact.info %>"> <b>[View Info]</b></a> -
-                                    <% } %>
-
-                                    <a href="<%= jsRoutes.controllers.Workflows.resultFile(artifact.id).url %>"><b>[Download File]</b></a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td colspan="2"><%= artifact.description %></td>
-                            </tr>
-                        </table>
-                    </li>
-
-                    <% }); %>
-
-                </ul>
-
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"><%if (name) { %><%= name %><% } else { %><%= workflow %><% } %></h4>
             </div>
+
+            <div class="modal-body">
+
+                <table>
+                    <tr>
+                        <td><b>Workflow: </b></td>
+                        <td><%= workflow %></td>
+                    </tr>
+                    <tr>
+                        <td><b>Start Time: </b></td>
+                        <td>&nbsp;<%= new Date(startTime).toLocaleString() %></td>
+                    </tr>
+                    <tr>
+                        <td><b>End Time: </b></td>
+                        <td>&nbsp;<%= new Date(endTime).toLocaleString() %></td>
+                    </tr>
+                </table>
+
+                <hr />
+
+                <a class="btn btn-primary" href="<%= jsRoutes.controllers.Workflows.resultArchive(id).url %>"><b>Download Archive</b></a>&nbsp;&nbsp;
+                <a class="btn btn-default" href="<%= jsRoutes.controllers.Workflows.workflowYaml(workflowName).url %>"><b>Download Yaml Config</b></a>
+
+                <hr />
+
+                <div class="panel-group" id="accordion" role="tablist">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingResults">
+                            <h4 class="panel-title">
+                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseResults">
+                                    Result Files
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseResults" class="panel-collapse collapse in" role="tabpanel">
+                            <div class="panel-body">
+
+                                <ul class="list-group">
+
+                                    <% _.each(artifacts.results, function(artifact) { %>
+
+                                    <li class="list-group-item">
+                                        <table width="100%">
+                                            <tr>
+                                                <td><span class="glyphicon glyphicon-file"></span></td>
+                                                <td><b><%= artifact.label %></b></td>
+
+                                                <td style="text-align: right">
+                                                    <% if (artifact.info) { %>
+                                                    </a><a target="_blank" href="<%= artifact.info %>"> <b>[View Info]</b></a> -
+                                                    <% } %>
+
+                                                    <a href="<%= jsRoutes.controllers.Workflows.resultFile(artifact.id).url %>"><b>[Download File]</b></a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td colspan="2"><%= artifact.description %></td>
+                                            </tr>
+                                        </table>
+                                    </li>
+
+                                    <% }); %>
+
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+                    <% if (artifacts.others.length > 0) { %>
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOther">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOther">
+                                    Other Files
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOther" class="panel-collapse collapse" role="tabpanel">
+                            <div class="panel-body">
+
+                                <ul class="list-group">
+
+                                    <% _.each(artifacts.others, function(artifact) { %>
+
+                                    <li class="list-group-item">
+                                        <table width="100%">
+                                            <tr>
+                                                <td><span class="glyphicon glyphicon-file"></span></td>
+                                                <td><b><%= artifact.label %></b></td>
+
+                                                <td style="text-align: right">
+                                                    <% if (artifact.info) { %>
+                                                    </a><a target="_blank" href="<%= artifact.info %>"> <b>[View Info]</b></a> -
+                                                    <% } %>
+
+                                                    <a href="<%= jsRoutes.controllers.Workflows.resultFile(artifact.id).url %>"><b>[Download File]</b></a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td colspan="2"><%= artifact.description %></td>
+                                            </tr>
+                                        </table>
+                                    </li>
+
+                                    <% }); %>
+
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+
         </div>
     </div>
-    <% if (artifacts.others.length > 0) { %>
-    <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="headingOther">
-            <h4 class="panel-title">
-                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOther">
-                    Other Files
-                </a>
-            </h4>
-        </div>
-        <div id="collapseOther" class="panel-collapse collapse" role="tabpanel">
-            <div class="panel-body">
-
-                <ul class="list-group">
-
-                    <% _.each(artifacts.others, function(artifact) { %>
-
-                    <li class="list-group-item">
-                        <table width="100%">
-                            <tr>
-                                <td><span class="glyphicon glyphicon-file"></span></td>
-                                <td><b><%= artifact.label %></b></td>
-
-                                <td style="text-align: right">
-                                    <% if (artifact.info) { %>
-                                    </a><a target="_blank" href="<%= artifact.info %>"> <b>[View Info]</b></a> -
-                                    <% } %>
-
-                                    <a href="<%= jsRoutes.controllers.Workflows.resultFile(artifact.id).url %>"><b>[Download File]</b></a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td colspan="2"><%= artifact.description %></td>
-                            </tr>
-                        </table>
-                    </li>
-
-                    <% }); %>
-
-                </ul>
-
-            </div>
-        </div>
-    </div>
-    <% } %>
 </div>
