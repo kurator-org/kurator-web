@@ -56,6 +56,9 @@ public class User extends Model implements Subject {
     private Date lastActive;
 
     @ManyToMany
+    private List<Group> groups;
+
+    @ManyToMany
     @JsonIgnore
     public List<SecurityRole> roles;
 
