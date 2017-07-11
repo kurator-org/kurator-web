@@ -6,6 +6,7 @@ require.config({
         'underscore'            : 'lib/underscore/underscore-min',
         'backbone'              : 'lib/backbone/backbone-min',
         'bootstrap-tokenfield'  : 'lib/bootstrap-tokenfield/bootstrap-tokenfield.min',
+        'jstree'                : 'lib/jstree/jstree.min',
         'paper'                 : 'lib/paper/paper-core',
         'text'                  : 'lib/requirejs-text/text',
         'd3'                    : 'lib/d3/d3.min'

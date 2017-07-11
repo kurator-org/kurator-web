@@ -13,6 +13,8 @@
 
       <!-- Application CSS -->
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/styles.css")">
+
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/lib/jstree/style.min.css")">
   </head>
 
   <body>
@@ -26,12 +28,8 @@
     </div>
     <hr />
 
-    <div>
-      <div>
-        <div id="container"></div>
-      </div>
-    </div>
-
+    <div id="container"></div>
+    <div id="dialog"></div>
 
       <!-- Play JavaScript routes -->
     <script type="text/javascript" src="@routes.Application.jsRoutes"></script>
