@@ -5,8 +5,10 @@ define([
     'jstree',
     'views/user',
     'views/treelist',
+    'views/creategroup',
+    'views/createuser',
     'text!templates/users.html'
-], function ($, _, Backbone, jstree, UserView, TreeListView, usersTpl) {
+], function ($, _, Backbone, jstree, UserView, TreeListView, CreateGroupView, CreateUserView, usersTpl) {
     var UserManagementView = Backbone.View.extend({
         template: _.template(usersTpl),
 
@@ -48,14 +50,19 @@ define([
         
         createGroup: function (e) {
             console.log('create group');
+            var view = new CreateGroupView();
+            $('#dialog').html(view.$el);
         },
         
         createUser: function (e) {
             console.log('create user');
+            var view = new CreateUserView();
+            $('#dialog').html(view.$el);
         },
         
         addToGroup: function (e) {
             console.log('add to group');
+            // TODO: implement this on backend and use http PUT
         },
 
         draggingUser: function (user) {

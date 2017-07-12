@@ -5,9 +5,10 @@ define([
     'collections/runs',
     'collections/shared',
     'views/runs',
+    'views/sharerun',
     'views/shared',
     'text!templates/status.html'
-], function ($, _, Backbone, Runs, SharedRuns, RunsView, SharedView, statusTpl) {
+], function ($, _, Backbone, Runs, SharedRuns, RunsView, ShareView, SharedView, statusTpl) {
 
     var RunStatusView = Backbone.View.extend({
         template: _.template(statusTpl),
@@ -51,7 +52,8 @@ define([
         },
 
         shareRuns: function (evt) {
-
+            var view = new ShareView();
+            $('#dialog').html(view.$el);
         }
     });
 

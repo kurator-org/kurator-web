@@ -93,7 +93,7 @@ define([
 
         viewResult: function (run) {
             var view = new ResultView({ run: run });
-            $('#dialog').append(view.$el);
+            $('#dialog').html(view.$el);
         },
 
         onBeforeClose: function () {

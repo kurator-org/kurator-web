@@ -1,0 +1,28 @@
+<div id="share-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Share Run Results</h4>
+            </div>
+
+            <div class="modal-body">
+                Select a user or group...
+                <select>
+                    <% _.each(groups, function(group) { %>
+                        <option value="<%= group.id %>"><%= group.name %></option>
+                    <% }); %>
+                </select>
+
+                <!-- TODO: add form here and autocomplete selection for users/groups -->
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="share-submit-btn" type="button" class="btn btn-primary">Share</button>
+            </div>
+
+        </div>
+    </div>
+</div>
