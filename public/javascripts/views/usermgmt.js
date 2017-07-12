@@ -4,13 +4,16 @@ define([
     'backbone',
     'jstree',
     'views/user',
+    'views/treelist',
     'text!templates/users.html'
-], function ($, _, Backbone, jstree, UserView, usersTpl) {
+], function ($, _, Backbone, jstree, UserView, TreeListView, usersTpl) {
     var UserManagementView = Backbone.View.extend({
         template: _.template(usersTpl),
 
         events: {
-            'mouseup .user-group': 'mouseUpNode'
+            'click .create-group-btn': 'createGroup',
+            'click .create-user-btn': 'createUser',
+            'click .add-to-group-btn': 'addToGroup'
         },
 
         initialize: function() {
@@ -20,11 +23,6 @@ define([
             this.collection.fetch();
 
             // TODO: hardcoded for now to test UI
-            this.groups = [
-                { 'id': 0, 'name': 'Guest Accounts' },
-                { 'id': 1, 'name': 'Education & Outreach' },
-                { 'id': 2, 'name': 'SPNHC' },
-            ];
         },
 
         addUser: function (user) {
@@ -38,7 +36,8 @@ define([
         render: function() {
             this.$el.html(this.template({ groups: this.groups }));
 
-            this.$tree = this.$('#tree-view').jstree();
+            this.treeView = new TreeListView();
+            this.$('#side-bar').html(this.treeView.el);
 
             this.collection.each(function (user) {
                 this.addUser(user);
@@ -46,29 +45,25 @@ define([
 
             return this;
         },
+        
+        createGroup: function (e) {
+            console.log('create group');
+        },
+        
+        createUser: function (e) {
+            console.log('create user');
+        },
+        
+        addToGroup: function (e) {
+            console.log('add to group');
+        },
 
         draggingUser: function (user) {
-            this.dragUser = user;
-            console.log(this);
+            this.treeView.draggingUser(user);
         },
 
         droppedUser: function (user) {
-            if (this.targetGroup) {
-                var group = $(this.targetGroup).attr('value');
-                var user = user.get('id');
-                console.log('add user: ' + user + ' to group: ' + group);
-
-                delete this.targetGroup;
-            }
-
-            delete this.dragUser;
-        },
-
-        mouseUpNode: function (node) {
-            if (this.dragUser) {
-                this.targetGroup = node.currentTarget;
-            }
-            console.log(this);
+            this.treeView.droppedUser(user);
         }
     });
 
