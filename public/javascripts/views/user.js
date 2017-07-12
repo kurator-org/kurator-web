@@ -12,7 +12,8 @@ define([
 
         events: {
             'click .status-btn' : 'toggleActive',
-            'click .dropdown-menu li a' : 'changeRole'
+            'click .dropdown-menu li a' : 'changeRole',
+            'mousedown .drag-handle' : 'startDrag',
         },
 
         initialize: function () {
@@ -56,6 +57,43 @@ define([
             if (selectedRole != this.model.get('role')) {
                 this.model.save({ role: selectedRole }, {wait: true});
             }
+        },
+        
+        startDrag: function (e) {
+            var x = e.pageX;
+            var y = e.pageY;
+
+            var $elem = this.$('.dragging-user');
+
+            var origX = $elem.css('left');
+            var origY = $elem.css('top');
+
+            $elem.css('left', x)
+                .css('top', y)
+                .show();
+
+            var onMouseMove = function (e) {
+                $elem.css('left', e.pageX)
+                    .css('top', e.pageY);
+            };
+
+            var that = this;
+            var onMouseUp = function (e) {
+                $elem.hide();
+
+                $elem.css('left', origX)
+                    .css('top', origY);
+
+                $('html').off('mousemove', onMouseMove);
+                $('html').off('mouseup', onMouseUp);
+
+                that.trigger('dropped', that.model);
+            };
+
+            $('html').on('mousemove', onMouseMove);
+            $('html').on('mouseup', onMouseUp);
+
+            this.trigger('dragging', this.model);
         }
     });
 

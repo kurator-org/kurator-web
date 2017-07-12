@@ -2,7 +2,50 @@
   <div style="float: left; width: 25%">
     <button class="btn btn-success">Create Group</button>
     <hr />
-    <div id="side-bar">Test</div>
+    <div id="side-bar">
+      <div id="tree-view">
+        <ul>
+          <li class="jstree-open">
+            <span><i>User Management</i></span>
+            <ul>
+              <li data-jstree='{ "icon": "glyphicon glyphicon-globe", "selected": true }'>
+                <span><b>All Users</b></span>
+              </li>
+              <li data-jstree='{ "icon": "glyphicon glyphicon-ok" }'>
+                <span>Active</span>
+              </li>
+              <li data-jstree='{ "icon": "glyphicon glyphicon-remove" }'>
+                <span>Inactive</span>
+              </li>
+              <li class="jstree-open">
+                <span><i>Roles</i></span>
+                <ul>
+                  <li data-jstree='{ "icon": "glyphicon glyphicon-user" }'>
+                    <span>ADMIN</span>
+                  </li>
+                  <li data-jstree='{ "icon": "glyphicon glyphicon-user" }'>
+                    <span>USER</span>
+                  </li>
+                  <!--<li data-jstree='{ "icon": "glyphicon glyphicon-user" }'>
+                    <span>INSTRUCTOR</span>
+                  </li> TODO: support for instructor role-->
+                </ul>
+              </li>
+              <li class="jstree-open">
+                <span><i>Groups</i></span>
+                <ul>
+                  <% _.each(groups, function(group) { %>
+                  <li value="<%= group.id %>" class="user-group" data-jstree='{ "icon": "glyphicon glyphicon-folder-close" }'>
+                    <span><%= group.name %></span>
+                  </li>
+                  <% }); %>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 
   <div style="float: left; width: 75%">
@@ -12,6 +55,8 @@
     <hr />
     <table class="table" id="user-table">
       <tr>
+        <th></th>
+        <th></th>
         <th>Username</th>
         <th>Fullname</th>
         <th>Email</th>

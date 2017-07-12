@@ -275,3 +275,24 @@ html, body {
     font-size: 16px;
     margin-top: -12px;
 }
+
+.drag-handle {
+    cursor: pointer;
+    vertical-align: middle;
+    font-size: 15px;
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+}
+
+.dragging-user {
+    position: absolute;
+    border-radius: 5%;
+    background-color: #2b2b2b;
+    color: white;
+    padding: 5px;
+    text-align: center;
+    opacity: 0.7;
+    display: none;
+}
