@@ -23,9 +23,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
+import dao.UserAccessDao;
 import dao.UserDao;
 import models.db.user.SecurityRole;
 import models.db.user.User;
+import models.db.user.UserGroup;
 import models.db.user.UserUpload;
 import models.forms.ChangePass;
 import models.forms.Login;
@@ -54,6 +56,7 @@ import views.html.*;
 
 public class Users extends Controller {
     private final UserDao userDao = new UserDao();
+    private final UserAccessDao userAccessDao = new UserAccessDao();
 
     private final FormFactory formFactory;
     private final MailerClient mailerClient;
@@ -185,6 +188,20 @@ public class Users extends Controller {
         return ok(
                 Json.toJson(users)
         );
+    }
+
+    @SubjectPresent
+    public Result listGroups() {
+        List<UserGroup> groups = userAccessDao.findAllGroups();
+
+        // TODO: hardcoded for now, just placeholder json
+        ObjectNode group1 = Json.newObject().put("id", 0).put("name", "Guest Accounts");
+        ObjectNode group2 = Json.newObject().put("id", 1).put("name", "Education & Outreach");
+        ObjectNode group3 = Json.newObject().put("id", 2).put("name", "SPNHC");
+
+        ArrayNode arrayNode = Json.newArray().add(group1).add(group2).add(group3);
+
+        return ok(arrayNode);
     }
 
 

@@ -39,7 +39,7 @@ GET     /download                               controllers.Users.downloadFile(i
 GET     /admin/users                            controllers.Users.manage()
 PUT     /admin/users/:id                        controllers.Users.updateUser(id: Long)
 
-POST    /admin/groups                           controllers.Users.createWorkshop()
+GET     /admin/groups                           controllers.Users.listGroups()
 
 # Workflow management routes, package deployment and workflow metadata
 # ~~~~
