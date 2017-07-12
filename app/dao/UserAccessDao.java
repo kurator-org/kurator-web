@@ -1,6 +1,6 @@
 package dao;
 
-import models.db.user.Group;
+import models.db.user.UserGroup;
 import com.avaje.ebean.annotation.Transactional;
 import models.db.user.SharedAccess;
 import models.db.user.User;
@@ -11,25 +11,25 @@ import java.util.List;
 public class UserAccessDao {
 
     @Transactional
-    public SharedAccess createSharedAccess(WorkflowRun resource, List<User> users, List<Group> groups) {
+    public SharedAccess createSharedAccess(WorkflowRun resource, List<User> users, List<UserGroup> groups) {
         // TODO: implement me
         return null;
     }
 
     @Transactional
-    public SharedAccess createGroup(User owner, Group group) {
+    public SharedAccess createGroup(User owner, UserGroup group) {
         // TODO: implement me
         return null;
     }
 
     @Transactional
-    public User addUserToGroup(User user, Group group) {
+    public User addUserToGroup(User user, UserGroup group) {
         // TODO: implement me
         return null;
     }
 
     @Transactional
-    public User removeUserFromGroup(User user, Group group) {
+    public User removeUserFromGroup(User user, UserGroup group) {
         // TODO: implement me
         return null;
     }
@@ -41,13 +41,13 @@ public class UserAccessDao {
     }
 
     @Transactional
-    public List<Group> findAllGroups() {
+    public List<UserGroup> findAllGroups() {
         // TODO: implement me
         return null;
     }
 
     @Transactional
-    public List<Group> findGroupsByOwner(User owner) {
+    public List<UserGroup> findGroupsByOwner(User owner) {
         // TODO: implement me
         return null;
     }

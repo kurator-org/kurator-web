@@ -1,7 +1,6 @@
 package models.db.user;
 
 import com.avaje.ebean.Model;
-import models.db.workflow.WorkflowResult;
 import models.db.workflow.WorkflowRun;
 
 import javax.persistence.Id;
@@ -15,7 +14,7 @@ public class SharedAccess extends Model {
     private Long id;
 
     @ManyToMany
-    private List<Group> groups;
+    private List<UserGroup> groups;
 
     @ManyToMany
     private List<User> users;
@@ -26,11 +25,11 @@ public class SharedAccess extends Model {
         return id;
     }
 
-    public List<Group> getGroups() {
+    public List<UserGroup> getGroups() {
         return groups;
     }
 
-    public void setGroups(List<Group> groups) {
+    public void setGroups(List<UserGroup> groups) {
         this.groups = groups;
     }
 

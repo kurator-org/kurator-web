@@ -7,8 +7,8 @@ import javax.persistence.Id;
 import java.util.Date;
 
 @Entity
-public class Group extends Model {
-    public static Finder<Long, Group> find = new Finder<Long,Group>(Group.class);
+public class UserGroup extends Model {
+    public static Finder<Long, UserGroup> find = new Finder<Long,UserGroup>(UserGroup.class);
 
     @Id
     private Long id;
