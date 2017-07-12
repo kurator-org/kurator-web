@@ -18,15 +18,63 @@
     @navbar()
 
     <div id="container">
-      <h3>About Kurator</h3>
+      <div class="page-header">
+        <h1>About Kurator</h1>
+      </div>
 
-      <p>Kurator, is an an open source toolkit for automated and semi-automated curation services to aid biodiversity research and beyond. KuratorWeb will consist of a user friendly web interface to configure and launch curation workflows while maintaining provenance, and a workflow platform for development of new curation services and workflow variations.</p>
+      <div class="well well-lg">
+        <p style="font-size: 21px; font-weight: 200;">Kurator provides scientific workflow tools for data quality improvement of natural history collections and other biodiversity data. Kurator Web is a set of a user friendly web interface to configure and launch curation workflows while maintaining provenance. Kurator-Akka and the Kurator YesWorkflow data curation software and code are available on <a href="https://github.com/kurator-org">GitHub</a>. For more information about Kurator, please visit our <a href="http://wiki.datakurator.org/wiki/">wiki</a>.</p>
+      </div>
 
-      <p>Kurator will facilitate digitization efforts through custom processing of raw data obtained from hardcopy specimen labels against existing services, including taxonomic name resolution, georeferencing, and duplicate specimen detection, as well as newly created customizable actors for appropriate controlled vocabularies to clean the data. Curation pipelines can be integrated with other workflows for analysis of ecological, evolutionary, phenological, genomic and related data, can be shared or repurposed easily, and can be made accessible for publication.</p>
+      <div class="page-header">
+        <h1>Current Kurator Web Tools</h1>
+      </div>
 
-      <p>The Kurator project is a collaborative project led by The University of Illinois Urbana Champaign and Harvard University and other partners and funded by the National Science Foundation. Learn more about the project here (link to: <a href="http://wiki.datakurator.org/wiki" target="_blank">http://wiki.datakurator.org/wiki</a></p>
+      <div class="row">
+        <div class="col-md-4"><h4><b>File Aggregator:</b></h4><p class="description">Aggregates two files into one file.</p></div>
+        <div class="col-md-4"><h4><b>Controlled Field Assessor:</b></h4><p class="description">Creates a report of counts of distinct geographic values and provides recommended values.</p></div>
+        <div class="col-md-4"><h4><b>Darwinizer:</b></h4><p class="description">Creates a new file with as many field names standardized to Darwin Core as possible.</p></div>
+      </div>
+      <div class="row">
+        <div class="col-md-4"><h4><b>Date Validator:</b></h4><p class="description">Validates event date fields and fills in missing dates from atomic event date fields.</p></div>
+        <div class="col-md-4"><h4><b>Field Value Counter:</b></h4><p class="description">Creates a report of counts of distinct values and recommended values for values that are not standard.</p></div>
+        <div class="col-md-4"><h4><b>Geography Cleaner:</b></h4><p class="description">Creates a new occurrences file with standardized geography and original geography saved in new fields.</p></div>
+      </div>
+      <div class="row">
+        <div class="col-md-4"><h4><b>Georeference Validator:</b></h4><p class="description">Performs validation of the georeference fields and fills in or transposes missing or inconsistent coordinates.</p></div>
+        <div class="col-md-4"><h4><b>Property Parser:</b></h4><p class="description">Parses "dynamicProperties" field in a DarwinCore-Archive spreadsheet and creates separate fields for each value.</p></div>
+        <div class="col-md-4"><h4><b>Geography Assessor:</b></h4><p class="description">Creates file containing the recommendations to standardize distinct combinations of higher geography.</p></div>
+      </div>
+      <div class="row">
+        <div class="col-md-4"><h4><b>Vocabulary Maker:</b></h4><p class="description">Creates a vocabulary file with fields for the original values, the standard values, and vetted values.</p></div>
+      </div>
 
-      <p>Kurator: A Provenance-enabled Workflow Platform and Toolkit to Curate Biodiversity Data Collaborative <a href="https://nsf.gov/awardsearch/showAward?AWD_ID=1356438" target="_blank">NSF Awards 1356438</a> and <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1356751" target="_blank">1356751</a></p>
+      <div class="page-header">
+        <h1>Authority Files Kurator Checks Data Against</h1>
+      </div>
+
+      <div>
+        <div class="row">
+          <div class="col-md-6">
+            <ul class="about-links">
+              <li><a href="http://www.catalogueoflife.org/" target="_blank">Catalogue of Life (CoL)</a></li>
+              <li><a href="http://www.museum.tulane.edu/geolocate/" target="_blank">GEOLocate</a></li>
+              <li><a href="http://www.gbif.org/" target="_blank">Global Biodiversity Information Facility (GBIF)</a></li>
+              <li><a href="http://globalnames.org/" target="_blank">Global Names Architecture (GNA)</a></li>
+              <li><a href="http://floranorthamerica.org/" target="_blank">Flora of North America (FNA)</a></li>
+              <li><a href="http://www.indexfungorum.org/" target="_blank">Index Fungorum (IF)</a></li>
+              <li><a href="http://www.ipni.org/" target="_blank">International Plants Names Index (IPNI)</a></li>
+              <li><a href="http://www.marinespecies.org/" target="_blank">World Register of Marine Species (WoRMS)</a></li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <img src="@routes.Assets.at("images/about.jpg")"/>
+          </div>
+        </div>
+      </div>
+
+<hr />
+      <p>The Kurator project is a collaborative project led by The University of Illinois Urbana Champaign and Harvard University and other partners and funded by the National Science Foundation. Learn more about the project here (link to: <a href="http://wiki.datakurator.org/wiki" target="_blank">http://wiki.datakurator.org/wiki</a>. Kurator: A Provenance-enabled Workflow Platform and Toolkit to Curate Biodiversity Data Collaborative <a href="https://nsf.gov/awardsearch/showAward?AWD_ID=1356438" target="_blank">NSF Awards 1356438</a> and <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1356751" target="_blank">1356751</a></p>
     </div>
 
       <!-- jQuery -->

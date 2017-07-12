@@ -10,6 +10,10 @@ html, body {
     width: 100%;
 }
 
+.container {
+    height: 100%;
+}
+
 .workflow-form-field {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -231,4 +235,43 @@ html, body {
 .loading-pulse:after {
     left: 12px;
     animation-delay: 500ms;
+}
+
+.about-links {
+    margin-top: 30px;
+}
+
+.about-links li {
+    display: block;
+    font-size: 18px;
+    margin-top: 8px;
+}
+
+.about-links li:before {
+    content: "\e103";
+    font-family: 'Glyphicons Halflings';
+    font-size: 20px;
+    float: left;
+    margin-top: 4px;
+    margin-left: -28px;
+    color: #337ab7;
+}
+
+.about-tools li {
+    display: block;
+    margin-bottom: 15px;
+}
+
+.about-tools li:before {
+    content: "\e080";
+    font-family: 'Glyphicons Halflings';
+    font-size: 20px;
+    float: left;
+    margin-top: -3px;
+    margin-left: -30px;
+}
+
+.about-tools .description {
+    font-size: 16px;
+    margin-top: -12px;
 }
