@@ -75,6 +75,8 @@ public class Application extends Controller {
 
                         routes.javascript.Users.manage(),
                         routes.javascript.Users.listGroups(),
+                        routes.javascript.Users.createGroup(),
+                        routes.javascript.Users.addUserToGroup(),
                         routes.javascript.Users.registerSubmit(),
                         routes.javascript.Users.listUploads(),
                         routes.javascript.Users.downloadFile(),

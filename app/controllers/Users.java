@@ -49,6 +49,7 @@ import util.UserUtil;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -183,7 +184,15 @@ public class Users extends Controller {
 
     @Restrict({@Group("ADMIN")})
     public Result manage() {
-        List<User> users = userDao.findAllUsers();
+        Map req = request().body().asFormUrlEncoded();
+
+        List<User> users = new ArrayList<>();
+
+        if (req != null && req.containsKey("group")) {
+            users = userAccessDao.findUsersByGroup((String) req.get("group"));
+        } else {
+            users = userDao.findAllUsers();
+        }
 
         return ok(
                 Json.toJson(users)
@@ -193,17 +202,33 @@ public class Users extends Controller {
     @SubjectPresent
     public Result listGroups() {
         List<UserGroup> groups = userAccessDao.findAllGroups();
-
-        // TODO: hardcoded for now, just placeholder json
-        ObjectNode group1 = Json.newObject().put("id", 0).put("name", "Guest Accounts");
-        ObjectNode group2 = Json.newObject().put("id", 1).put("name", "Education & Outreach");
-        ObjectNode group3 = Json.newObject().put("id", 2).put("name", "SPNHC");
-
-        ArrayNode arrayNode = Json.newArray().add(group1).add(group2).add(group3);
-
-        return ok(arrayNode);
+        return ok(Json.toJson(groups));
     }
 
+    @Restrict({@Group("ADMIN")})
+    public Result createGroup() {
+        final JsonNode json = request().body().asJson();
+
+        String name = json.get("name").textValue();
+
+        User user = userDao.findUserByUsername(session().get("username"));
+        UserGroup group = userAccessDao.createGroup(user, name);
+
+
+        return ok(
+                Json.toJson(group)
+        );
+    }
+
+    @Restrict({@Group("ADMIN")})
+    public Result addUserToGroup() {
+        final JsonNode json = request().body().asJson();
+        User user = userAccessDao.addUserToGroup(json.get("user").asLong(), json.get("group").asLong());
+
+        return ok(
+                Json.toJson(user)
+        );
+    }
 
     /**
      * Process the data submitted on the user management form (user administration page). Activate or
