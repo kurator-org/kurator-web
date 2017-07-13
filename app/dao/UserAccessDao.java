@@ -6,6 +6,7 @@ import models.db.user.SharedAccess;
 import models.db.user.User;
 import models.db.workflow.WorkflowRun;
 
+import java.util.Date;
 import java.util.List;
 
 public class UserAccessDao {
@@ -17,15 +18,35 @@ public class UserAccessDao {
     }
 
     @Transactional
-    public SharedAccess createGroup(User owner, UserGroup group) {
-        // TODO: implement me
-        return null;
+    public UserGroup createGroup(User owner, String name) {
+        UserGroup group = new UserGroup();
+        group.setCreatedOn(new Date());
+        group.setName(name);
+        group.setOwner(owner);
+
+        group.save();
+
+        return group;
     }
 
     @Transactional
-    public User addUserToGroup(User user, UserGroup group) {
-        // TODO: implement me
-        return null;
+    public User addUserToGroup(Long userId, Long groupId) {
+        UserGroup group = UserGroup.find.byId(groupId);
+        User user = User.find.byId(userId);
+
+        boolean found = false;
+        for (UserGroup g : user.getGroups()) {
+            if (g.getName().equals(group.getName())) {
+                found = true;
+            }
+        }
+
+        if (!found) {
+            user.getGroups().add(group);
+            user.update();
+        }
+
+        return user;
     }
 
     @Transactional
@@ -35,15 +56,13 @@ public class UserAccessDao {
     }
 
     @Transactional
-    public List<User> findUsersByGroup(String role) {
-        // TODO: implement me
-        return null;
+    public List<User> findUsersByGroup(String group) {
+        return User.find.where().eq("groups.name", group).findList();
     }
 
     @Transactional
     public List<UserGroup> findAllGroups() {
-        // TODO: implement me
-        return null;
+        return UserGroup.find.all();
     }
 
     @Transactional

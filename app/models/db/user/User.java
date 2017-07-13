@@ -143,6 +143,14 @@ public class User extends Model implements Subject {
         this.active = active;
     }
 
+    public List<UserGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<UserGroup> groups) {
+        this.groups = groups;
+    }
+
     public String getRole() {
         return roles.get(0).getName();
     }
