@@ -7,8 +7,9 @@ define([
     'views/treelist',
     'views/creategroup',
     'views/createuser',
+    'app',
     'text!templates/users.html'
-], function ($, _, Backbone, jstree, UserView, TreeListView, CreateGroupView, CreateUserView, usersTpl) {
+], function ($, _, Backbone, jstree, UserView, TreeListView, CreateGroupView, CreateUserView, app, usersTpl) {
     var UserManagementView = Backbone.View.extend({
         template: _.template(usersTpl),
 
@@ -19,12 +20,8 @@ define([
         },
 
         initialize: function() {
-            //this.listenTo(this.collection, 'add', this.addUser);
-
             this.listenTo(this.collection, 'update', this.render);
             this.collection.fetch();
-
-            // TODO: hardcoded for now to test UI
         },
 
         addUser: function (user) {
@@ -36,9 +33,11 @@ define([
         },
 
         render: function() {
-            this.$el.html(this.template({ groups: this.groups }));
+            this.$el.html(this.template({ }));
 
-            this.treeView = new TreeListView();
+            this.treeView = new TreeListView({ collection: app.currentGroups });
+            this.listenTo(this.treeView, 'usermoved', this.addToGroup);
+
             this.$('#side-bar').html(this.treeView.el);
 
             this.collection.each(function (user) {
@@ -61,8 +60,18 @@ define([
         },
         
         addToGroup: function (e) {
-            console.log('add to group');
-            // TODO: implement this on backend and use http PUT
+            $.ajax({
+                type: "POST",
+                url: jsRoutes.controllers.Users.addUserToGroup().url,
+                // The key needs to match your method's input parameter (case-sensitive).
+                data: JSON.stringify({ user: e.user, group: e.group }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data){console.log(data);},
+                failure: function(errMsg) {
+                    console.log(errMsg);
+                }
+            });
         },
 
         draggingUser: function (user) {

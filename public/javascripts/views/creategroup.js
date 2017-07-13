@@ -2,23 +2,21 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'collections/groups',
+    'app',
     'text!templates/creategroup.html'
-], function ($, _, Backbone, GroupCollection, createGroupTpl) {
+], function ($, _, Backbone, app, createGroupTpl) {
 
     var CreateGroupView = Backbone.View.extend({
         template: _.template(createGroupTpl),
 
         events: {
             'hidden.bs.modal .modal': 'close',
-            'click #group-submit-btn': 'createGroup'
+            'click #group-submit-btn': 'createGroupSubmit',
+            'submit #create-group-form': 'createGroup'
         },
 
         initialize: function () {
-            this.collection = new GroupCollection();
-
-            this.listenTo(this.collection, 'update', this.render);
-            this.collection.fetch();
+            this.render();
         },
 
         render: function () {
@@ -28,9 +26,15 @@ define([
             return this;
         },
 
+        createGroupSubmit: function (e) {
+            this.$('#create-group-form').submit();
+        },
+
         createGroup: function (e) {
-            console.log('create group...');
-            // TODO: form submit to create group
+            e.preventDefault();
+
+            var name = this.$('input[name=group-name]').val();
+            app.currentGroups.create({ name: name});
         },
 
         close: function() {

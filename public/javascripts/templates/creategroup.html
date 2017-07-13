@@ -8,12 +8,18 @@
             </div>
 
             <div class="modal-body">
-                Create group...
+                <form id="create-group-form">
+                    <p class="help-block">Enter a name for the new group below</p>
+                    <div class="form-group">
+                        <label for="group-name">Group name</label>
+                        <input type="text" class="form-control" id="group-name" name="group-name">
+                    </div>
+                </form>
             </div>
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button id="group-submit-btn" type="button" class="btn btn-primary">Create Group</button>
+                <button id="group-submit-btn" type="button" data-dismiss="modal" class="btn btn-primary">Create Group</button>
             </div>
 
         </div>

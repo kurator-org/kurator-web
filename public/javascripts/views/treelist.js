@@ -2,9 +2,8 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'collections/groups',
     'text!templates/treelist.html'
-], function ($, _, Backbone, GroupCollection, treeListTpl) {
+], function ($, _, Backbone, treeListTpl) {
 
     var TreeListView = Backbone.View.extend({
         template: _.template(treeListTpl),
@@ -13,9 +12,7 @@ define([
             'mouseup .user-group': 'mouseUpNode'
         },
 
-        initialize: function (options) {
-            this.collection = new GroupCollection();
-
+        initialize: function () {
             this.listenTo(this.collection, 'update', this.render);
             this.collection.fetch();
         },
@@ -23,7 +20,10 @@ define([
         render: function () {
             this.$el.html(this.template({ groups: this.collection.toJSON() }));
 
-            this.$tree = this.$('#tree-view').jstree();
+            var that = this;
+            this.$tree = this.$('#tree-view').jstree().on('changed.jstree', function (e, data) {
+                console.log(data.selected[0]);
+            });
 
             return this;
         },
@@ -35,21 +35,42 @@ define([
             console.log(this);
         },
 
-        draggingUser: function (user) {
-            this.dragUser = user;
+        selectNode: function (node) {
+            this.collection.fetch();
+        },
+
+        draggingUser: function (model) {
+            this.dragUser = model;
+
+            this.$('#tree-view li').each(function(elem) {
+                if (!$(this).hasClass('user-group')) {
+                    $("#tree-view").jstree().disable_node(this.id);
+                }
+            });
+
             console.log(this);
         },
 
-        droppedUser: function (user) {
+        droppedUser: function (model) {
+            // if mouseover a group instead of empty space
             if (this.targetGroup) {
                 var group = $(this.targetGroup).attr('value');
-                var user = user.get('id');
+                var user = model.get('id');
+
                 console.log('add user: ' + user + ' to group: ' + group);
+                this.trigger('usermoved', { user: user, group: group });
 
                 delete this.targetGroup;
             }
 
+            // mouseover empty space, cancel the move
             delete this.dragUser;
+
+            this.$('#tree-view li').each(function() {
+                if (!$(this).hasClass('user-group')) {
+                    $("#tree-view").jstree().enable_node(this.id);
+                }
+            });
         }
     });
 

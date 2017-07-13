@@ -28,6 +28,7 @@ require([
     'router',
     'models/session',
     'ffdq',
+    'collections/groups',
     'collections/runs',
     'views/runstatus',
     'views/usermgmt',
@@ -49,7 +50,7 @@ require([
     'text!templates/dataset.html',
     'bootstrap-tokenfield',
     'jquery-ui'
-], function (app, WebRouter, SessionModel, FFDQPostProcessor, Runs, RunStatusView, UserManagementView, Users, Uploads, UploadsView, FileSelectView, workflowTpl, artifactsTpl, resultTpl,
+], function (app, WebRouter, SessionModel, FFDQPostProcessor, GroupCollection, Runs, RunStatusView, UserManagementView, Users, Uploads, UploadsView, FileSelectView, workflowTpl, artifactsTpl, resultTpl,
              runWorkflowTpl, loginTpl, statusTpl, registerTpl, deployTpl, reportTpl, datasetTpl, TokenField, JQueryUI) {
 
     app.router = new WebRouter();
@@ -64,6 +65,10 @@ require([
     });
 
     app.assetsUrl = jsRoutes.controllers.Assets.at('').url;
+
+    // Set app globals
+    app.currentGroups = new GroupCollection();
+    app.currentUsers = new Users();
 
     var Workflows = Backbone.Collection.extend({
         url : jsRoutes.controllers.Workflows.list().url,
