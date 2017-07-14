@@ -183,6 +183,21 @@ public class Users extends Controller {
     }
 
     @Restrict({@Group("ADMIN")})
+    public Result createUser() {
+        final JsonNode json = request().body().asJson();
+        System.out.println();
+
+
+        Long groupId = json.get("groups").get(0).get("id").asLong();
+        String email = json.get("email").asText();
+
+        UserGroup group = userAccessDao.findGroupById(groupId);
+        User user = userDao.createUser(email, group);
+
+        return ok(Json.toJson(user));
+    }
+
+    @Restrict({@Group("ADMIN")})
     public Result manage() {
         Map req = request().body().asFormUrlEncoded();
 

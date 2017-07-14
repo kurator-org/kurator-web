@@ -1,5 +1,6 @@
 package dao;
 
+import be.objectify.deadbolt.java.actions.Group;
 import models.db.user.UserGroup;
 import com.avaje.ebean.annotation.Transactional;
 import models.db.user.SharedAccess;
@@ -77,4 +78,7 @@ public class UserAccessDao {
         return null;
     }
 
+    public UserGroup findGroupById(Long groupId) {
+        return UserGroup.find.byId(groupId);
+    }
 }

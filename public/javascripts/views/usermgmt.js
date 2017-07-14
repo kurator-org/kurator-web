@@ -22,6 +22,8 @@ define([
         initialize: function() {
             this.listenTo(this.collection, 'update', this.render);
             this.collection.fetch();
+
+            console.log("test");
         },
 
         addUser: function (user) {
@@ -35,6 +37,7 @@ define([
         render: function() {
             this.$el.html(this.template({ }));
 
+            console.log(app.currentGroups);
             this.treeView = new TreeListView({ collection: app.currentGroups });
             this.listenTo(this.treeView, 'usermoved', this.addToGroup);
 
@@ -54,7 +57,6 @@ define([
         },
         
         createUser: function (e) {
-            console.log('create user');
             var view = new CreateUserView();
             $('#dialog').html(view.$el);
         },

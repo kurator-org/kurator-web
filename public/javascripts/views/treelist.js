@@ -13,7 +13,7 @@ define([
         },
 
         initialize: function () {
-            this.listenTo(this.collection, 'update', this.render);
+            this.listenTo(this.collection, 'sync', this.render);
             this.collection.fetch();
         },
 
@@ -71,6 +71,10 @@ define([
                     $("#tree-view").jstree().enable_node(this.id);
                 }
             });
+        },
+
+        eventsHandler: function (e) {
+            console.log(e);
         }
     });
 

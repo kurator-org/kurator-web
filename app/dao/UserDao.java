@@ -20,6 +20,7 @@ import com.avaje.ebean.annotation.Transactional;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.db.user.SecurityRole;
 import models.db.user.User;
+import models.db.user.UserGroup;
 import models.db.user.UserUpload;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -44,6 +45,20 @@ public class UserDao {
         user.setRoles(Collections.singletonList(SecurityRole.findByName(DEFAULT_ROLE)));
         user.setAffiliation(affiliation);
         user.setCreatedOn(new Date());
+
+        user.save();
+        return user;
+    }
+
+    @Transactional
+    public User createUser(String email, UserGroup group) {
+        User user = new User();
+
+        user.setEmail(email);
+        user.getGroups().add(group);
+        user.setRoles(Collections.singletonList(SecurityRole.findByName(DEFAULT_ROLE)));
+        user.setCreatedOn(new Date());
+        user.setActive(true);
 
         user.save();
         return user;
