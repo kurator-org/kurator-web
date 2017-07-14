@@ -30,7 +30,11 @@ libraryDependencies ++= Seq(
   "org.kurator" % "kurator-validation" % "1.0.1-SNAPSHOT" exclude("com.typesafe.akka", "akka-actor_2.10") exclude("com.typesafe.akka", "akka-slf4j_2.10"),
   "mysql" % "mysql-connector-java" % "5.1.18",
   "org.webjars" % "requirejs" % "2.1.11-1",
-  "be.objectify" %% "deadbolt-java" % "2.5.4"
+  "be.objectify" %% "deadbolt-java" % "2.5.4",
+
+  "com.fasterxml.jackson.core" % "jackson-core" % "2.7.6",
+  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.7.6",
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.7.3"
 )
 
 libraryDependencies := libraryDependencies.value.map(_.excludeAll(
@@ -42,6 +46,8 @@ libraryDependencies := libraryDependencies.value.map(_.excludeAll(
 )
 
 libraryDependencies += "org.springframework" % "spring-context" % "3.1.2.RELEASE"
+
+libraryDependencies += "com.github.stefanbirkner" % "system-rules" % "1.16.1" % "test"
 
 playEbeanModels in Compile := Seq("models.*")
 

@@ -7,5 +7,6 @@ target
 packages
 jython
 workspace_*
+test_runs
 conf/application.conf
 project/project/
