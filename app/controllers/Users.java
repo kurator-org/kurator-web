@@ -202,6 +202,11 @@ public class Users extends Controller {
     @SubjectPresent
     public Result listGroups() {
         List<UserGroup> groups = userAccessDao.findAllGroups();
+        if (groups.isEmpty()) {
+
+            //response().setHeader("Content-Type", "application/json");
+            return ok(Json.newArray()); // empty array
+        }
         return ok(Json.toJson(groups));
     }
 
