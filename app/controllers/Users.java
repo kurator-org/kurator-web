@@ -108,8 +108,8 @@ public class Users extends Controller {
     }
 
     public Result checkAuth() {
-        if (session().get("username") != null) {
-            User user = userDao.findUserByUsername(session().get("username"));
+        if (session().get("uid") != null) {
+            User user = User.find.byId(Long.parseLong(session().get("uid")));
 
             ObjectNode json = Json.newObject();
             json.put("uid", user.getId());
@@ -187,14 +187,20 @@ public class Users extends Controller {
         final JsonNode json = request().body().asJson();
         System.out.println();
 
-
-        Long groupId = json.get("groups").get(0).get("id").asLong();
         String email = json.get("email").asText();
 
-        UserGroup group = userAccessDao.findGroupById(groupId);
-        User user = userDao.createUser(email, group);
+        if (json.get("groups").has(0)) {
 
-        return ok(Json.toJson(user));
+            Long groupId = json.get("groups").get(0).get("id").asLong();
+            UserGroup group = userAccessDao.findGroupById(groupId);
+            User user = userDao.createUser(email, group);
+
+            return ok(Json.toJson(user));
+        } else {
+            User user = userDao.createUser(email, null);
+            return ok(Json.toJson(user));
+        }
+
     }
 
     @Restrict({@Group("ADMIN")})
@@ -231,7 +237,7 @@ public class Users extends Controller {
 
         String name = json.get("name").textValue();
 
-        User user = userDao.findUserByUsername(session().get("username"));
+        User user = User.find.byId(Long.parseLong(session().get("uid")));
         UserGroup group = userAccessDao.createGroup(user, name);
 
 
@@ -256,14 +262,13 @@ public class Users extends Controller {
      */
     @Restrict({@Group("ADMIN")})
     public Result updateUser(Long id) {
-        ObjectNode response = Json.newObject();
-
-        JsonNode request = request().body().asJson();
-        userDao.updateUserAccess(request.get("username").asText(), request.get("active").asBoolean(), request.get("role").asText());
+        final JsonNode json = request().body().asJson();
+        User user = Json.fromJson(json, User.class);
+        user.update();
 
         // TODO: Add success message to json response or handle errors
 
-        return ok(response);
+        return ok(Json.toJson(user));
     }
 
     @Restrict({@Group("ADMIN")})
@@ -333,7 +338,7 @@ public class Users extends Controller {
      * @return json containing file upload ids and filenames
      */
     public Result listUploads() {
-        List<UserUpload> uploadList = userDao.findUserUploads(session().get("username"));
+        List<UserUpload> uploadList = userDao.findUserUploads(Long.parseLong(session().get("uid")));
 
         ObjectNode response = Json.newObject();
         ArrayNode uploads = response.putArray("uploads");

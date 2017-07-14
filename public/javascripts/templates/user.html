@@ -1,4 +1,4 @@
-<td><span class="glyphicon glyphicon-log-out icon-flipped drag-handle"> </span><div class="dragging-user"><%= username %></div></td>
+<td><span class="glyphicon glyphicon-log-out icon-flipped drag-handle"> </span><div class="dragging-user"><%= username %> <% if(!username) { %> <%= email %> <% } %></div></td>
 <td><input type="checkbox" /></td>
 <td><%= username %> <% if(!username) { %><i style="color: #777">N/A</i><% } %></td>
 <td><%= firstname %> <%= lastname %></td>

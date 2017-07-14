@@ -22,7 +22,19 @@ define([
 
             var that = this;
             this.$tree = this.$('#tree-view').jstree().on('changed.jstree', function (e, data) {
-                console.log(data.selected[0]);
+                var node = data.instance.get_node(data.selected[0]);
+                var elem = that.$('#'+node.id);
+
+                if (elem.hasClass('user-group')) {
+                    that.trigger('nodeselected', { groupId: elem.val() });
+                } else if (elem.hasClass('user-role')) {
+                    that.trigger('nodeselected', { role: (elem.val() == 0 ? 'ADMIN' : 'USER') });
+                } else if (elem.hasClass('all-users')) {
+                    that.trigger('nodeselected', { });
+                } else if (elem.hasClass('user-status')) {
+                    that.trigger('nodeselected', { active: elem.val() });
+                }
+
             });
 
             return this;
@@ -36,7 +48,7 @@ define([
         },
 
         selectNode: function (node) {
-            this.collection.fetch();
+
         },
 
         draggingUser: function (model) {
@@ -71,10 +83,6 @@ define([
                     $("#tree-view").jstree().enable_node(this.id);
                 }
             });
-        },
-
-        eventsHandler: function (e) {
-            console.log(e);
         }
     });
 

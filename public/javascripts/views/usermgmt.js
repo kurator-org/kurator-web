@@ -5,11 +5,12 @@ define([
     'jstree',
     'views/user',
     'views/treelist',
+    'views/users',
     'views/creategroup',
     'views/createuser',
     'app',
-    'text!templates/users.html'
-], function ($, _, Backbone, jstree, UserView, TreeListView, CreateGroupView, CreateUserView, app, usersTpl) {
+    'text!templates/usermgmt.html'
+], function ($, _, Backbone, jstree, UserView, TreeListView, UserTableView, CreateGroupView, CreateUserView, app, usersTpl) {
     var UserManagementView = Backbone.View.extend({
         template: _.template(usersTpl),
 
@@ -20,34 +21,34 @@ define([
         },
 
         initialize: function() {
-            this.listenTo(this.collection, 'update', this.render);
-            this.collection.fetch();
 
-            console.log("test");
-        },
-
-        addUser: function (user) {
-            var view = new UserView({ model: user });
-            this.listenTo(view, 'dragging', this.draggingUser);
-            this.listenTo(view, 'dropped', this.droppedUser);
-
-            this.$('#user-table').append(view.render().el);
         },
 
         render: function() {
             this.$el.html(this.template({ }));
 
-            console.log(app.currentGroups);
+            // Create the tree view
             this.treeView = new TreeListView({ collection: app.currentGroups });
             this.listenTo(this.treeView, 'usermoved', this.addToGroup);
+            this.listenTo(this.treeView, 'nodeselected', this.selectFilter);
 
             this.$('#side-bar').html(this.treeView.el);
 
-            this.collection.each(function (user) {
-                this.addUser(user);
-            }, this);
+            // Create the table view
+            this.tableView = new UserTableView({ collection: app.currentUsers });
+            this.listenTo(this.tableView, 'dragging', this.draggingUser);
+            this.listenTo(this.tableView, 'dropped', this.droppedUser);
+
+            this.$('#content').html(this.tableView.el);
 
             return this;
+        },
+
+        selectFilter: function (filter) {
+            console.log('filter: ' + JSON.stringify(filter));
+
+            this.tableView.filter = filter;
+            this.tableView.render();
         },
         
         createGroup: function (e) {
@@ -62,18 +63,20 @@ define([
         },
         
         addToGroup: function (e) {
-            $.ajax({
-                type: "POST",
-                url: jsRoutes.controllers.Users.addUserToGroup().url,
-                // The key needs to match your method's input parameter (case-sensitive).
-                data: JSON.stringify({ user: e.user, group: e.group }),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function(data){console.log(data);},
-                failure: function(errMsg) {
-                    console.log(errMsg);
-                }
-            });
+            var user = app.currentUsers.get(e.user);
+            var group = app.currentGroups.get(e.group);
+
+            // only add if the user isn't already in the group
+            if (!user.hasGroup(group)) {
+                var groups = user.get('groups');
+                groups.push(group);
+                //user.set({'groups': groups});
+
+                user.save();
+                //app.currentGroups.set(group);
+            } else {
+                console.log('user already in group...');
+            }
         },
 
         draggingUser: function (user) {

@@ -42,7 +42,7 @@ require([
     'text!templates/runworkflow.html',
     'text!templates/login.html',
     'text!templates/status.html',
-    'text!templates/users.html',
+    'text!templates/usermgmt.html',
     'text!templates/user.html',
     'text!templates/register.html',
     'text!templates/deploy.html',
@@ -406,7 +406,7 @@ require([
     });
 
     app.router.on("route:users", function () {
-        var usersView = new UserManagementView({collection: new Users()});
+        var usersView = new UserManagementView();
         this.navigateToView(usersView);
     });
 

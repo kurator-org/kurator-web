@@ -72,7 +72,7 @@ public class AsyncController extends Controller {
                 throw new RuntimeException("Could not create temp file for upload", e);
             }
 
-            UserUpload uploadFile = userDao.createUserUpload(session().get("username"), filePart.getFilename(),
+            UserUpload uploadFile = userDao.createUserUpload(Long.parseLong(session().get("uid")), filePart.getFilename(),
                     file.getAbsolutePath());
 
 
@@ -82,7 +82,7 @@ public class AsyncController extends Controller {
 
         // TODO: save user object in global state somehow
         // Get the current logged in user
-        User user = userDao.findUserByUsername(session().get("username"));
+        User user = User.find.byId(Long.parseLong(session().get("uid")));
 
         //  Set the form definition field values from the request data
         Map<String, String[]> data = body.asFormUrlEncoded();

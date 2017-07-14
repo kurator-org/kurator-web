@@ -38,8 +38,8 @@ GET     /download                               controllers.Users.downloadFile(i
 # ~~~~
 GET     /admin/users                            controllers.Users.manage()
 POST    /admin/users                            controllers.Users.createUser()
-
 PUT     /admin/users/:id                        controllers.Users.updateUser(id: Long)
+
 POST    /admin/groups                           controllers.Users.createGroup()
 
 GET     /admin/groups                           controllers.Users.listGroups()

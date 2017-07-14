@@ -120,7 +120,7 @@ public class Workflows extends Controller {
 
         // TODO: save user object in global state somehow
         // Get the current logged in user
-        User user = userDao.findUserByUsername(session().get("username"));
+        User user = User.find.byId(Long.parseLong(session().get("uid")));
         Map<String, Object> settings = settingsFromConfig(workflowDef, user);
 
         // Process form submission as multipart form data
@@ -192,7 +192,7 @@ public class Workflows extends Controller {
 
     public Result upload() {
         // Get the current logged in user
-        User user = userDao.findUserByUsername(session().get("username"));
+        User user = User.find.byId(Long.parseLong(session().get("uid")));
 
         // Process form submission as multipart form data
         Http.MultipartFormData body = request().body().asMultipartFormData();
@@ -245,7 +245,7 @@ public class Workflows extends Controller {
             throw new RuntimeException("Could not create temp file for upload", e);
         }
 
-        UserUpload uploadFile = userDao.createUserUpload(session().get("username"), file.getName(),
+        UserUpload uploadFile = userDao.createUserUpload(Long.parseLong(session().get("uid")), file.getName(),
                 file.getAbsolutePath());
 
 

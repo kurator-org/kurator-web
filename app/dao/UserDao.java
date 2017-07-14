@@ -55,7 +55,11 @@ public class UserDao {
         User user = new User();
 
         user.setEmail(email);
-        user.getGroups().add(group);
+
+        if (group != null) {
+            user.getGroups().add(group);
+        }
+
         user.setRoles(Collections.singletonList(SecurityRole.findByName(DEFAULT_ROLE)));
         user.setCreatedOn(new Date());
         user.setActive(true);
@@ -65,8 +69,8 @@ public class UserDao {
     }
 
     @Transactional
-    public UserUpload createUserUpload(String username, String filename, String absolutePath) {
-        User user = findUserByUsername(username);
+    public UserUpload createUserUpload(Long uid, String filename, String absolutePath) {
+        User user = User.find.byId(uid);
 
         UserUpload uploadFile = new UserUpload();
 
@@ -99,8 +103,8 @@ public class UserDao {
         return UserUpload.find.byId(id);
     }
 
-    public List<UserUpload> findUserUploads(String username) {
-        return UserUpload.find.where().eq("user.username", username).findList();
+    public List<UserUpload> findUserUploads(Long uid) {
+        return UserUpload.find.where().eq("user.id", uid).findList();
     }
 
     @Transactional
@@ -118,8 +122,8 @@ public class UserDao {
     }
 
     @Transactional
-    public void updateUserAccess(String username, boolean active, String role) {
-        User user = findUserByUsername(username);
+    public void updateUser(Long id, boolean active, String role) {
+        User user = User.find.byId(id);
         user.setActive(active);
         user.setRoles(Collections.singletonList(SecurityRole.findByName(role)));
         user.save();

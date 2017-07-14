@@ -6,11 +6,7 @@ define([
     var Users = Backbone.Collection.extend({
         model: User,
 
-        url : jsRoutes.controllers.Users.manage().url,
-
-        modelId: function(attrs) {
-            return attrs.username;
-        }
+        url : jsRoutes.controllers.Users.manage().url
     });
 
     return Users;
