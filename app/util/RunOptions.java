@@ -20,6 +20,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 
 public class RunOptions {
@@ -65,7 +71,44 @@ public class RunOptions {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
     }
 
+    public String toCmdString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("-f ")
+                .append(yamlFile);
+
+        for (String param : parameters.keySet()) {
+            sb.append(" -p ")
+                    .append(param)
+                    .append('=')
+                    .append(parameters.get(param));
+        }
+
+        sb.append(" -l ")
+                .append(logLevel);
+
+        return sb.toString();
+    }
+
     public String getWorkspace() {
         return workspace;
+    }
+
+    /**
+     * Helper method resolves a path relative to the packages directory and returns an
+     * absolute path as a String
+     *
+     * @param path
+     * @return absolute path
+     */
+    public static String resolve(String path) {
+        Path packageDir = Paths.get("packages/kurator_dwca");
+        File file = packageDir.resolve(path).toFile();
+
+        if (!file.exists()) {
+            throw new RuntimeException("File not found: " + file.getAbsolutePath());
+        }
+
+        return file.getAbsolutePath();
     }
 }

@@ -68,10 +68,17 @@ public class RunResult {
     }
 
     protected File createWorkspaceFile(String filename) throws IOException {
+        File workspace = new File(options.getWorkspace());
+
+        if (!workspace.exists()) {
+            workspace.mkdirs();
+        }
+
         Path path = Paths.get(options.getWorkspace(), filename);
         File file = path.toFile();
 
         file.createNewFile();
+
         return file;
     }
 

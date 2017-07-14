@@ -34,54 +34,6 @@ public class WorkflowRunner {
     private static String JAVA_BIN = System.getProperty("java.home") + "/bin/java";
     private static String KURATOR_JAR = System.getenv("KURATOR_JAR");
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        String yamlFile = "/home/lowery/IdeaProjects/kurator-validation/packages/kurator_dwca/workflows/file_term_values.yaml";
-
-        // Create a workspace
-        Path path = Paths.get("/home/lowery/IdeaProjects/kurator-web/workspace", "workspace_" + UUID.randomUUID());
-        path.toFile().mkdir();
-
-        Map<String, Object> parameters = new HashMap<>();
-
-        parameters.put("workspace", path.toString());
-        parameters.put("inputfile", "/home/lowery/IdeaProjects/kurator-validation/packages/kurator_dwca/data/tests/test_onslow_vertnet.csv");
-        parameters.put("format", "txt");
-        parameters.put("fieldlist", "country|stateProvince");
-
-        Map<String, String> config = new HashMap<>();
-        config.put("jython_home", "/home/lowery/IdeaProjects/kurator-web/jython");
-        config.put("jython_path", "/home/lowery/IdeaProjects/kurator-validation/packages");
-
-        String logLevel = "DEBUG";
-
-        // Lambda Runnable
-        Runnable workflowTask = () -> {
-            System.out.println("Started workflow run...");
-            WorkflowRunner runner = new WorkflowRunner();
-
-            try {
-                RunOptions options = new RunOptions(yamlFile, parameters, config, logLevel);
-                RunResult result = runner.run(options);
-
-                // TODO: write results to db
-                System.out.println(result.getOptions().toJsonString());
-                System.out.println(result.getWorkspaceDirectory().getAbsolutePath());
-
-                for (WorkflowArtifact artifact : result.getArtifacts()) {
-                    System.out.println(artifact.getName() + " - " + artifact.getPath());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            System.out.println("Ended workflow run...");
-        };
-
-        // start the thread
-        new Thread(workflowTask).start();
-        System.out.println("TEST!");
-    }
-
     public RunResult run(RunOptions options) throws IOException, InterruptedException {
         if (KURATOR_JAR == null) {
             // Try a JVM property
@@ -96,17 +48,17 @@ public class WorkflowRunner {
 
         // The process builder will run the kurator jar in a separate process
         ProcessBuilder builder = new ProcessBuilder(JAVA_BIN, "-cp", KURATOR_JAR, "org.kurator.akka.KuratorWeb");
-        System.out.println("Running workflow via: " + JAVA_BIN + " -cp " + KURATOR_JAR + " org.kurator.akka.KuratorWeb");
+        System.out.println("export JYTHON_HOME=" + options.getConfig().get("jython_home"));
+        System.out.println("export JYTHON_PATH=" + options.getConfig().get("jython_path"));
+        System.out.println("java -jar " + KURATOR_JAR + " " + options.toCmdString());
+        System.out.println();
         System.out.println(options.toJsonString());
+        System.out.println();
+
         // Create run result, retain a copy of the input options and set initial status to running
         RunResult result = new RunResult();
         result.setOptions(options);
         result.setStatus(Status.RUNNING);
-
-        // Redirect stderr and stdout to a log file in the workspace directory
-        File runlog = result.createWorkspaceFile("runlog.log");
-        builder.redirectError(runlog);
-        result.setRunlog(runlog);
 
         // Start the workflow run as a process and get the input and output streams
         Process process = builder.start();
