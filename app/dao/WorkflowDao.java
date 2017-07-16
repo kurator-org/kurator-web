@@ -29,7 +29,7 @@ public class WorkflowDao {
     @Transactional
     public WorkflowRun createWorkflowRun(String name, Workflow workflow, User user, Date startTime) {
         WorkflowRun run = new WorkflowRun();
-        run.setUser(user);
+        run.setOwner(user);
         run.setWorkflow(workflow);
         run.setStartTime(startTime);
         run.setStatus(Status.RUNNING);
@@ -69,7 +69,7 @@ public class WorkflowDao {
     }
 
     public List<WorkflowRun> findUserWorkflowRuns(String uid) {
-        return WorkflowRun.find.where().eq("user.id", uid).findList();
+        return WorkflowRun.find.where().eq("owner.id", uid).findList();
     }
 
     public List<WorkflowRun> findWorkflowRunsByStatus(Status status) {

@@ -60,7 +60,8 @@ POST    /workflows/upload                       controllers.Workflows.upload()
 
 # Workflow run routes for managing user runs and artifacts (result, report, logs)
 # ~~~~
-GET     /run/status                             controllers.Workflows.status(uid : String)
+GET     /results                                controllers.Workflows.status()
+PUT     /results/:id                            controllers.Workflows.shareRun(id: Long)
 
 GET     /run/result/*id                         controllers.Workflows.resultArtifacts(id : Long)
 GET     /run/archive/*id                        controllers.Workflows.resultArchive(id : Long)

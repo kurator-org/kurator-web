@@ -203,7 +203,7 @@ public class Users extends Controller {
 
     }
 
-    @Restrict({@Group("ADMIN")})
+    @SubjectPresent
     public Result manage() {
         Map req = request().body().asFormUrlEncoded();
 

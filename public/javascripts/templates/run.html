@@ -1,8 +1,8 @@
 <td><input class="run-checkbox" type="checkbox"></td>
 <td><%= run.name ? run.name : "Workflow Run #" + run.id %></td>
-<td><%= run.workflow %></td>
-<td><%= new Date(run.startDate).toLocaleString() %></td>
-<td><% if (run.endDate) { %><%= new Date(run.endDate).toLocaleString() %><% } else { %><i style="color: #777">Unavailable</i><% } %></td>
+<td><%= run.workflow.title %></td>
+<td><%= new Date(run.startTime).toLocaleString() %></td>
+<td><% if (run.endTime) { %><%= new Date(run.endTime).toLocaleString() %><% } else { %><i style="color: #777">Unavailable</i><% } %></td>
 <td class="run-status"></td>
 <td>
     <% if (run.status == "RUNNING") { %>
@@ -11,23 +11,23 @@
 
     <% } else { %>
 
-        <% if (run.hasResult) { %>
-        <a class="result-btn" href="#" title="View Results" data-toggle="modal" data-target="#result-modal">
-            <span class="glyphicon glyphicon-file"style="font-size: 1.3em; color: #777"></span>
-        </a>
-        <% } %>
+    <% if (run.result) { %>
+    <a class="result-btn" href="#" title="View Results" data-toggle="modal" data-target="#result-modal">
+        <span class="glyphicon glyphicon-file"style="font-size: 1.3em; color: #777"></span>
+    </a>
+    <% } %>
 
-        <% if (run.hasOutput) { %>
-        <a href="<%= jsRoutes.controllers.Workflows.outputLog(run.id).url %>" data-toggle="tooltip" data-placement="top" title="Output Log">
-            <span class="glyphicon glyphicon-info-sign" style="font-size: 1.3em; color: #777"></span>
-        </a>
-        <% } %>
+    <% if (run.result && run.result.outputText) { %>
+    <a href="<%= jsRoutes.controllers.Workflows.outputLog(run.id).url %>" data-toggle="tooltip" data-placement="top" title="Output Log">
+        <span class="glyphicon glyphicon-info-sign" style="font-size: 1.3em; color: #777"></span>
+    </a>
+    <% } %>
 
-        <% if (run.hasErrors) { %>
-        <a href="<%= jsRoutes.controllers.Workflows.errorLog(run.id).url %>" data-toggle="tooltip" data-placement="top" title="Error Log">
-            <span class="glyphicon glyphicon-exclamation-sign" style="font-size: 1.3em; color: #777"></span>
-        </a>
-        <% } %>
+    <% if (run.result && run.result.errorText) { %>
+    <a href="<%= jsRoutes.controllers.Workflows.errorLog(run.id).url %>" data-toggle="tooltip" data-placement="top" title="Error Log">
+        <span class="glyphicon glyphicon-exclamation-sign" style="font-size: 1.3em; color: #777"></span>
+    </a>
+    <% } %>
 
     <% } %>
 

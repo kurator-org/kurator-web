@@ -3,12 +3,11 @@ define([
     'underscore',
     'backbone',
     'collections/runs',
-    'collections/shared',
     'views/runs',
+    'views/sharedruns',
     'views/sharerun',
-    'views/shared',
     'text!templates/status.html'
-], function ($, _, Backbone, Runs, SharedRuns, RunsView, ShareView, SharedView, statusTpl) {
+], function ($, _, Backbone, Runs, RunsView, SharedRunsView, ShareView, statusTpl) {
 
     var RunStatusView = Backbone.View.extend({
         template: _.template(statusTpl),
@@ -29,12 +28,11 @@ define([
         render: function () {
             this.$el.html(this.template({}));
 
-            var runs = new Runs({ 'uid': this.options.uid });
-            this.runsView = new RunsView({ collection: runs, el: this.$('#user-runs') });
+            this.runs = new Runs({ 'uid': this.options.uid });
+            this.runsView = new RunsView({ collection: this.runs, el: this.$('#user-runs') });
             this.listenTo(this.runsView, 'selectionChange', this.renderControls);
 
-            var shared = new SharedRuns();
-            this.sharedView = new SharedView({ collection: shared, el: this.$('#shared-runs') });
+            this.sharedView = new SharedRunsView({ collection: this.runs, el: this.$('#shared-runs') });
 
             return this;
         },
@@ -52,7 +50,7 @@ define([
         },
 
         shareRuns: function (evt) {
-            var view = new ShareView();
+            var view = new ShareView({model: this.runs.get(1)});
             $('#dialog').html(view.$el);
         }
     });

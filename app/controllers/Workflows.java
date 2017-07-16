@@ -26,6 +26,7 @@ import config.Artifact;
 import config.ConfigManager;
 import config.ParameterConfig;
 import config.Variable;
+import dao.UserAccessDao;
 import dao.UserDao;
 import dao.WorkflowDao;
 import models.PackageData;
@@ -76,6 +77,7 @@ public class Workflows extends Controller {
 
     private final WorkflowDao workflowDao = new WorkflowDao();
     private final UserDao userDao = new UserDao();
+    private final UserAccessDao userAccessDao = new UserAccessDao();
 
     // For handling classpath url scheme in workflows.conf files
     static {
@@ -469,24 +471,27 @@ public class Workflows extends Controller {
      * @return
      */
     @SubjectPresent
-    public Result status(String uid) {
+    public Result status() {
         List<RunResult> results = new ArrayList<>();
-        List<WorkflowRun> workflowRuns = workflowDao.findUserWorkflowRuns(uid);
+        List<WorkflowRun> userRuns = workflowDao.findUserWorkflowRuns(session("uid"));
+        List<WorkflowRun> sharedRuns = userAccessDao.findSharedRunsByUser(Long.parseLong(session("uid")));
 
-        for (WorkflowRun run : workflowRuns) {
-            boolean hasReport = run.getResult() != null && run.getResult().getDqReport() != null;
-            boolean hasOutput = run.getResult() != null && !run.getResult().getOutputText().isEmpty();
-            boolean hasErrors = run.getResult() != null && !run.getResult().getErrorText().isEmpty();
+        List<WorkflowRun> runs = new ArrayList<>();
+        runs.addAll(userRuns);
+        runs.addAll(sharedRuns);
 
-            boolean hasResult = run.getResult() != null;
+        return ok(Json.toJson(runs));
+    }
 
-            RunResult result = new RunResult(run.getId(), run.getName(), run.getWorkflow().getTitle(), run.getStartTime(),
-                    run.getEndTime(), hasResult, hasOutput, hasErrors, hasReport, run.getStatus());
+    @SubjectPresent
+    public Result shareRun(Long id) {
+        WorkflowRun shared = Json.fromJson(request().body().asJson(), WorkflowRun.class);
+        shared.setSharedOn(new Date());
+        shared.update();
 
-            results.add(result);
-        }
-
-        return ok(Json.toJson(results));
+        return ok(
+                Json.toJson(shared)
+        );
     }
 
     /**

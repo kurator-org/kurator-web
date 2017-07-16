@@ -8,14 +8,16 @@
             </div>
 
             <div class="modal-body">
-                Select a user or group...
-                <select>
-                    <% _.each(groups, function(group) { %>
-                        <option value="<%= group.id %>"><%= group.name %></option>
-                    <% }); %>
-                </select>
-
-                <!-- TODO: add form here and autocomplete selection for users/groups -->
+                <label>Select user or group...</label>
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li role="separator" class="divider"></li>
+                        </ul>
+                    </div><!-- /btn-group -->
+                    <input class="share-with" type="text" class="form-control" aria-label="...">
+                </div><!-- /input-group -->
             </div>
 
             <div class="modal-footer">

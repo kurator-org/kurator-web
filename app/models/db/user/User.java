@@ -155,6 +155,11 @@ public class User extends Model implements Subject {
         return roles.get(0).getName();
     }
 
+    public void setRole(String name) {
+        SecurityRole role = SecurityRole.findByName(name);
+        roles.add(role);
+    }
+
     @Override
     public List<? extends Role> getRoles() {
         return roles;

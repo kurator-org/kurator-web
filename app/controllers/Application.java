@@ -70,6 +70,8 @@ public class Application extends Controller {
                         routes.javascript.Workflows.report(),
                         routes.javascript.Workflows.dataset(),
 
+                        routes.javascript.Workflows.shareRun(),
+
                         routes.javascript.Workflows.deploy(),
                         routes.javascript.Workflows.deletePackage(),
 

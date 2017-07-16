@@ -1,0 +1,42 @@
+<table class="table">
+    <thead>
+    <tr>
+        <td></td>
+        <td><%= run.name ? run.name : "Workflow Run #" + run.id %></td>
+        <td><%= run.workflow.title %></td>
+        <td><%= run.owner.username %></td>
+        <td><%= new Date(run.sharedOn).toLocaleString() %></td>
+        <td class="run-status"></td>
+        <td >
+            <% if (run.status == "RUNNING") { %>
+
+            <div class="loading-pulse" style="height: 1.3em; margin-left: 12px;"></div>
+
+            <% } else { %>
+
+            <% if (run.result) { %>
+            <a class="result-btn" href="#" title="View Results" data-toggle="modal" data-target="#result-modal">
+                <span class="glyphicon glyphicon-file"style="font-size: 1.3em; color: #777"></span>
+            </a>
+            <% } %>
+
+            <% if (run.result && run.result.outputText) { %>
+            <a href="<%= jsRoutes.controllers.Workflows.outputLog(run.id).url %>" data-toggle="tooltip" data-placement="top" title="Output Log">
+                <span class="glyphicon glyphicon-info-sign" style="font-size: 1.3em; color: #777"></span>
+            </a>
+            <% } %>
+
+            <% if (run.result && run.result.errorText) { %>
+            <a href="<%= jsRoutes.controllers.Workflows.errorLog(run.id).url %>" data-toggle="tooltip" data-placement="top" title="Error Log">
+                <span class="glyphicon glyphicon-exclamation-sign" style="font-size: 1.3em; color: #777"></span>
+            </a>
+            <% } %>
+
+            <% } %>
+        </td>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- runs status entries will go here -->
+    </tbody>
+</table>

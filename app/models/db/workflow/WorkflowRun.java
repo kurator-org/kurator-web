@@ -18,9 +18,11 @@ package models.db.workflow;
 
 import com.avaje.ebean.Model;
 import models.db.user.User;
+import models.db.user.UserGroup;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * The model object that represents a single run of a workflow.
@@ -46,7 +48,16 @@ public class WorkflowRun extends Model {
     private WorkflowResult result;
 
     @ManyToOne
-    private User user;
+    private User owner;
+
+    // sharing
+    @ManyToMany
+    private List<UserGroup> groups;
+
+    @ManyToMany
+    private List<User> users;
+
+    private Date sharedOn;
 
     public Long getId() {
         return id;
@@ -100,11 +111,35 @@ public class WorkflowRun extends Model {
         this.result = result;
     }
 
-    public User getUser() {
-        return user;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public List<UserGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<UserGroup> groups) {
+        this.groups = groups;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    public Date getSharedOn() {
+        return sharedOn;
+    }
+
+    public void setSharedOn(Date sharedOn) {
+        this.sharedOn = sharedOn;
     }
 }

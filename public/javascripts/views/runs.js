@@ -5,8 +5,9 @@ define([
     'models/result',
     'views/result',
     'views/run',
+    'app',
     'text!templates/runs.html'
-], function ($, _, Backbone, ResultModel, ResultView, RunView, runsTpl) {
+], function ($, _, Backbone, ResultModel, ResultView, RunView, app, runsTpl) {
 
     var RunsView = Backbone.View.extend({
         template: _.template(runsTpl),
@@ -31,14 +32,16 @@ define([
             _.invoke(this.views, 'destroy');
             this.views.length = 0;
 
-            this.$el.html(this.template({runs: this.collection.toJSON()}));
+            this.$el.html(this.template({ }));
 
             this.collection.each(function (run) {
-                if (this.selected.includes(run)) {
-                    run.set('selected', true);
-                }
+                if (run.get('owner').id == app.session.get('uid')) {
+                    if (this.selected.includes(run)) {
+                        run.set('selected', true);
+                    }
 
-                this.addRun(run);
+                    this.addRun(run);
+                }
             }, this);
 
             return this;
