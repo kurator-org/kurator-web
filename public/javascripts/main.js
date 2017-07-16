@@ -28,30 +28,31 @@ require([
     'router',
     'models/session',
     'ffdq',
+    'views/workflows',
+    'views/runworkflow',
+    'collections/workflows',
     'collections/groups',
     'collections/runs',
     'views/runstatus',
     'views/usermgmt',
+    'views/deploy',
     'collections/users',
     'collections/uploads',
+    'collections/packages',
     'views/uploads',
     'views/fileselect',
-    'text!templates/workflow.html',
     'text!templates/artifacts.html',
     'text!templates/result.html',
-    'text!templates/runworkflow.html',
     'text!templates/login.html',
     'text!templates/status.html',
-    'text!templates/usermgmt.html',
-    'text!templates/user.html',
     'text!templates/register.html',
     'text!templates/deploy.html',
     'text!templates/report.html',
     'text!templates/dataset.html',
     'bootstrap-tokenfield',
     'jquery-ui'
-], function (app, WebRouter, SessionModel, FFDQPostProcessor, GroupCollection, Runs, RunStatusView, UserManagementView, Users, Uploads, UploadsView, FileSelectView, workflowTpl, artifactsTpl, resultTpl,
-             runWorkflowTpl, loginTpl, statusTpl, registerTpl, deployTpl, reportTpl, datasetTpl, TokenField, JQueryUI) {
+], function (app, WebRouter, SessionModel, FFDQPostProcessor, WorkflowsView, RunWorkflowView, Workflows, GroupCollection, Runs, RunStatusView, UserManagementView, DeployPackagesView, Users, Uploads, Packages, UploadsView, FileSelectView, artifactsTpl, resultTpl,
+             loginTpl, statusTpl, registerTpl, deployTpl, reportTpl, datasetTpl, TokenField, JQueryUI) {
 
     app.router = new WebRouter();
     app.session = new SessionModel({});
@@ -67,130 +68,10 @@ require([
     app.assetsUrl = jsRoutes.controllers.Assets.at('').url;
 
     // Set app globals
+    app.workflows = new Workflows();
+
     app.currentGroups = new GroupCollection();
     app.currentUsers = new Users();
-
-    var Workflows = Backbone.Collection.extend({
-        url : jsRoutes.controllers.Workflows.list().url,
-
-        modelId: function(attrs) {
-            return attrs.name;
-        }
-    });
-
-    var WorkflowsView = Backbone.View.extend({
-        template: _.template(workflowTpl),
-
-        initialize: function () {
-            this.listenTo(this.collection, 'update', this.render);
-            this.collection.fetch();
-        },
-
-        render: function () {
-            this.$el.html(this.template({definitions : this.collection.toJSON(), infoImg : app.assetsUrl + "images/info.png"}));
-
-            return this;
-        }
-    });
-
-    var RunWorkflowView = Backbone.View.extend({
-        el: '#run-modal',
-        template: _.template(runWorkflowTpl),
-
-        render: function () {
-            //this.model.set('uploads', []); TODO: this was just a test, make a subview for the file select
-
-            //console.log(this.model.toJSON());
-            $('#run-modal-title').html(this.model.get('title'));
-           $('#run-modal-body').html(this.template(this.model.toJSON()));
-
-           this.$('.fileinput').each(function () {
-               var uploads = new Uploads();
-               uploads.url = jsRoutes.controllers.Users.listUploads(app.session.get('uid')).url;
-
-               var fileSelectView = new FileSelectView({ fieldName: $(this).attr('id'), collection: uploads});
-               $(this).html(fileSelectView.el);
-           });
-
-            $('#run-workflow').submit(function (event) {
-                event.preventDefault();
-
-                //grab all form data
-                var formData = new FormData($(this)[0]);
-
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',
-                    data: formData,
-                    async: false,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        $('.progress').hide();
-                    }
-                });
-
-                return this;
-            });
-
-            $('#run-modal').on('hidden.bs.modal', function (e) {
-                app.router.navigate("#", {trigger: true});
-            });
-
-            $('#run-btn').on('click', function (e) {
-
-                $('#run-modal').on('hidden.bs.modal', function (e) {
-                    app.router.navigate("status", {trigger: true});
-                });
-
-                $('.progress').show();
-                $('#run-workflow').submit();
-                $('#run-modal').modal('toggle');
-
-            });
-
-            $('#run-modal').modal({show: true});
-
-            // TODO: fix autocomplete and add support for file upload selection
-            /*$('#inputfile').on("change", function(){
-
-                var myfile = $('#inputfile input')[0].files[0];
-
-                console.log(myfile);
-
-                Papa.parse(myfile, {
-                    preview: 1,
-                    complete: function(results) {
-                        var header = results.data[0];
-                        console.log(header);
-
-                        $('#tokenfield').tokenfield({
-                            autocomplete: {
-                                source: header,
-                                delay: 100,
-                            },
-                            showAutocompleteOnFocus: true
-                        });
-                    }
-                });
-            });*/
-
-            //this.$el.html(this.template(this.model.toJSON()));
-        }
-    });
-
-    var WorkflowRuns = Backbone.Collection.extend({
-        url : function() {
-            return jsRoutes.controllers.Workflows.status(app.session.get('uid')).url
-        },
-
-        comparator: function(a, b) {
-            a = new Date(a.attributes.startDate);
-            b = new Date(b.attributes.startDate);
-            return a > b ? -1 : a < b ? 1 : 0;
-        }
-    });
 
     var ReportSummary = Backbone.Collection.extend({
         url : function() {
@@ -201,44 +82,6 @@ require([
     var DatasetSummary = Backbone.Model.extend({
         url : function() {
             return jsRoutes.controllers.Workflows.dataset(this.id).url;
-        }
-    });
-
-    var Packages = Backbone.Collection.extend({
-        url : jsRoutes.controllers.Workflows.deploy().url
-    });
-
-    var DeployPackagesView = Backbone.View.extend({
-        template: _.template(deployTpl),
-
-        initialize: function () {
-            this.listenTo(this.collection, 'update', this.render);
-            this.collection.fetch();
-        },
-
-        render: function () {
-            this.$el.html(this.template({packages : this.collection.toJSON()}));
-
-            var that = this;
-            $('.delete-btn').click(function (event) {
-                var package = $(this).attr('id').substr(7);
-
-                $.ajax({
-                    type: "POST",
-                    //the url where you want to sent the userName and password to
-                    url: jsRoutes.controllers.Workflows.deletePackage(package).url,
-                    dataType: 'json',
-                    async: false,
-                    contentType: 'application/json',
-                    //json object to sent to the authentication url
-                    data: JSON.stringify({package: package}),
-                    success: function(data) {
-                        that.collection.fetch();
-                    }
-                });
-            });
-
-            return this;
         }
     });
 
@@ -436,13 +279,13 @@ require([
         $('.breadcrumb .active').remove();
         $('.breadcrumb').append('<li class="active"><a href="#run">Run</a></li>');
 
-        var workflowsView = new WorkflowsView({collection: new Workflows()});
+        var workflowsView = new WorkflowsView({ collection: app.workflows });
         this.navigateToView(workflowsView);
     });
 
     app.router.on("route:run", function (name) {
-        var currentView = app.router.currentView;
-        var runView = new RunWorkflowView({ model : currentView.collection.get(name)});
+        var runView = new RunWorkflowView({ model : app.workflows.get(name)});
+        console.log(app.workflows.get(name));
         runView.render();
         //this.navigateToView(runView);
         //new RunWorkflowView({ model : workflows.get(name)});
