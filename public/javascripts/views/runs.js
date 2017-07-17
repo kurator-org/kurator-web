@@ -54,6 +54,7 @@ define([
             this.listenTo(view, 'viewResult', this.viewResult);
 
             this.views.push(view);
+            this.trigger('addedRun', { count: this.views.length });
 
             this.$('tbody').append(view.render().el);
         },

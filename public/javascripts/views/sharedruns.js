@@ -12,6 +12,7 @@ define([
 
         initialize: function () {
             this.views = [];
+            this.count = 0;
 
             this.listenTo(this.collection, 'update', this.render);
             this.collection.fetch();
@@ -40,6 +41,7 @@ define([
             this.views.push(view);
 
             this.$('tbody').append(view.render().el);
+            this.trigger('addedRun', { count: this.views.length });
         },
 
         onBeforeClose: function () {
