@@ -19,10 +19,10 @@ define([
         },
 
         initialize: function (options) {
+            var selection = [];
+
             this.activeTab = '#user-runs';
             this.options = options;
-
-            //this.listenTo(this.runsView, 'selectionChange', this.render);
         },
 
         render: function () {
@@ -35,6 +35,10 @@ define([
             this.sharedView = new SharedRunsView({ collection: this.runs, el: this.$('#shared-runs') });
 
             return this;
+        },
+        
+        selectionChange: function (e) {
+            console.log(e);
         },
 
         renderControls: function (selected) {
@@ -50,8 +54,7 @@ define([
         },
 
         shareRuns: function (evt) {
-            var view = new ShareView({model: this.runs.get(1)});
-            $('#dialog').html(view.$el);
+            this.runsView.shareRuns()
         }
     });
 

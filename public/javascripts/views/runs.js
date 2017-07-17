@@ -5,9 +5,10 @@ define([
     'models/result',
     'views/result',
     'views/run',
+    'views/sharerun',
     'app',
     'text!templates/runs.html'
-], function ($, _, Backbone, ResultModel, ResultView, RunView, app, runsTpl) {
+], function ($, _, Backbone, ResultModel, ResultView, RunView, ShareView, app, runsTpl) {
 
     var RunsView = Backbone.View.extend({
         template: _.template(runsTpl),
@@ -81,7 +82,8 @@ define([
         },
 
         shareRuns: function (evt) {
-
+            var view = new ShareView({ collection: this.collection, selected: this.selected });
+            $('#dialog').html(view.$el);
         },
 
         runChecked: function (evt) {

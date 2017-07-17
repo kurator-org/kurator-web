@@ -99,10 +99,9 @@ require([
     });
 
     app.router.on("route:runs", function (uid) {
-        var runs = new WorkflowRuns();
-        //runs.uid = uid;
+        app.currentRuns = new Runs();
 
-        var statusView = new WorkflowRunsView({collection: runs});
+        var statusView = new WorkflowRunsView({collection: app.currentRuns});
         this.navigateToView(statusView);
     });
 

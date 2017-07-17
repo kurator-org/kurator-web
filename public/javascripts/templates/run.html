@@ -1,5 +1,8 @@
 <td><input class="run-checkbox" type="checkbox"></td>
-<td><%= run.name ? run.name : "Workflow Run #" + run.id %></td>
+<td>
+    <% if(run.sharedOn) { %>
+    <span class="glyphicon glyphicon-asterisk" style="margin-left: -1.5em; padding-right: 0.5em; color: #777;" data-toggle="tooltip" data-placement="top" title="Shared with: <% _.each(run.groups, function(group, i) { %><%= group.name %><% if (i > 0) { %>,<% } %><% }); %><% _.each(run.users, function(user, i) { %><%= user.username %><% if (run.groups.length || i > 0) { %>,<% } %><% }); %>"></span>
+    <% } %><%= run.name ? run.name : "Workflow Run #" + run.id %></td>
 <td><%= run.workflow.title %></td>
 <td><%= new Date(run.startTime).toLocaleString() %></td>
 <td><% if (run.endTime) { %><%= new Date(run.endTime).toLocaleString() %><% } else { %><i style="color: #777">Unavailable</i><% } %></td>

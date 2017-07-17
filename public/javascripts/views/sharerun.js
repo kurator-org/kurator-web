@@ -18,7 +18,9 @@ define([
             'click .user-item': 'addUser'
         },
 
-        initialize: function () {
+        initialize: function (options) {
+            this.selected = options.selected;
+            console.log(options);
             this.groups = [];
             this.users = [];
 
@@ -39,13 +41,15 @@ define([
         },
 
         shareRun: function (e) {
-            console.log('share run...');
+            console.log(this.selected);
+            this.collection.each(function (run) {
+                if (this.selected.indexOf(run.id) != -1) {
+                    run.set('users', this.users);
+                    run.set('groups', this.groups);
 
-            // TODO: share with a list of selected models
-            this.model.set('users', this.users);
-            this.model.set('groups', this.groups);
-
-            this.model.save();
+                    run.save();
+                }
+            }, this);
         },
 
         close: function() {
@@ -66,19 +70,23 @@ define([
                 this.$('.divider').after($groupItem);
             }, this);
         },
-        
-        updateUsers: function (e) {
-            app.currentUsers.each(function (user) {
-                $userItem = $('<li>').append($('<a class="user-item">').attr('href', '#').html(user.get('username'))).attr('value', user.get('id'));
 
-                this.$('.divider').before($userItem);
-            }, this);
+        updateUsers: function (e) {
+            console.log(app.session);
+                app.currentUsers.each(function (user) {
+                    if (app.session.get('username') != user.username) {
+                        $userItem = $('<li>').append($('<a class="user-item">').attr('href', '#').html(user.get('username'))).attr('value', user.get('id'));
+
+                        this.$('.divider').before($userItem);
+                    }
+                }, this);
         },
         
         addUser: function (e) {
             var userId = $(e.target).parent().val();
             var user = app.currentUsers.get(userId);
             console.log(this.groups.indexOf(user));
+
             if (this.users.indexOf(user) == -1) {
                 this.users.push(user);
                 this.updateShareWith();
