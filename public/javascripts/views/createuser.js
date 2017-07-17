@@ -66,6 +66,7 @@ define([
                 console.log("invalid form");
             }
 
+            this.$('.modal').modal('hide');
         },
 
         close: function() {

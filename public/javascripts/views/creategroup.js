@@ -35,6 +35,8 @@ define([
 
             var name = this.$('input[name=group-name]').val();
             app.currentGroups.create({ name: name});
+
+            this.$('.modal').modal('hide');
         },
 
         close: function() {
