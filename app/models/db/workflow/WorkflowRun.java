@@ -51,10 +51,10 @@ public class WorkflowRun extends Model {
     private User owner;
 
     // sharing
-    @ManyToMany
+    @ManyToMany(mappedBy = "workflowRuns", cascade=CascadeType.REMOVE)
     private List<UserGroup> groups;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "workflowRuns", cascade=CascadeType.REMOVE)
     private List<User> users;
 
     private Date sharedOn;

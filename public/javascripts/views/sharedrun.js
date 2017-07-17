@@ -11,7 +11,7 @@ define([
         template: _.template(sharedRunTpl),
 
         events: {
-
+            'click  .result-btn': 'viewResult'
         },
 
         initialize: function () {

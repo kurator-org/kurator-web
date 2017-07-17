@@ -3,9 +3,10 @@ define([
     'underscore',
     'backbone',
     'views/sharedrun',
+    'views/result',
     'app',
     'text!templates/sharedruns.html'
-], function ($, _, Backbone, SharedRunView, app, sharedTpl) {
+], function ($, _, Backbone, SharedRunView, ResultView, app, sharedTpl) {
 
     var SharedRunsView = Backbone.View.extend({
         template: _.template(sharedTpl),
@@ -25,6 +26,10 @@ define([
         },
 
         render: function () {
+            // clean up the subviews before rendering new ones
+            _.invoke(this.views, 'destroy');
+            this.views.length = 0;
+
             this.$el.html(this.template({ }));
 
             this.collection.each(function (run) {
@@ -38,10 +43,17 @@ define([
 
         addRun: function (run) {
             var view = new SharedRunView({ model: run });
+            this.listenTo(view, 'viewResult', this.viewResult);
+
             this.views.push(view);
+            this.trigger('addedSharedRun', { count: this.views.length });
 
             this.$('tbody').append(view.render().el);
-            this.trigger('addedRun', { count: this.views.length });
+        },
+
+        viewResult: function (run) {
+            var view = new ResultView({ run: run });
+            $('#dialog').html(view.$el);
         },
 
         onBeforeClose: function () {

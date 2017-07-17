@@ -31,10 +31,10 @@ define([
             this.runs = new Runs({ 'uid': this.options.uid });
             this.runsView = new RunsView({ collection: this.runs, el: this.$('#user-runs') });
             this.listenTo(this.runsView, 'selectionChange', this.renderControls);
-            this.listenTo(this.runsView, 'addedRun', this.addedUserRun);
-            this.listenTo(this.sharedView, 'addedRun', this.addedSharedRun);
+            this.listenTo(this.runsView, 'addedUserRun', this.addedUserRun);
 
             this.sharedView = new SharedRunsView({ collection: this.runs, el: this.$('#shared-runs') });
+            this.listenTo(this.sharedView, 'addedSharedRun', this.addedSharedRun);
 
             return this;
         },
@@ -65,6 +65,7 @@ define([
         },
 
         addedSharedRun: function (e) {
+            console.log(e.count);
             this.$('.shared-runs-count').html(e.count);
         }
     });

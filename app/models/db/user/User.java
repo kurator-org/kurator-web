@@ -21,6 +21,7 @@ import be.objectify.deadbolt.java.models.Role;
 import be.objectify.deadbolt.java.models.Subject;
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import models.db.workflow.WorkflowRun;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -64,6 +65,10 @@ public class User extends Model implements Subject {
 
     @ManyToMany
     public List<UserPermission> permissions;
+
+    @ManyToMany
+    @JsonIgnore
+    public List<WorkflowRun> workflowRuns;
 
     private boolean active;
 

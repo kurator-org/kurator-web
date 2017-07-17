@@ -1,10 +1,14 @@
 package models.db.user;
 
 import com.avaje.ebean.Model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import models.db.workflow.WorkflowRun;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class UserGroup extends Model {
@@ -17,6 +21,10 @@ public class UserGroup extends Model {
     private User owner;
 
     private Date createdOn;
+
+    @ManyToMany
+    @JsonIgnore
+    public List<WorkflowRun> workflowRuns;
 
     public Long getId() {
         return id;
