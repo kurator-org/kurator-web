@@ -1,17 +1,19 @@
-<div id="run-controls">
+<div>
     <div class="btn-group">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Select <span class="caret"></span>
         </button>
 
-        <ul class="dropdown-menu">
-            <li><a href="#">All</a></li>
-            <li><a href="#">None</a></li>
+        <ul class="dropdown-menu select-dropdown">
+            <li><a href="#" class="select-all">All</a></li>
+            <li><a href="#" class="select-none">None</a></li>
         </ul>
     </div>
     <span>&nbsp;&nbsp;</span>
-    <button type="button" class="btn btn-success share-btn" disabled="disabled">Share Selected</button>
-    <button type="button" class="btn btn-success remove-btn" disabled="disabled">Remove Selected</button>
+    <span id="run-controls">
+        <button type="button" class="btn btn-success share-btn" disabled="disabled">Share Selected</button>
+        <button type="button" class="btn btn-success remove-btn" disabled="disabled">Remove Selected</button>
+    </span>
 </div>
 <hr />
 <div>

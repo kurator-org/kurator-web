@@ -20,7 +20,6 @@ define([
 
             var that = this;
             this.timer = setInterval(function() {
-                console.log('polling...');
                 that.collection.fetch();
             }, 5000);
         },

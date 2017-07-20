@@ -22,13 +22,11 @@ define([
 
             var that = this;
             this.timer = setInterval(function() {
-                console.log('polling...');
                 that.collection.fetch();
             }, 5000);
         },
 
         render: function () {
-            console.log('render');
             // clean up the subviews before rendering new ones
             _.invoke(this.views, 'destroy');
             this.views.length = 0;
@@ -79,6 +77,18 @@ define([
                 contentType: "application/json",
                 success: onSuccess
                 //dataType: dataType
+            });
+        },
+
+        selectAll: function () {
+            this.views.forEach(function(run) {
+                run.setSelected(true);
+            });
+        },
+
+        selectNone: function () {
+            this.views.forEach(function(run) {
+                run.setSelected(false);
             });
         },
 

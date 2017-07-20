@@ -53,6 +53,12 @@ define([
 
             return this;
         },
+
+        setSelected: function(value) {
+            this.$('.run-checkbox').prop('checked', value);
+            this.model.set('selected', value);
+            this.trigger("runChecked", this.model);
+        },
         
         toggleSelected: function (evt) {
             this.model.set('selected', $(evt.target).prop('checked'));

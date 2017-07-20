@@ -13,6 +13,8 @@ define([
         template: _.template(statusTpl),
 
         events: {
+            'click .select-all': 'selectAll',
+            'click .select-none': 'selectNone',
             'click .remove-btn': 'removeRuns',
             'click .share-btn': 'shareRuns',
             'shown.bs.tab a[data-toggle="tab"]': 'toggleTab'
@@ -38,9 +40,13 @@ define([
 
             return this;
         },
-        
-        selectionChange: function (e) {
-            console.log(e);
+
+        selectAll: function (e) {
+            this.runsView.selectAll();
+        },
+
+        selectNone: function (e) {
+            this.runsView.selectNone();
         },
 
         renderControls: function (selected) {
@@ -60,12 +66,10 @@ define([
         },
 
         addedUserRun: function (e) {
-            console.log(e.count);
             this.$('.user-runs-count').html(e.count);
         },
 
         addedSharedRun: function (e) {
-            console.log(e.count);
             this.$('.shared-runs-count').html(e.count);
         }
     });
