@@ -12,7 +12,7 @@ define([
         template: _.template(shareTpl),
 
         events: {
-            'hidden.bs.modal #share-modal': 'close',
+            'hidden.bs.modal .modal': 'close',
             'click #share-submit-btn': 'shareRun',
             'click .group-item': 'addGroup',
             'click .user-item': 'addUser'
@@ -50,6 +50,8 @@ define([
                     run.save();
                 }
             }, this);
+
+            this.$('.modal').modal('hide');
         },
 
         close: function() {
@@ -95,7 +97,7 @@ define([
         
         addGroup: function (e) {
             var groupId = $(e.target).parent().val();
-            var group = app.currentUsers.get(groupId);
+            var group = app.currentGroups.get(groupId);
 
             if (this.groups.indexOf(group) == -1) {
                 this.groups.push(group);
@@ -118,11 +120,22 @@ define([
                 if (value.length) {
                     value += ', ';
                 }
-
+                console.log(group);
                 value += group.get('name');
             });
 
             this.$('.share-with').val(value);
+        },
+        
+        close: function() {
+            // Unbind from events
+            this.undelegateEvents();
+
+            this.$el.removeData().unbind();
+
+            // Remove view from DOM
+            this.remove();
+            Backbone.View.prototype.remove.call(this);
         }
     });
 
