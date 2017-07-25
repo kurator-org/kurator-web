@@ -35,6 +35,9 @@ import models.forms.Register;
 import models.forms.ResetPass;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
+import org.mindrot.jbcrypt.BCrypt;
+import play.Configuration;
+import play.api.Play;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
@@ -56,6 +59,9 @@ import java.util.Map;
 import views.html.*;
 
 public class Users extends Controller {
+
+    private static String APPLICATION_URL;
+
     private final UserDao userDao = new UserDao();
     private final UserAccessDao userAccessDao = new UserAccessDao();
 
@@ -63,9 +69,11 @@ public class Users extends Controller {
     private final MailerClient mailerClient;
 
     @Inject
-    public Users(FormFactory formFactory, MailerClient mailerClient) {
+    public Users(Configuration config, FormFactory formFactory, MailerClient mailerClient) {
         this.formFactory = formFactory;
         this.mailerClient = mailerClient;
+
+        this.APPLICATION_URL = config.getString("application.baseUrl");
     }
 
     /**
@@ -194,6 +202,8 @@ public class Users extends Controller {
             UserGroup group = userAccessDao.findGroupById(groupId);
             User user = userDao.createUser(email, group);
 
+
+
             return ok(Json.toJson(user));
         } else {
             User user = userDao.createUser(email, null);
@@ -286,13 +296,11 @@ public class Users extends Controller {
         );
     }
 
-    @SubjectPresent
     public Result reset() {
         Form form = formFactory.form(ResetPass.class);
         return ok(reset.render(form));
     }
 
-    @SubjectPresent
     public Result resetPassword() {
         Form<ResetPass> form = formFactory.form(ResetPass.class).bindFromRequest();
 
@@ -302,11 +310,15 @@ public class Users extends Controller {
 
         ResetPass resetPass = form.get();
 
-        // TODO: more email tasks to make work and factor out into mailer service
-        String pw = UserUtil.generatePassword();
-
         String username = resetPass.getUsername();
         String emailAddr = resetPass.getEmail();
+
+        String pass = UserUtil.generatePassword();
+        String hash = BCrypt.hashpw(pass, BCrypt.gensalt());
+
+        User user = User.find.where().eq("username", username).findUnique();
+        user.setPassword(hash);
+        user.save();
 
         Email email = new Email();
         email.setSubject("Kurator-web password reset: " + username);
@@ -314,15 +326,9 @@ public class Users extends Controller {
         email.addTo(emailAddr);
 
         email.setBodyText("Password reset request received for user account " + username + ". Temporary password " +
-                "assigned: " + pw);
+                "assigned: " + pass);
 
-        /*mailer.send(email);
-
-        User user = User.find.where().eq("username", username).findUnique();
-        user.password = pw;
-        user.save();
-
-        */
+        mailerClient.send(email);
 
         flash("message", "Password reset email sent to: " + emailAddr);
 

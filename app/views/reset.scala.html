@@ -34,7 +34,16 @@
       <div class="panel-body">
         <h3>Forgot password</h3>
         <br />
-        <p>Enter the email you used to sign up and you will receive a link to reset your password.</p>
+
+        @if(flash.containsKey("message")) {
+          <div class="alert alert-info" role="alert">@flash.get("message")</div>
+        }
+
+        @if(form.hasGlobalErrors) {
+          <div class="alert alert-danger" role="alert">@form.globalError.message</div>
+        }
+
+        <p>Enter the username and email you used to sign up and you will receive a link to reset your password.</p>
 
         @helper.form(routes.Users.resetPassword) {
           <div class="form-group">
