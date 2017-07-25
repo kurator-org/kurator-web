@@ -170,7 +170,7 @@ public class Users extends Controller {
                     "authorization for kurator-web.");
 
             if (adminUsers.size() > 1) { // send only if there are admins registered
-                //mailer.send(email);
+                mailerClient.send(email);
             }
 
         } catch (Exception e) {
@@ -185,7 +185,6 @@ public class Users extends Controller {
     @Restrict({@Group("ADMIN")})
     public Result createUser() {
         final JsonNode json = request().body().asJson();
-        System.out.println();
 
         String email = json.get("email").asText();
 

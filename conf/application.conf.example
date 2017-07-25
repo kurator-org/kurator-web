@@ -59,14 +59,12 @@ db.default.logStatements=true
 # Mailer config
 
 play.mailer {
-    host = "smtp.gmail.com"
-    port = 465
-    ssl = true
-    user = "user"
-    password = "password"
+    host = "localhost"
+    user = "kurator"
 }
 
 play.modules {
+    enabled += "playconfig.ConfigModule",
     enabled += "be.objectify.deadbolt.java.DeadboltModule",
     enabled += "modules.CustomDeadboltHook"
 }
