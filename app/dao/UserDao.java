@@ -51,9 +51,29 @@ public class UserDao {
     }
 
     @Transactional
-    public User createUser(String email, UserGroup group) {
+    public User updateUser(String email, String username, String firstName, String lastName, String password,
+                           String affiliation) {
+        User user = User.find.where().eq("email", email).findUnique();
+
+        user.setUsername(username);
+        user.setFirstname(firstName);
+        user.setLastname(lastName);
+        user.setEmail(email);
+        user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+        user.setRoles(Collections.singletonList(SecurityRole.findByName(DEFAULT_ROLE)));
+        user.setAffiliation(affiliation);
+        user.setLastActive(new Date());
+
+        user.update();
+        return user;
+    }
+
+
+    @Transactional
+    public User createUser(String email, String password, UserGroup group) {
         User user = new User();
 
+        user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         user.setEmail(email);
 
         if (group != null) {

@@ -26,6 +26,9 @@ GET     /logout                                 controllers.Users.logout()
 GET     /register                               controllers.Users.register()
 POST    /register                               controllers.Users.registerSubmit()
 
+GET     /updateinfo                             controllers.Users.preRegister(email: String)
+POST    /updateinfo                             controllers.Users.preRegisterSubmit()
+
 POST    /authenticate                           controllers.Users.authenticate()
 
 GET     /reset                                  controllers.Users.reset()

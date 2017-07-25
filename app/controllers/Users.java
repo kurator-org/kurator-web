@@ -18,6 +18,7 @@ package controllers;
 
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
+import be.objectify.deadbolt.java.actions.SubjectNotPresent;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -29,10 +30,7 @@ import models.db.user.SecurityRole;
 import models.db.user.User;
 import models.db.user.UserGroup;
 import models.db.user.UserUpload;
-import models.forms.ChangePass;
-import models.forms.Login;
-import models.forms.Register;
-import models.forms.ResetPass;
+import models.forms.*;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.mindrot.jbcrypt.BCrypt;
@@ -134,8 +132,10 @@ public class Users extends Controller {
      * Display the register a new user form page.
      */
     public Result register() {
+        Form<Register> form = formFactory.form(Register.class);
+
         return ok(
-                register.render(formFactory.form(Register.class))
+                register.render(form)
         );
     }
 
@@ -162,7 +162,6 @@ public class Users extends Controller {
         List<User> adminUsers = userDao.findUsersByRole(SecurityRole.ADMIN);
 
         try {
-            // TODO: make this work and perhaps factor it out into a service for mailer tasks
             Email email = new Email();
             email.setSubject("New kurator-web user registration: " + user.getUsername());
             email.setFrom("Kurator Admin <from@email.com>");
@@ -190,26 +189,76 @@ public class Users extends Controller {
         );
     }
 
+    public Result preRegister(String email) {
+        Form<PreRegister> form = formFactory.form(PreRegister.class);
+        form.data().put("email", email);
+
+        return ok(
+                preregister.render(form)
+        );
+    }
+
+    public Result preRegisterSubmit() {
+        Form<PreRegister> form = formFactory.form(PreRegister.class).bindFromRequest();
+
+        if (form.hasErrors()) {
+            return badRequest(preregister.render(form));
+        } else {
+            userDao.updateUser(
+                    form.get().getEmail(),
+                    form.get().getUsername(),
+                    form.get().getFirstName(),
+                    form.get().getLastName(),
+                    form.get().getNewPassword(),
+                    form.get().getAffiliation()
+            );
+
+            flash("message", "Successfully updated user info! Please login using your new username.");
+
+            return redirect(
+                    routes.Users.login()
+            );
+        }
+    }
+
     @Restrict({@Group("ADMIN")})
     public Result createUser() {
         final JsonNode json = request().body().asJson();
 
-        String email = json.get("email").asText();
+        String emailAddr = json.get("email").asText();
+        String password = UserUtil.generatePassword();
 
+        User user = null;
         if (json.get("groups").has(0)) {
 
             Long groupId = json.get("groups").get(0).get("id").asLong();
             UserGroup group = userAccessDao.findGroupById(groupId);
-            User user = userDao.createUser(email, group);
 
+            user = userDao.createUser(emailAddr, password, group);
+        } else {
+            user = userDao.createUser(emailAddr, password, null);
+        }
 
+        if (user != null) {
+            // Get the current user for email from
+            User currUser = User.find.byId(Long.parseLong(session().get("uid")));
+
+            Email email = new Email();
+            email.setSubject("Invitation to register for kurator-web");
+            email.setFrom(currUser.getFirstname() + " " + currUser.getLastname() + " <" + currUser.getEmail() + ">");
+            email.addTo(emailAddr);
+
+            email.setBodyText("You've been invited by " + currUser.getFirstname() + " " + currUser.getLastname() +
+                    " to register an account for kurator-web. Your temporary password is: " + password + "\n\n" +
+                    "Use the following link to update your user info and login: "
+                    + APPLICATION_URL + "updateinfo?email=" + emailAddr);
+
+            mailerClient.send(email);
 
             return ok(Json.toJson(user));
         } else {
-            User user = userDao.createUser(email, null);
-            return ok(Json.toJson(user));
+            return internalServerError();
         }
-
     }
 
     @SubjectPresent

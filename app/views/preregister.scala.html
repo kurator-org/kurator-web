@@ -1,0 +1,86 @@
+@import models.forms.PreRegister
+@(form: Form[PreRegister])
+
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>Kurator Web</title>
+
+      <!-- Bootstrap CSS -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/lib/bootstrap/bootstrap.min.css")">
+
+      <!-- Application CSS -->
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/landing.css")">
+
+
+  </head>
+
+  <body>
+
+<div class="container">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <h1>Welcome to Kurator</h1>
+
+      <p>Kurator is a project to develop a provenance-enabled Workflow Platform and Toolkit to Curate
+        Biodiversity Data.</p>
+      <p>See <a href="@routes.Application.index()">home page</a> for more info.</p>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+  <div class="panel-body">
+    <div style="float: left"><h3 style="display: inline;">Update Info and Login</h3></div>
+    <div style="clear: both"></div>
+    <br />
+
+    @if(flash.containsKey("message")) {
+      <div class="alert alert-info" role="alert">@flash.get("message")</div>
+    }
+
+    @if(form.hasGlobalErrors) {
+      <div class="alert alert-danger" role="alert">@form.globalError.message</div>
+    }
+
+    @helper.form(routes.Users.preRegisterSubmit()) {
+      <div>
+
+        <div class="form-group">
+          <input type="email" class="form-control" id="email" name="email" placeholder="Email" readonly="readonly" value="@form("email").value" />
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" id="password" placeholder="Password" name="password" required />
+        </div>
+
+        <hr />
+
+        <div class="form-group">
+          <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" value="@form("firstName").value" />
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" value="@form("lastName").value" />
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="@form("username").value" required />
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" id="newPassword" placeholder="Reset Password" name="newPassword" required />
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword" required />
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" id="affiliation" placeholder="Affiliation" name="affiliation" value="@form("affiliation").value" required />
+
+          <br />
+          <button class="btn btn-primary" type="submit">Submit and Login</button><div style="float:right">
+        }
+  </div>
+</div>
+</div>
+  </div>
+</div>
+
+  </body>
+</html>
