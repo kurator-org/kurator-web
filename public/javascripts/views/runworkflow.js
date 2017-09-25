@@ -11,6 +11,10 @@ define([
         el: '#run-modal',
         template: _.template(runWorkflowTpl),
 
+        events: {
+            'submit #run-workflow': 'runWorkflow'
+        },
+
         render: function () {
             $('#run-modal-title').html(this.model.get('title'));
             $('#run-modal-body').html(this.template(this.model.toJSON()));
@@ -23,28 +27,7 @@ define([
                 $(this).html(fileSelectView.el);
             });
 
-            $('#run-workflow').submit(function (event) {
-                event.preventDefault();
-
-                //grab all form data
-                var formData = new FormData($(this)[0]);
-
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: 'POST',
-                    data: formData,
-                    async: false,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        $('.progress').hide();
-                    }
-                });
-
-                return this;
-            });
-
+            // TODO: refactor these as events in backbone
             $('#run-modal').on('hidden.bs.modal', function (e) {
                 app.router.navigate("#", {trigger: true});
             });
@@ -88,6 +71,33 @@ define([
              });*/
 
             //this.$el.html(this.template(this.model.toJSON()));
+        },
+
+        runWorkflow: function (event) {
+            console.log("submit");
+
+            event.preventDefault();
+
+            //grab all form data
+            var formData = new FormData(event.target);
+
+            var name = this.model.get('name');
+            console.log(name);
+
+            $.ajax({
+                url: jsRoutes.controllers.Workflows.runWorkflow(name).url,
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $('.progress').hide();
+                }
+            });
+
+            return this;
         }
     });
 
