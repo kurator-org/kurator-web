@@ -28,19 +28,19 @@ define([
                 case "RUNNING":
                     $status.addClass('label')
                         .addClass('label-default')
-                        .html('Complete')
+                        .html('Running')
                         .css('font-size', '0.9em');
                     break;
                 case "SUCCESS":
                     $status.addClass('label')
                         .addClass('label-success')
-                        .html('Complete')
+                        .html('Success')
                         .css('font-size', '0.9em');
                     break;
                 case "ERRORS":
                     $status.addClass('label')
                         .addClass('label-danger')
-                        .html('Complete')
+                        .html('Errors')
                         .css('font-size', '0.9em');
                     break;
                 default:
