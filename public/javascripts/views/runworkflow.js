@@ -85,7 +85,7 @@ define([
             console.log(name);
 
             $.ajax({
-                url: jsRoutes.controllers.Workflows.runWorkflow(name).url,
+                url: jsRoutes.controllers.AsyncController.scheduleRun(name).url,
                 type: 'POST',
                 data: formData,
                 async: false,

@@ -55,10 +55,21 @@ public class WorkflowRunner {
         System.out.println(options.toJsonString());
         System.out.println();
 
+        // Create workspace if it doesn't exist
+        File workspace = new File(options.getWorkspace());
+        if (!workspace.exists()) {
+            workspace.mkdirs();
+        }
+
         // Create run result, retain a copy of the input options and set initial status to running
         RunResult result = new RunResult();
         result.setOptions(options);
         result.setStatus(Status.RUNNING);
+
+        // Store run log as file
+        File log = new File(options.getWorkspace() + "/" + "output.log");
+        result.setRunlog(log);
+        builder.redirectError(log);
 
         // Start the workflow run as a process and get the input and output streams
         Process process = builder.start();

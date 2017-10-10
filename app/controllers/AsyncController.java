@@ -56,33 +56,22 @@ public class AsyncController extends Controller {
     public Result scheduleRun(String name) {
         WorkflowDefinition workflowDef = Workflows.formDefinitionForWorkflow(name);
 
+        // TODO: save user object in global state somehow
+        // Get the current logged in user
+        User user = User.find.byId(Long.parseLong(session().get("uid")));
+        Map<String, Object> settings = Workflows.settingsFromConfig(workflowDef, user);
+
         // Process form submission as multipart form data
         Http.MultipartFormData body = request().body().asMultipartFormData();
 
         for (Object obj : body.getFiles()) {
             Http.MultipartFormData.FilePart filePart = (Http.MultipartFormData.FilePart) obj;
 
-            // Create user file upload object
-            File src = (File) filePart.getFile();
-            File file = null;
-            try {
-                file = File.createTempFile(filePart.getFilename() + "-", ".csv");
-                FileUtils.copyFile(src, file);
-            } catch (IOException e) {
-                throw new RuntimeException("Could not create temp file for upload", e);
-            }
-
-            UserUpload uploadFile = userDao.createUserUpload(Long.parseLong(session().get("uid")), filePart.getFilename(),
-                    file.getAbsolutePath());
-
-
             BasicField fileInputField = workflowDef.getField(filePart.getKey());
-            fileInputField.setValue(uploadFile);
-        }
+            File file = createWorkspaceFile(settings, filePart);
 
-        // TODO: save user object in global state somehow
-        // Get the current logged in user
-        User user = User.find.byId(Long.parseLong(session().get("uid")));
+            fileInputField.setValue(file);
+        }
 
         //  Set the form definition field values from the request data
         Map<String, String[]> data = body.asFormUrlEncoded();
@@ -98,13 +87,10 @@ public class AsyncController extends Controller {
         }
 
         // Transfer form field data to workflow settings map
-        Map<String, Object> settings = new HashMap<>();
 
         for (BasicField field : workflowDef.getFields()) {
             settings.put(field.name, field.value());
         }
-
-        settings.putAll(Workflows.settingsFromConfig(workflowDef, user));
 
         // Update the workflow model object and persist to the db
         Workflow workflow = workflowDao.updateWorkflow(workflowDef.getName(), workflowDef.getTitle(),
@@ -289,5 +275,22 @@ public class AsyncController extends Controller {
         }
 
         in.close();
+    }
+
+    private File createWorkspaceFile(Map<String, Object> settings, Http.MultipartFormData.FilePart src) {
+        String workspace = (String) settings.get("workspace");
+
+        if (workspace == null) {
+            throw new RuntimeException("Workspace parameter not present in settings! Nowhere to put the inputfile.");
+        }
+
+        try {
+            File workspaceFile = Paths.get(workspace, src.getFilename()).toFile();
+            FileUtils.copyFile((File) src.getFile(), workspaceFile);
+
+            return workspaceFile;
+        } catch (IOException e) {
+            throw new RuntimeException("Error copying uploaded file to workspace: " + workspace, e);
+        }
     }
 }

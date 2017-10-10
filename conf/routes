@@ -16,8 +16,6 @@ GET     /auth                                   controllers.Users.checkAuth()
 
 GET     /admin                                  controllers.Application.admin()
 
-POST     /async/*name                         controllers.AsyncController.scheduleRun(name: String)
-
 # User authentication and user data routes, login, registration, password reset
 # ~~~~
 GET     /login                                  controllers.Users.login()
@@ -50,7 +48,7 @@ POST    /admin/users/group                      controllers.Users.addUserToGroup
 
 # Workflow management routes, package deployment and workflow metadata
 # ~~~~
-POST    /workflow/*name                         controllers.Workflows.runWorkflow(name: String)
+POST    /workflow/*name                         controllers.AsyncController.scheduleRun(name: String)
 
 GET     /workflows/deploy                       controllers.Workflows.deploy()
 POST    /workflows/deploy                       controllers.Workflows.deployWorkflows()
