@@ -10,6 +10,7 @@ import models.db.workflow.*;
 import models.json.ArtifactDef;
 import models.json.WorkflowDefinition;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.kurator.akka.data.WorkflowProduct;
 import play.Logger;
 import play.libs.Json;
@@ -212,8 +213,8 @@ public class AsyncController extends Controller {
             //File yamlFile = new File(yamlFile);
 
             // Create output error log file
-            ResultFile log = workflowDao.createResultFile("runlog.txt", "runlog", "The output log for this run", result.getRunlog().getAbsolutePath());
-            resultFiles.add(log);
+            //ResultFile log = workflowDao.createResultFile("runlog.txt", "runlog", "The output log for this run", result.getRunlog().getAbsolutePath());
+            //resultFiles.add(log);
 
             // Create readme file
             resultFiles.add(createReadmeFile(workflowDef.getName(), run.getStartTime(), endTime));
@@ -222,9 +223,12 @@ public class AsyncController extends Controller {
             File archive = createArchive(resultFiles);
             System.out.println("created archive");
 
+            // TODO: this is a hack for now, modify WorkflowResult to hold a reference to log file path instead
+            String outputText = logFileToString(result.getRunlog().getAbsolutePath());
+
             // Persist the result to the db and update the workflow run
             WorkflowResult workflowResult = workflowDao.createWorkflowResult(resultFiles, archive.getAbsolutePath(),
-                    dqReportFile, "", "");
+                    dqReportFile, outputText, "");
 
             // Default status is success unless errors are present in the error log
             Status status = result.getStatus();
@@ -232,6 +236,14 @@ public class AsyncController extends Controller {
             workflowDao.updateRunResult(run, workflowResult, status, endTime);
         } catch (Exception e) {
             throw new RuntimeException("Failure during processing of workflow result", e);
+        }
+    }
+
+    private String logFileToString(String logfile) {
+        try {
+            return IOUtils.toString(new FileInputStream(logfile));
+        } catch (IOException e) {
+            return "";
         }
     }
 

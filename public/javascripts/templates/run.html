@@ -22,7 +22,11 @@
 
     <% if (run.result && run.result.outputText) { %>
     <a href="<%= jsRoutes.controllers.Workflows.outputLog(run.id).url %>" data-toggle="tooltip" data-placement="top" title="Output Log">
+        <% if (run.status == "ERRORS") { %>
+        <span class="glyphicon glyphicon-exclamation-sign" style="font-size: 1.3em; color: #777"></span>
+        <% } else { %>
         <span class="glyphicon glyphicon-info-sign" style="font-size: 1.3em; color: #777"></span>
+        <% } %>
     </a>
     <% } %>
 
