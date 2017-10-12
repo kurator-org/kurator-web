@@ -48,6 +48,12 @@ public class WorkflowRunner {
 
         // The process builder will run the kurator jar in a separate process
         ProcessBuilder builder = new ProcessBuilder(JAVA_BIN, "-cp", KURATOR_JAR, "org.kurator.akka.KuratorWeb");
+        Map<String, String> env = builder.environment();
+
+        // TODO: Hardcoded for now, get these variables instead of the JYTHON ones
+        env.put("PYTHONPATH", "/home/lowery/IdeaProjects/kurator-validation/packages");
+        env.put("LD_LIBRARY_PATH", "/home/lowery/IdeaProjects/kurator-akka/lib/native");
+
         System.out.println("export JYTHON_HOME=" + options.getConfig().get("jython_home"));
         System.out.println("export JYTHON_PATH=" + options.getConfig().get("jython_path"));
         System.out.println("java -jar " + KURATOR_JAR + " " + options.toCmdString());

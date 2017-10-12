@@ -43,7 +43,7 @@ public class IntegrationTests {
     }
 
     @Parameterized.Parameters
-    public static List<RunOptions> options() {
+    public static Collection<Object[]> options() {
         List<RunOptions> options = new ArrayList<>();
 
         String logLevel = "DEBUG";
@@ -302,7 +302,11 @@ public class IntegrationTests {
 
         ));
 
+        Collection<Object[]> result = new ArrayList<>();
+        for (RunOptions opt : options) {
+            result.add(new Object[] { opt });
+        }
 
-        return options;
+        return result;
     }
 }
