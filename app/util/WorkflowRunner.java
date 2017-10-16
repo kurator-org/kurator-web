@@ -50,12 +50,15 @@ public class WorkflowRunner {
         ProcessBuilder builder = new ProcessBuilder(JAVA_BIN, "-cp", KURATOR_JAR, "org.kurator.akka.KuratorWeb");
         Map<String, String> env = builder.environment();
 
-        // TODO: Hardcoded for now, get these variables instead of the JYTHON ones
-        env.put("PYTHONPATH", "/home/lowery/IdeaProjects/kurator-validation/packages");
-        env.put("LD_LIBRARY_PATH", "/home/lowery/IdeaProjects/kurator-akka/lib/native");
+        env.put("PYTHONPATH", options.getConfig().get("python_path"));
+        env.put("LD_LIBRARY_PATH", options.getConfig().get("ld_library_path"));
 
-        System.out.println("export JYTHON_HOME=" + options.getConfig().get("jython_home"));
-        System.out.println("export JYTHON_PATH=" + options.getConfig().get("jython_path"));
+        //System.out.println("export JYTHON_HOME=" + options.getConfig().get("jython_home"));
+        //System.out.println("export JYTHON_PATH=" + options.getConfig().get("jython_path"));
+
+        System.out.println("export PYTHON_PATH=" + options.getConfig().get("python_path"));
+        System.out.println("export LD_LIBRARY_PATH=" + options.getConfig().get("ld_library_path"));
+
         System.out.println("java -jar " + KURATOR_JAR + " " + options.toCmdString());
         System.out.println();
         System.out.println(options.toJsonString());

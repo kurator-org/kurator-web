@@ -2,6 +2,8 @@ package controllers;
 
 import akka.actor.ActorSystem;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.typesafe.config.ConfigFactory;
+import config.ConfigManager;
 import dao.UserDao;
 import dao.WorkflowDao;
 import models.db.user.User;
@@ -36,8 +38,8 @@ import java.util.zip.ZipOutputStream;
 
 public class AsyncController extends Controller {
     // Get jython home and path directories relative to the current directory
-    private static final String JYTHON_HOME = new File("jython").getAbsolutePath();
-    private static final String JYTHON_PATH = new File("packages").getAbsolutePath();
+    //private static final String JYTHON_HOME = new File("jython").getAbsolutePath();
+    //private static final String JYTHON_PATH = new File("packages").getAbsolutePath();
 
     // Get the workspace basedir relative to the current directory
     private static final String WORKSPACE_DIR = new File("workspace").getAbsolutePath();
@@ -110,8 +112,16 @@ public class AsyncController extends Controller {
     private long runYamlWorkflow(String runName, Workflow workflow, WorkflowDefinition workflowDef, Map<String, Object> parameters, User user) {
         // Set up workflow runner configuration
         Map<String, String> config = new HashMap<>();
-        config.put("jython_home", JYTHON_HOME);
-        config.put("jython_path", JYTHON_PATH);
+        //config.put("jython_home", JYTHON_HOME);
+        //config.put("jython_path", JYTHON_PATH);
+
+        ConfigManager configManager = ConfigManager.getInstance();
+
+        String pythonPath = ConfigFactory.defaultApplication().getString("python.path");
+        String libraryPath = ConfigFactory.defaultApplication().getString("library.path");
+
+        config.put("python_path", pythonPath);
+        config.put("ld_library_path", libraryPath);
 
         Date startTime = new Date(); // Workflow run start time
         WorkflowRun run = workflowDao.createWorkflowRun(runName, workflow, user, startTime);
