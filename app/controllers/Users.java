@@ -159,9 +159,7 @@ public class Users extends Controller {
         flash("message", "New user registration successful! The admin will send an email notification when your " +
                 "account has been activated.");
 
-        //List<User> adminUsers = userDao.findUsersByRole(SecurityRole.ADMIN);'
-        List<User> adminUsers = new ArrayList<>();
-        adminUsers.add(User.find.where().eq("username", "admin").findUnique());
+        List<User> adminUsers = userDao.findUsersByRole(SecurityRole.ADMIN);
 
         try {
             Email email = new Email();

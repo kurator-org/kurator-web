@@ -21,8 +21,18 @@
 
 <h3>Files</h3>
 
-<div class="list-group" style="position: absolute">
+<table class="uploads-table">
     <% _.each(uploads, function(upload) { %>
-    <a href="<%= jsRoutes.controllers.Users.downloadFile(upload.id).url %>" class="list-group-item"><%= upload.filename %> &nbsp;&nbsp;&nbsp;&nbsp; <button class="btn btn-sm btn-primary"><b>Share</b> <span class="glyphicon glyphicon-share"></span></button> </a>
+    <tr>
+        <td>
+            <%= upload.filename %>
+        </td>
+        <td>
+            <a class="btn btn-sm btn-primary" href="<%= jsRoutes.controllers.Users.downloadFile(upload.id).url %>"><span class="glyphicon glyphicon-download"></span> <b>Download</b></a>
+        </td>
+        <td>
+            <button class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-trash"></span> <b>Remove</b></button>
+        </td>
+    </tr>
     <% }); %>
-</div>
+</table>
