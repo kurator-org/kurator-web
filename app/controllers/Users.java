@@ -159,12 +159,14 @@ public class Users extends Controller {
         flash("message", "New user registration successful! The admin will send an email notification when your " +
                 "account has been activated.");
 
-        List<User> adminUsers = userDao.findUsersByRole(SecurityRole.ADMIN);
+        //List<User> adminUsers = userDao.findUsersByRole(SecurityRole.ADMIN);'
+        List<User> adminUsers = new ArrayList<>();
+        adminUsers.add(User.find.where().eq("username", "admin").findUnique());
 
         try {
             Email email = new Email();
             email.setSubject("New kurator-web user registration: " + user.getUsername());
-            email.setFrom("Kurator Admin <from@email.com>");
+            email.setFrom("Kurator Admin <datakurator@gmail.com>");
 
             for (User admin : adminUsers) {
                 if (admin.getEmail() != null) {
@@ -176,7 +178,7 @@ public class Users extends Controller {
                     user.getUsername() + " and email: " + user.getEmail() + " has requested account " +
                     "authorization for kurator-web.");
 
-            if (adminUsers.size() > 1) { // send only if there are admins registered
+            if (adminUsers.size() > 0) { // send only if there are admins registered
                 mailerClient.send(email);
             }
 
@@ -320,9 +322,25 @@ public class Users extends Controller {
      */
     @Restrict({@Group("ADMIN")})
     public Result updateUser(Long id) {
+        boolean isActive = User.find.byId(id).isActive();
+
         final JsonNode json = request().body().asJson();
         User user = Json.fromJson(json, User.class);
         user.update();
+
+        // If the user was activated
+        if (!isActive && user.isActive()) {
+            Email email = new Email();
+            email.setSubject("New user activation for kurator-web");
+            email.setFrom("Kurator Admin <datakurator@gmail.com>");
+            email.addTo(user.getEmail());
+
+            email.setBodyText("Hello " + user.getFirstname() + ",\n\n Your kurator-web user account, " + user.getUsername() + ", " +
+                    "has just been activated! Use the following link with your username and password to login: "
+                    + APPLICATION_URL + "login.");
+
+            mailerClient.send(email);
+        }
 
         // TODO: Add success message to json response or handle errors
 
