@@ -26,6 +26,7 @@ import config.WorkflowConfig;
 import dao.UserDao;
 import dao.WorkflowDao;
 import models.db.user.UserUpload;
+import models.forms.ChangePass;
 import models.json.WorkflowDefinition;
 import play.Routes;
 import play.libs.Json;
@@ -41,6 +42,8 @@ import views.html.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static play.data.Form.form;
 
 /**
  * The main application controller
@@ -96,6 +99,15 @@ public class Application extends Controller {
     public Result index() {
         return ok(
                 index.render()
+        );
+    }
+
+    /**
+     * User settings page
+     */
+    public Result settings() {
+        return ok(
+                settings.render(form(ChangePass.class))
         );
     }
 
