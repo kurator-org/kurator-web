@@ -38,6 +38,10 @@ POST    /reset                                  controllers.Users.resetPassword(
 GET     /uploads                                controllers.Users.listUploads()
 GET     /download                               controllers.Users.downloadFile(id: Long)
 
+# User settings routes
+# ~~~~
+POST     /settings/changepw                     controllers.Users.changePassword()
+
 # Admin and user management, user accounts and user groups
 # ~~~~
 GET     /admin/users                            controllers.Users.manage()

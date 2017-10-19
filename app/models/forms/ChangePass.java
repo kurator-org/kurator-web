@@ -21,6 +21,7 @@ import models.db.user.User;
 import util.UserUtil;
 
 import static play.mvc.Controller.request;
+import static play.mvc.Http.Context.Implicit.session;
 
 /**
  * The change password form object (user administration page)
@@ -33,10 +34,12 @@ public class ChangePass {
     private String confirmPassword;
 
     public String validate() {
-        User user = UserUtil.authenticate(userDao.findUserByUsername(request().username()), password);
-
+        long uid = Long.parseLong(session().get("uid"));
+        User user = UserUtil.authenticate(User.find.byId(uid), oldPassword);
+        System.out.println(User.find.byId(uid).getUsername());
+        System.out.println(oldPassword);
         if (user == null) {
-            return "Current password is invalid.";
+            return "Current password is incorrect.";
         }
 
         if (!password.equals(confirmPassword)) {

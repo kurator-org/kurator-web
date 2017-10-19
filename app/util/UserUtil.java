@@ -57,7 +57,7 @@ public class UserUtil {
      * Utility for generating guest accounts and sql statements for adding them to the db.
      */
     public static void main(String[] args) {
-        String pass = generatePassword();
+       /* String pass = generatePassword();
 
         Map<String, String> users = new LinkedHashMap<>();
 
@@ -78,6 +78,9 @@ public class UserUtil {
 
         for (String username : users.keySet()) {
             System.out.println(username + " : " + users.get(username));
-        }
+        }*/
+
+        String hash = BCrypt.hashpw("password", BCrypt.gensalt());
+        System.out.println(hash);
     }
 }

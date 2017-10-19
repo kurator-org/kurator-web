@@ -56,6 +56,8 @@ import java.util.Map;
 
 import views.html.*;
 
+import static play.mvc.Http.Context.Implicit.session;
+
 public class Users extends Controller {
 
     private static String APPLICATION_URL;
@@ -383,6 +385,38 @@ public class Users extends Controller {
 
         return redirect(
                 routes.Users.reset()
+        );
+    }
+
+    public Result changePassword() {
+        Form<ChangePass> form = formFactory.form(ChangePass.class).bindFromRequest();
+
+        if (form.hasErrors()) {
+            return badRequest(settings.render(form));
+        }
+
+        ChangePass changePass = form.get();
+
+        // Get the currently logged in user
+        long uid = Long.parseLong(session().get("uid"));
+        User user = User.find.byId(uid);
+
+        System.out.println("Username:" + user.getUsername());
+        System.out.println("old Password:" + user.getPassword());
+
+        System.out.println("new Password:" + changePass.getPassword());
+
+        // Update the password
+        String pass = changePass.getPassword();
+        String hash = BCrypt.hashpw(pass, BCrypt.gensalt());
+
+        user.setPassword(hash);
+        user.save();
+
+        flash("message", "Successfully updated your password.");
+
+        return redirect(
+                routes.Application.settings()
         );
     }
 
