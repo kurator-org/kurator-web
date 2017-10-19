@@ -34,6 +34,9 @@
     <a href="<%= jsRoutes.controllers.Workflows.errorLog(run.id).url %>" data-toggle="tooltip" data-placement="top" title="Error Log">
         <span class="glyphicon glyphicon-exclamation-sign" style="font-size: 1.3em; color: #777"></span>
     </a>
+    <a href="<%= jsRoutes.controllers.Workflows.reportRun(run.id).url %>" data-toggle="tooltip" data-placement="top" title="Report an issue with this run">
+        <i class="fa fa-bug" aria-hidden="true"></i>
+    </a>
     <% } %>
 
     <% } %>
