@@ -100,6 +100,15 @@ public class Application extends Controller {
     }
 
     /**
+     * User settings page
+     */
+    public Result settings() {
+        return ok(
+                settings.render()
+        );
+    }
+
+    /**
      * The page for the workflow builder tool.
      */
     @SubjectPresent
