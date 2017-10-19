@@ -36,8 +36,7 @@ public class ChangePass {
     public String validate() {
         long uid = Long.parseLong(session().get("uid"));
         User user = UserUtil.authenticate(User.find.byId(uid), oldPassword);
-        System.out.println(User.find.byId(uid).getUsername());
-        System.out.println(oldPassword);
+
         if (user == null) {
             return "Current password is incorrect.";
         }

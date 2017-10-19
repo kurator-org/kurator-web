@@ -35,9 +35,8 @@
             <ul class="dropdown-menu">
               <li><a href="settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
               <li><a href="logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-              <li role="separator" class="divider"></li>
-
               @if(session.get("user_role").equals("ADMIN")) {
+                <li role="separator" class="divider"></li>
                 <li><a id="view-as-user" href="#" data-toggle="modal" data-target="#user-select-modal"><span class="glyphicon glyphicon-eye-open"></span> View as User</a></li>
                 <li><a id="view-as-self" style="display: none" href="#"><span class="glyphicon glyphicon-eye-close"></span>View as Self</a></li>
               }

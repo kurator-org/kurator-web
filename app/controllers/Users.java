@@ -417,11 +417,6 @@ public class Users extends Controller {
         long uid = Long.parseLong(session().get("uid"));
         User user = User.find.byId(uid);
 
-        System.out.println("Username:" + user.getUsername());
-        System.out.println("old Password:" + user.getPassword());
-
-        System.out.println("new Password:" + changePass.getPassword());
-
         // Update the password
         String pass = changePass.getPassword();
         String hash = BCrypt.hashpw(pass, BCrypt.gensalt());
