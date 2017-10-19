@@ -177,8 +177,7 @@ html, body {
 }
 
 .uploads-table td {
-    padding-left: 5px;
-    padding-right: 5px;
+    padding: 5px;
 }
 
 /** Spinners/loaders **/

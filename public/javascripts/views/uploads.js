@@ -11,7 +11,8 @@ define([
 
         events: {
             'submit #upload-file': 'uploadFile',
-            'change #upload': 'fileSelected'
+            'change #upload': 'fileSelected',
+            'click .remove-file': 'removeFile'
         },
 
         initialize: function () {
@@ -70,6 +71,23 @@ define([
 
 
             console.log(event);
+
+            return this;
+        },
+
+        removeFile: function (event) {
+            var id = $(event.target).attr('id');
+
+            var that = this;
+            $.ajax({
+                url: jsRoutes.controllers.Workflows.deleteUpload(id).url,
+                type: 'POST',
+                cache: false,
+                contentType: false,
+                processData: false
+            }).done(function (data) {
+                that.collection.fetch();
+            });
 
             return this;
         },

@@ -192,6 +192,14 @@ public class Workflows extends Controller {
         }
     }
 
+    public Result deleteUpload(long id) {
+        UserUpload userUpload = userDao.removeUserUpload(id);
+
+        flash("message", "Successfully removed uploaded file: " + userUpload.getFileName());
+
+        return ok("{ }");
+    }
+
     public Result upload() {
         // Get the current logged in user
         User user = User.find.byId(Long.parseLong(session().get("uid")));

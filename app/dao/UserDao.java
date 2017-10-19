@@ -24,6 +24,7 @@ import models.db.user.UserGroup;
 import models.db.user.UserUpload;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -101,6 +102,20 @@ public class UserDao {
         uploadFile.save();
 
         return uploadFile;
+    }
+
+    public UserUpload removeUserUpload(long id) {
+        UserUpload userUpload = UserUpload.find.byId(id);
+
+        File file = new File(userUpload.getAbsolutePath());
+
+        if (file.exists()) {
+            file.delete();
+        }
+
+        userUpload.delete();
+
+        return userUpload;
     }
 
     public List<User> findUsersByRole(String role) {

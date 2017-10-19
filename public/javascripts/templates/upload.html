@@ -31,7 +31,7 @@
             <a class="btn btn-sm btn-primary" href="<%= jsRoutes.controllers.Users.downloadFile(upload.id).url %>"><span class="glyphicon glyphicon-download"></span> <b>Download</b></a>
         </td>
         <td>
-            <button class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-trash"></span> <b>Remove</b></button>
+            <button id="<%= upload.id %>" class="btn btn-sm btn-primary remove-file"><span class="glyphicon glyphicon-trash"></span> <b>Remove</b></button>
         </td>
     </tr>
     <% }); %>

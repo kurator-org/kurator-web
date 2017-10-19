@@ -57,8 +57,10 @@ public class Application extends Controller {
                         routes.javascript.Users.checkAuth(),
 
                         routes.javascript.Workflows.list(),
-                        //routes.javascript.Workflows.runWorkflow(),
+
                         routes.javascript.Workflows.upload(),
+                        routes.javascript.Workflows.deleteUpload(),
+
                         routes.javascript.AsyncController.scheduleRun(),
                         routes.javascript.Workflows.status(),
                         routes.javascript.Workflows.removeRuns(),
