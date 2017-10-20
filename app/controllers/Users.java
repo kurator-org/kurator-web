@@ -244,18 +244,21 @@ public class Users extends Controller {
         if (user != null) {
             // Get the current user for email from
             User currUser = User.find.byId(Long.parseLong(session().get("uid")));
+            try {
+                Email email = new Email();
+                email.setSubject("Invitation to register for kurator-web");
+                email.setFrom(currUser.getFirstname() + " " + currUser.getLastname() + " <" + currUser.getEmail() + ">");
+                email.addTo(emailAddr);
 
-            Email email = new Email();
-            email.setSubject("Invitation to register for kurator-web");
-            email.setFrom(currUser.getFirstname() + " " + currUser.getLastname() + " <" + currUser.getEmail() + ">");
-            email.addTo(emailAddr);
+                email.setBodyText("You've been invited by " + currUser.getFirstname() + " " + currUser.getLastname() +
+                        " to register an account for kurator-web. Your temporary password is: " + password + "\n\n" +
+                        "Use the following link to update your user info and login: "
+                        + APPLICATION_URL + "updateinfo?email=" + emailAddr);
 
-            email.setBodyText("You've been invited by " + currUser.getFirstname() + " " + currUser.getLastname() +
-                    " to register an account for kurator-web. Your temporary password is: " + password + "\n\n" +
-                    "Use the following link to update your user info and login: "
-                    + APPLICATION_URL + "updateinfo?email=" + emailAddr);
-
-            mailerClient.send(email);
+                mailerClient.send(email);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             return ok(Json.toJson(user));
         } else {
@@ -328,18 +331,22 @@ public class Users extends Controller {
         User user = Json.fromJson(json, User.class);
         user.update();
 
-        // If the user was activated
-        if (!isActive && user.isActive()) {
-            Email email = new Email();
-            email.setSubject("New user activation for kurator-web");
-            email.setFrom("Kurator Admin <datakurator@gmail.com>");
-            email.addTo(user.getEmail());
+        try {
+            // If the user was activated
+            if (!isActive && user.isActive()) {
+                Email email = new Email();
+                email.setSubject("New user activation for kurator-web");
+                email.setFrom("Kurator Admin <datakurator@gmail.com>");
+                email.addTo(user.getEmail());
 
-            email.setBodyText("Hello " + user.getFirstname() + ",\n\n Your kurator-web user account, " + user.getUsername() + ", " +
-                    "has just been activated! Use the following link with your username and password to login: "
-                    + APPLICATION_URL + "login.");
+                email.setBodyText("Hello " + user.getFirstname() + ",\n\n Your kurator-web user account, " + user.getUsername() + ", " +
+                        "has just been activated! Use the following link with your username and password to login: "
+                        + APPLICATION_URL + "login.");
 
-            mailerClient.send(email);
+                mailerClient.send(email);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         // TODO: Add success message to json response or handle errors
@@ -387,16 +394,19 @@ public class Users extends Controller {
         user.setPassword(hash);
         user.save();
 
-        Email email = new Email();
-        email.setSubject("Kurator-web password reset: " + username);
-        email.setFrom("Kurator Admin <datakurator@gmail.com>");
-        email.addTo(emailAddr);
+        try {
+            Email email = new Email();
+            email.setSubject("Kurator-web password reset: " + username);
+            email.setFrom("Kurator Admin <datakurator@gmail.com>");
+            email.addTo(emailAddr);
 
-        email.setBodyText("Password reset request received for user account " + username + ". Temporary password " +
-                "assigned: " + pass);
+            email.setBodyText("Password reset request received for user account " + username + ". Temporary password " +
+                    "assigned: " + pass);
 
-        mailerClient.send(email);
-
+            mailerClient.send(email);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         flash("message", "Password reset email sent to: " + emailAddr);
 
         return redirect(
