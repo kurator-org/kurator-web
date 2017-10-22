@@ -28,7 +28,7 @@ define([
             this.listenTo(view, 'dropped', this.droppedUser);
             // TODO: dispose of views at some point?
 
-            this.$('#user-table').append(view.render().el);
+            this.$('#user-table tbody').append(view.render().el);
         },
 
         render: function() {
