@@ -30,6 +30,66 @@ html, body {
     padding: 5px;
 }
 
+/** Spinners/loaders **/
+
+/**
+   Coded by /u/j0be in scss.
+   See scss source here -> http://codepen.io/j0be/pen/MKRVyN
+*/
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    50% { background: #777; }
+}
+
+.loading {
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    border: 0.25rem solid rgba(119, 119, 119, 0.2);
+    border-top-color: #777;
+    animation: spin 1s infinite linear;
+}
+
+.loading--double {
+    border-style: double;
+    border-width: .5rem;
+}
+
+.loading-pulse {
+    position: relative;
+    width: 6px;
+    height: 24px;
+    background: rgba(119, 119, 119, 0.2);
+    animation: pulse 750ms infinite;
+    animation-delay: 250ms;
+}
+
+.loading-pulse:before, .loading-pulse:after {
+    content: '';
+    position: absolute;
+    display: block;
+    height: 16px;
+    width: 6px;
+    background: rgba(119, 119, 119, 0.2);
+    top: 50%;
+    transform: translateY(-50%);
+    animation: pulse 750ms infinite;
+}
+
+.loading-pulse:before {
+    left: -12px;
+}
+
+.loading-pulse:after {
+    left: 12px;
+    animation-delay: 500ms;
+}
 
 /**********************/
 /* Workflow list page */
