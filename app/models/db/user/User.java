@@ -73,7 +73,8 @@ public class User extends Model implements Subject {
     public List<WorkflowRun> workflowRuns;
 
     private boolean active;
-    
+
+    @Transient
     @Formula(select = "_b${ta}.run_count", join = "join (select owner_id, count(*) as run_count from workflow_run group by owner_id) as _b${ta} on _b${ta}.owner_id = ${ta}.id")
     public int runCount;
 

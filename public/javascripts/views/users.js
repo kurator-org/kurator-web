@@ -10,7 +10,7 @@ define([
         template: _.template(usersTpl),
 
         events: {
-
+            'click .page-btn': 'viewPage'
         },
 
         initialize: function() {
@@ -20,6 +20,7 @@ define([
             this.collection.fetch();
 
             this.filter = { }; // all users
+            this.currPage = 0;
         },
 
         addUser: function (user) {
@@ -32,7 +33,7 @@ define([
         },
 
         render: function() {
-            this.$el.html(this.template({ }));
+            users = [ ];
 
             // apply the filter to the collection and display
             this.collection.each(function (user) {
@@ -42,27 +43,44 @@ define([
                     var group = app.currentGroups.get(groupId);
 
                     if (user.hasGroup(group)) {
-                        this.addUser(user);
+                        users.push(user);
                     }
                 } else if (this.filter.role) {
                     var role = this.filter.role;
 
                     if (user.get('role') == role) {
-                        this.addUser(user);
+                        users.push(user);
                     }
                 } else if('active' in this.filter) {
                     var active = this.filter.active;
-                    console.log(user.get('active'));
+
                     if (user.get('active') == active) {
-                        this.addUser(user);
+                        users.push(user);
                     }
                 } else {
                     // display all users
-                    this.addUser(user);
+                    users.push(user);
                 }
 
             }, this);
 
+            var total = users.length;
+            var pages = total/10;
+
+            this.$el.html(this.template({ total : users.length, pages: pages }));
+
+            var start = (this.currPage * 10);
+            var limit = (start + 10) < users.length ? 10 : users.length - start;
+
+            for (i = 0; i < limit; i++) {
+                var user = users[start + i];
+                this.addUser(user);
+            }
+
+            $('.start').html(start+1);
+            $('.limit').html(start+limit);
+
+            // Set total user count
             return this;
         },
 
@@ -72,6 +90,11 @@ define([
 
         droppedUser: function (user) {
             this.trigger('dropped', user);
+        },
+
+        viewPage: function (e) {
+            this.currPage = $(e.target).attr('id');
+            this.render();
         }
     });
 
