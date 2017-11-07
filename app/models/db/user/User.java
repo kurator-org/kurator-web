@@ -20,12 +20,14 @@ import be.objectify.deadbolt.java.models.Permission;
 import be.objectify.deadbolt.java.models.Role;
 import be.objectify.deadbolt.java.models.Subject;
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.Formula;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import models.db.workflow.WorkflowRun;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
@@ -71,6 +73,9 @@ public class User extends Model implements Subject {
     public List<WorkflowRun> workflowRuns;
 
     private boolean active;
+    
+    @Formula(select = "_b${ta}.run_count", join = "join (select owner_id, count(*) as run_count from workflow_run group by owner_id) as _b${ta} on _b${ta}.owner_id = ${ta}.id")
+    public int runCount;
 
     public Long getId() {
         return id;
@@ -142,6 +147,14 @@ public class User extends Model implements Subject {
 
     public boolean isActive() {
         return active;
+    }
+
+    public int getRunCount() {
+        return runCount;
+    }
+
+    public void setRunCount(int runCount) {
+        this.runCount = runCount;
     }
 
     public void setActive(boolean active) {
