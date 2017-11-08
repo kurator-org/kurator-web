@@ -64,6 +64,10 @@ public class AsyncController extends Controller {
         User user = User.find.byId(Long.parseLong(session().get("uid")));
         Map<String, Object> settings = Workflows.settingsFromConfig(workflowDef, user);
 
+        // Update date user was last active
+        user.setLastActive(new Date());
+        user.save();
+
         // Process form submission as multipart form data
         Http.MultipartFormData body = request().body().asMultipartFormData();
 
