@@ -22,6 +22,7 @@ import models.db.user.SecurityRole;
 import models.db.user.User;
 import models.db.user.UserGroup;
 import models.db.user.UserUpload;
+import models.db.workflow.WorkflowRun;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.File;
@@ -131,7 +132,15 @@ public class UserDao {
     }
 
     public List<User> findAllUsers() {
-        return User.find.all();
+        List<User> users = User.find.all();
+
+        // TODO: Use the following to report on the user's summary of run counts
+        // select user.username, count(case when status = 'SUCCESS' then status end) as count_success,
+        //     count(case when status = 'ERRORS' then status end) as count_errors,
+        //     count(case when status = 'RUNNING' then status end) as count_running
+        //     from workflow_run join user on workflow_run.owner_id=user.id group by username;
+
+        return users;
     }
 
     public UserUpload findUserUploadById(long id) {
