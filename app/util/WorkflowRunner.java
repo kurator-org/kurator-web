@@ -47,7 +47,7 @@ public class WorkflowRunner {
         }
 
         // The process builder will run the kurator jar in a separate process
-        ProcessBuilder builder = new ProcessBuilder(JAVA_BIN, "-cp", KURATOR_JAR, "org.kurator.akka.KuratorWeb");
+        ProcessBuilder builder = new ProcessBuilder("/usr/bin/nice", "-n", "10", JAVA_BIN, "-cp", KURATOR_JAR, "org.kurator.akka.KuratorWeb");
         Map<String, String> env = builder.environment();
 
         env.put("PYTHONPATH", options.getConfig().get("python_path"));
