@@ -19,11 +19,13 @@ package util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.db.workflow.Status;
+import models.db.workflow.WorkflowRun;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -34,7 +36,7 @@ public class WorkflowRunner {
     private static String JAVA_BIN = System.getProperty("java.home") + "/bin/java";
     private static String KURATOR_JAR = System.getenv("KURATOR_JAR");
 
-    public RunResult run(RunOptions options) throws IOException, InterruptedException {
+    public RunResult run(RunOptions options, WorkflowRun run) throws IOException, InterruptedException {
         if (KURATOR_JAR == null) {
             // Try a JVM property
             String prop = System.getProperty("kurator.jar");
@@ -82,6 +84,14 @@ public class WorkflowRunner {
 
         // Start the workflow run as a process and get the input and output streams
         Process process = builder.start();
+
+        // Store the process id to the database
+        long pid = getPid(process);
+
+        System.out.println("PID: " + pid);
+        run.setPid(pid);
+        run.save();
+
         OutputStream stdin = process.getOutputStream();
         InputStream stdout = process.getInputStream();
 
@@ -114,5 +124,21 @@ public class WorkflowRunner {
 
         System.out.println("Workflow run status: " + result.getStatus());
         return result;
+    }
+
+    public static synchronized long getPid(Process p) {
+        long pid = -1;
+
+        try {
+            if (p.getClass().getName().equals("java.lang.UNIXProcess")) {
+                Field f = p.getClass().getDeclaredField("pid");
+                f.setAccessible(true);
+                pid = f.getLong(p);
+                f.setAccessible(false);
+            }
+        } catch (Exception e) {
+            pid = -1;
+        }
+        return pid;
     }
 }

@@ -21,6 +21,7 @@ import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import models.db.user.User;
 import models.db.workflow.*;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -107,6 +108,17 @@ public class WorkflowDao {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
         if (run != null) {
+            // if status is running then kill the process
+            try {
+                Runtime rt = Runtime.getRuntime();
+                if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1)
+                    rt.exec("taskkill " + run.getPid());
+                else
+                    rt.exec("kill -9 " + run.getPid());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             run.delete();
 
             WorkflowResult result = run.getResult();
