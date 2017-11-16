@@ -80,6 +80,8 @@ define([
             $('.start').html(start+1);
             $('.limit').html(start+limit);
 
+            $("#" + this.currPage).parent().addClass("active");
+
             // Set total user count
             return this;
         },
