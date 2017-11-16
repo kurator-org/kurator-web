@@ -448,13 +448,13 @@ public class Workflows extends Controller {
         response().setHeader("Content-Type", "text/plain");
 
         WorkflowRun run = workflowDao.findWorkflowRunById(runId);
-        WorkflowResult result = run.getResult();
 
-        if (result != null) {
-            return ok(result.getOutputText());
-        } else {
-            return notFound("No output log found for workflow run with id " + runId);
-        }
+            File output = Paths.get(run.getWorkspace(), "output.log").toFile();
+            if (output != null && output.exists()) {
+                return ok(output);
+            } else {
+                return notFound("No output log found for workflow run with id " + runId);
+            }
     }
 
     @SubjectPresent

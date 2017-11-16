@@ -85,10 +85,11 @@ public class WorkflowRunner {
         // Start the workflow run as a process and get the input and output streams
         Process process = builder.start();
 
-        // Store the process id to the database
+        // Store the process id and workspace directory to the database
         long pid = getPid(process);
-
         System.out.println("PID: " + pid);
+
+        run.setWorkspace(workspace.getAbsolutePath());
         run.setPid(pid);
         run.save();
 

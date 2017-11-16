@@ -41,6 +41,8 @@ public class WorkflowRun extends Model {
 
 
     private Long pid;
+    private String workspace;
+
     private Date startTime;
     private Date endTime;
 
@@ -87,6 +89,14 @@ public class WorkflowRun extends Model {
 
     public void setPid(Long pid) {
         this.pid = pid;
+    }
+
+    public String getWorkspace() {
+        return workspace;
+    }
+
+    public void setWorkspace(String workspace) {
+        this.workspace = workspace;
     }
 
     public Date getStartTime() {
