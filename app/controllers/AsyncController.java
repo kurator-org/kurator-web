@@ -147,12 +147,14 @@ public class AsyncController extends Controller {
         String logLevel = "DEBUG";
 
         Runnable workflowTask = () -> {
+            final WorkflowRun workflowRun = run;
+
             System.out.println("Started workflow run...");
             WorkflowRunner runner = new WorkflowRunner();
 
             try {
                 RunOptions options = new RunOptions(yamlFile, parameters, config, logLevel);
-                RunResult result = runner.run(options);
+                RunResult result = runner.run(options, workflowRun);
 
                 System.out.println(result.getOptions().toJsonString());
                 System.out.println(result.getWorkspaceDirectory().getAbsolutePath());

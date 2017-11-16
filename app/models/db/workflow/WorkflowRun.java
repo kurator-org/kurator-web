@@ -39,6 +39,8 @@ public class WorkflowRun extends Model {
     @ManyToOne
     private Workflow workflow;
 
+
+    private Long pid;
     private Date startTime;
     private Date endTime;
 
@@ -77,6 +79,14 @@ public class WorkflowRun extends Model {
 
     public void setWorkflow(Workflow workflow) {
         this.workflow = workflow;
+    }
+
+    public Long getPid() {
+        return pid;
+    }
+
+    public void setPid(Long pid) {
+        this.pid = pid;
     }
 
     public Date getStartTime() {
