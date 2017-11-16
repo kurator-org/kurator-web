@@ -75,8 +75,7 @@ public class User extends Model implements Subject {
     private boolean active;
 
     @Transient
-    @Formula(select = "_b${ta}.run_count", join = "join (select owner_id, count(*) as run_count from workflow_run group by owner_id) as _b${ta} on _b${ta}.owner_id = ${ta}.id")
-    public int runCount;
+    private RunReport runReport;
 
     public Long getId() {
         return id;
@@ -150,14 +149,6 @@ public class User extends Model implements Subject {
         return active;
     }
 
-    public int getRunCount() {
-        return runCount;
-    }
-
-    public void setRunCount(int runCount) {
-        this.runCount = runCount;
-    }
-
     public void setActive(boolean active) {
         this.active = active;
     }
@@ -201,5 +192,13 @@ public class User extends Model implements Subject {
 
     public void setPermissions(List<UserPermission> permissions) {
         this.permissions = permissions;
+    }
+
+    public void setRunReport(RunReport runReport) {
+        this.runReport = runReport;
+    }
+
+    public RunReport getRunReport() {
+        return runReport;
     }
 }

@@ -16,19 +16,17 @@
  */
 package dao;
 
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.SqlQuery;
+import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.annotation.Transactional;
 import com.fasterxml.jackson.databind.JsonNode;
-import models.db.user.SecurityRole;
-import models.db.user.User;
-import models.db.user.UserGroup;
-import models.db.user.UserUpload;
+import models.db.user.*;
 import models.db.workflow.WorkflowRun;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class UserDao {
 
@@ -134,11 +132,27 @@ public class UserDao {
     public List<User> findAllUsers() {
         List<User> users = User.find.all();
 
-        // TODO: Use the following to report on the user's summary of run counts
-        // select user.username, count(case when status = 'SUCCESS' then status end) as count_success,
-        //     count(case when status = 'ERRORS' then status end) as count_errors,
-        //     count(case when status = 'RUNNING' then status end) as count_running
-        //     from workflow_run join user on workflow_run.owner_id=user.id group by username;
+        String sql = "select user.username, count(case when status = 'SUCCESS' then status end) as count_success, " +
+                          "count(case when status = 'ERRORS' then status end) as count_errors, " +
+                          "count(case when status = 'RUNNING' then status end) as count_running " +
+                          "from workflow_run join user on workflow_run.owner_id=user.id group by username;";
+
+        SqlQuery sqlQuery = Ebean.createSqlQuery(sql);
+        List<SqlRow> list = sqlQuery.findList();
+
+        Map<String, RunReport> runReports = new HashMap<>();
+        for (SqlRow row : list) {
+            RunReport runReport = new RunReport(row.getLong("count_success"),
+                    row.getLong("count_errors"),
+                    row.getLong("count_running"));
+
+            runReports.put(row.getString("username"), runReport);
+        }
+
+        for (User user : users) {
+            String username = user.getUsername();
+            user.setRunReport(runReports.get(username));
+        }
 
         return users;
     }
