@@ -151,7 +151,13 @@ public class UserDao {
 
         for (User user : users) {
             String username = user.getUsername();
-            user.setRunReport(runReports.get(username));
+            RunReport runReport = runReports.get(username);
+
+            if (runReport == null) {
+                runReport = new RunReport();
+            }
+
+            user.setRunReport(runReport);
         }
 
         return users;

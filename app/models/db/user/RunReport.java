@@ -8,6 +8,10 @@ public class RunReport {
     private long errorsCount;
     private long runningCount;
 
+    public RunReport() {
+
+    }
+
     public RunReport(long successCount, long errorsCount, long runningCount) {
         this.successCount = successCount;
         this.errorsCount = errorsCount;
