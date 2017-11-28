@@ -36,7 +36,6 @@ public class FilePathHandler implements FieldHandler<String> {
             String[] files = (String[]) obj;
             UserUpload file = userDao.findUserUploadById(Long.parseLong(files[0]));
 
-            System.out.println(file.getAbsolutePath());
             return file.getAbsolutePath();
         } else {
             throw new UnsupportedOperationException("Could not transfrom instance of " + obj.getClass());

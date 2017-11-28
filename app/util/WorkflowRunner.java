@@ -18,6 +18,7 @@ package util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import models.db.workflow.ResultFile;
 import models.db.workflow.Status;
 import models.db.workflow.WorkflowRun;
 import org.apache.commons.io.FileUtils;
@@ -115,6 +116,19 @@ public class WorkflowRunner {
                 ObjectMapper mapper = new ObjectMapper();
                 List<WorkflowArtifact> artifacts = mapper.readValue(stdout, new TypeReference<ArrayList<WorkflowArtifact>>() { });
                 result.setArtifacts(artifacts);
+
+                // Add the input file to the artifacts list
+                Map<String, Object> parameters = options.getParameters();
+
+                if (parameters.containsKey("inputfile")) {
+                    WorkflowArtifact inputfile = new WorkflowArtifact();
+
+                    inputfile.setName("input_file");
+                    inputfile.setType("");
+                    inputfile.setPath((String) options.getParameters().get("inputfile"));
+
+                    artifacts.add(inputfile);
+                }
 
                 break;
             case 1:

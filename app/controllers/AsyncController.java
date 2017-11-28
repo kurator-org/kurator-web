@@ -22,6 +22,7 @@ import play.mvc.Result;
 import scala.concurrent.ExecutionContextExecutor;
 import scala.concurrent.duration.Duration;
 import ui.input.BasicField;
+import ui.input.FileInput;
 import util.RunOptions;
 import util.RunResult;
 import util.WorkflowArtifact;
@@ -56,7 +57,7 @@ public class AsyncController extends Controller {
         this.exec = exec;
     }
 
-    public Result scheduleRun(String name) {
+    public Result scheduleRun(String name) throws IOException {
         WorkflowDefinition workflowDef = Workflows.formDefinitionForWorkflow(name);
 
         // TODO: save user object in global state somehow
@@ -90,6 +91,15 @@ public class AsyncController extends Controller {
             } else {
                 BasicField field = workflowDef.getField(key);
                 field.setValue(data.get(key));
+
+                if (field instanceof FileInput) {
+                    FileInput fileInput = ((FileInput) field);
+                    File src = new File(fileInput.value().toString());
+                    File dest = Paths.get((String) settings.get("workspace"), src.getName()).toFile();
+
+                    FileUtils.copyFile(src, dest);
+                    ((FileInput) field).setValue(dest);
+                }
             }
         }
 
@@ -133,13 +143,15 @@ public class AsyncController extends Controller {
 
         String yamlFile = workflow.getYamlFile();
 
+
+
         // Create a workspace
-        Path path = Paths.get(WORKSPACE_DIR, "workspace_" + UUID.randomUUID());
-        path.toFile().mkdir();
+        //Path path = Paths.get(WORKSPACE_DIR, "workspace_" + UUID.randomUUID());
+        //path.toFile().mkdir();
 
         //Map<String, String> parameters = new HashMap<>();
 
-        parameters.put("workspace", path.toString());
+        //parameters.put("workspace", path.toString());
         //parameters.put("inputfile", "/home/lowery/IdeaProjects/kurator-validation/packages/kurator_dwca/data/tests/test_onslow_vertnet.csv");
         //parameters.put("format", "txt");
         //parameters.put("fieldlist", "country|stateProvince");
@@ -233,7 +245,18 @@ public class AsyncController extends Controller {
             //resultFiles.add(log);
 
             // Create readme file
-            resultFiles.add(createReadmeFile(workflowDef.getName(), run.getStartTime(), endTime));
+            File workspace = result.getWorkspaceDirectory();
+            resultFiles.add(createReadmeFile(workspace, workflowDef.getName(), run.getStartTime(), endTime));
+
+            // Add the output log file
+            ResultFile outputLog = new ResultFile();
+
+            outputLog.setName("output_log");
+            outputLog.setLabel("output_log");
+            outputLog.setDescription("a copy of the workflow run output log");
+            outputLog.setFileName(Paths.get(workspace.getAbsolutePath(), "output.log").toString());
+
+            resultFiles.add(outputLog);
 
             // Package result files in archive
             File archive = createArchive(resultFiles);
@@ -263,8 +286,8 @@ public class AsyncController extends Controller {
         }
     }
 
-    private ResultFile createReadmeFile(String workflow, Date startTime, Date endTime) throws IOException {
-        File readmeFile = File.createTempFile("README_", ".txt");
+    private ResultFile createReadmeFile(File workspace, String workflow, Date startTime, Date endTime) throws IOException {
+        File readmeFile = Paths.get(workspace.getAbsolutePath(), "readme.txt").toFile();
         FileWriter readme = new FileWriter(readmeFile);
 
         readme.append("Workflow: " + workflow + "\n");
