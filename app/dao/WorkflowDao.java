@@ -20,7 +20,9 @@ import com.avaje.ebean.annotation.Transactional;
 import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import models.db.user.User;
 import models.db.workflow.*;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -104,7 +106,7 @@ public class WorkflowDao {
     }
 
     @Transactional
-    public void removeWorkflowRun(long workflowRunId) {
+    public void removeWorkflowRun(long workflowRunId) throws IOException {
         WorkflowRun run = WorkflowRun.find.byId(workflowRunId);
 
         if (run != null) {
@@ -117,6 +119,12 @@ public class WorkflowDao {
                     rt.exec("kill -9 " + run.getPid());
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+
+            // if the workspace directory exists, delete it
+            File workspace = new File(run.getWorkspace());
+            if (workspace.exists()) {
+                FileUtils.deleteDirectory(workspace);
             }
 
             run.delete();

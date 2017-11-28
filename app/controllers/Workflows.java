@@ -19,6 +19,7 @@ package controllers;
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
@@ -464,9 +465,15 @@ public class Workflows extends Controller {
 
         ArrayNode response = Json.newArray();
         for (int i = 0; i < runs.size(); i++) {
-            //System.out.println("removing run: " + runs.get(i).get("id"));
-            long runId = runs.get(i).get("id").asLong();
-            workflowDao.removeWorkflowRun(runs.get(i).get("id").asLong());
+            JsonNode run = runs.get(i);
+
+            long runId = run.get("id").asLong();
+            try {
+                workflowDao.removeWorkflowRun(runId);
+            } catch (Exception e) {
+                return internalServerError(e.getMessage());
+            }
+
             response.add(runId);
         }
 
