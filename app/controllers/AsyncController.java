@@ -192,89 +192,92 @@ public class AsyncController extends Controller {
         WorkflowDao workflowDao = new WorkflowDao();
         WorkflowRun run = workflowDao.findWorkflowRunById(runId);
 
-        List<ResultFile> resultFiles = new ArrayList<>();
+        if (run != null) {
 
-        Map<String, String> resultDefs = new HashMap<>();
-        Map<String, String> otherDefs = new HashMap<>();
+            List<ResultFile> resultFiles = new ArrayList<>();
 
-        for (ArtifactDef artifactDef : workflowDef.getResultArtifacts().values()) {
-            resultDefs.put(artifactDef.getName(), artifactDef.getDescription());
-        }
+            Map<String, String> resultDefs = new HashMap<>();
+            Map<String, String> otherDefs = new HashMap<>();
 
-        for (ArtifactDef artifactDef : workflowDef.getOtherArtifacts().values()) {
-            otherDefs.put(artifactDef.getName(), artifactDef.getDescription());
-        }
-
-        Date endTime = new Date(); // Workflow run end time
-        String dqReportFile = "";
-
-        try {
-            // Process workflow artifacts
-            for (WorkflowArtifact artifact : result.getArtifacts()) {
-                String fileName = String.valueOf(artifact.getPath());
-                File file = new File(fileName);
-                if (file.exists()) {
-                    // if one of the products is a dq report save it for later
-                    if (artifact.getType().equals("DQ_REPORT")) {
-                        dqReportFile = file.getAbsolutePath();
-                    }
-
-                    // Include descriptive text
-                    String description = "";
-
-                    if (resultDefs.containsKey(artifact.getName())) {
-                        description = resultDefs.get(artifact.getName());
-                    } else if (otherDefs.containsKey(artifact.getName())) {
-                        description = otherDefs.get(artifact.getName());
-                    }
-
-                    // Create a result file from the workflow product and persist it to the db
-                    ResultFile resultFile = workflowDao.createResultFile(artifact.getName(), file.getName(), description, artifact.getPath());
-                    resultFiles.add(resultFile);
-
-                } else {
-                    Logger.error("artifact specified does not exist: " + fileName);
-                }
+            for (ArtifactDef artifactDef : workflowDef.getResultArtifacts().values()) {
+                resultDefs.put(artifactDef.getName(), artifactDef.getDescription());
             }
 
-            // TODO: yaml file should be workflow yaml and not web app version
-            //File yamlFile = new File(yamlFile);
+            for (ArtifactDef artifactDef : workflowDef.getOtherArtifacts().values()) {
+                otherDefs.put(artifactDef.getName(), artifactDef.getDescription());
+            }
 
-            // Create output error log file
-            //ResultFile log = workflowDao.createResultFile("runlog.txt", "runlog", "The output log for this run", result.getRunlog().getAbsolutePath());
-            //resultFiles.add(log);
+            Date endTime = new Date(); // Workflow run end time
+            String dqReportFile = "";
 
-            // Create readme file
-            File workspace = result.getWorkspaceDirectory();
-            resultFiles.add(createReadmeFile(workspace, workflowDef.getName(), run.getStartTime(), endTime));
+            try {
+                // Process workflow artifacts
+                for (WorkflowArtifact artifact : result.getArtifacts()) {
+                    String fileName = String.valueOf(artifact.getPath());
+                    File file = new File(fileName);
+                    if (file.exists()) {
+                        // if one of the products is a dq report save it for later
+                        if (artifact.getType().equals("DQ_REPORT")) {
+                            dqReportFile = file.getAbsolutePath();
+                        }
 
-            // Add the output log file
-            ResultFile outputLog = new ResultFile();
+                        // Include descriptive text
+                        String description = "";
 
-            outputLog.setName("output_log");
-            outputLog.setLabel("output_log");
-            outputLog.setDescription("a copy of the workflow run output log");
-            outputLog.setFileName(Paths.get(workspace.getAbsolutePath(), "output.log").toString());
+                        if (resultDefs.containsKey(artifact.getName())) {
+                            description = resultDefs.get(artifact.getName());
+                        } else if (otherDefs.containsKey(artifact.getName())) {
+                            description = otherDefs.get(artifact.getName());
+                        }
 
-            resultFiles.add(outputLog);
+                        // Create a result file from the workflow product and persist it to the db
+                        ResultFile resultFile = workflowDao.createResultFile(artifact.getName(), file.getName(), description, artifact.getPath());
+                        resultFiles.add(resultFile);
 
-            // Package result files in archive
-            File archive = createArchive(resultFiles);
-            System.out.println("created archive");
+                    } else {
+                        Logger.error("artifact specified does not exist: " + fileName);
+                    }
+                }
 
-            // TODO: this is a hack for now, modify WorkflowResult to hold a reference to log file path instead
-            String outputText = logFileToString(result.getRunlog().getAbsolutePath());
+                // TODO: yaml file should be workflow yaml and not web app version
+                //File yamlFile = new File(yamlFile);
 
-            // Persist the result to the db and update the workflow run
-            WorkflowResult workflowResult = workflowDao.createWorkflowResult(resultFiles, archive.getAbsolutePath(),
-                    dqReportFile, outputText, "");
+                // Create output error log file
+                //ResultFile log = workflowDao.createResultFile("runlog.txt", "runlog", "The output log for this run", result.getRunlog().getAbsolutePath());
+                //resultFiles.add(log);
 
-            // Default status is success unless errors are present in the error log
-            Status status = result.getStatus();
+                // Create readme file
+                File workspace = result.getWorkspaceDirectory();
+                resultFiles.add(createReadmeFile(workspace, workflowDef.getName(), run.getStartTime(), endTime));
 
-            workflowDao.updateRunResult(run, workflowResult, status, endTime);
-        } catch (Exception e) {
-            throw new RuntimeException("Failure during processing of workflow result", e);
+                // Add the output log file
+                ResultFile outputLog = new ResultFile();
+
+                outputLog.setName("output_log");
+                outputLog.setLabel("output_log");
+                outputLog.setDescription("a copy of the workflow run output log");
+                outputLog.setFileName(Paths.get(workspace.getAbsolutePath(), "output.log").toString());
+
+                resultFiles.add(outputLog);
+
+                // Package result files in archive
+                File archive = createArchive(resultFiles);
+                System.out.println("created archive");
+
+                // TODO: this is a hack for now, modify WorkflowResult to hold a reference to log file path instead
+                String outputText = logFileToString(result.getRunlog().getAbsolutePath());
+
+                // Persist the result to the db and update the workflow run
+                WorkflowResult workflowResult = workflowDao.createWorkflowResult(resultFiles, archive.getAbsolutePath(),
+                        dqReportFile, outputText, "");
+
+                // Default status is success unless errors are present in the error log
+                Status status = result.getStatus();
+
+                workflowDao.updateRunResult(run, workflowResult, status, endTime);
+            } catch (Exception e) {
+                throw new RuntimeException("Failure during processing of workflow result", e);
+            }
         }
     }
 
