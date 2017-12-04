@@ -6,14 +6,15 @@ define([
     'views/result',
     'views/run',
     'views/sharerun',
-    'app',
     'text!templates/runs.html'
-], function ($, _, Backbone, ResultModel, ResultView, RunView, ShareView, app, runsTpl) {
+], function ($, _, Backbone, ResultModel, ResultView, RunView, ShareView, runsTpl) {
 
     var RunsView = Backbone.View.extend({
         template: _.template(runsTpl),
 
-        initialize: function () {
+        initialize: function (options) {
+            this.options = options;
+
             this.views = [];
             this.selected = [];
 
@@ -34,7 +35,8 @@ define([
             this.$el.html(this.template({ }));
 
             this.collection.each(function (run) {
-                if (run.get('owner').id == app.session.get('uid')) {
+                //if (run.get('owner').id == app.session.get('uid')) {
+                if (run.get('owner').id == this.options.uid) {
                     if (this.selected.includes(run)) {
                         run.set('selected', true);
                     }

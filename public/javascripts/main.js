@@ -76,20 +76,34 @@ require([
     app.currentGroups = new GroupCollection();
     app.currentUsers = new Users();
 
-    app.router.on("route:status", function () {
+    var viewAsSelf = function () {
+        $('#view-as-text').html('');
+        $('#page-alert').html('');
+        $('#view-as-self').hide();
+        $('#view-as-user').show();
+    };
+
+    var viewAsUser = function (uid, username) {
+        $('#view-as-text').html('<span class="label label-warning" style="font-size: .9em">Viewing as <i>' + username + '</i></span>');
+        $('#page-alert').html('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Viewing workflows page as ' + username + '.</strong> Navigating away from the workflows page will restore view state to the currently logged in user.</div>');
+        $('#view-as-user').hide();
+        $('#view-as-self').show();
+    };
+
+    app.router.on("route:status", function (uid) {
         $(".nav-pills li").removeClass("active");
         $('.status-pill').addClass('active');
 
         $('.breadcrumb .active').remove();
         $('.breadcrumb').append('<li class="active"><a href="#status">Status</a></li>');
 
-        //if (app.view_as) {
-        //    runs.uid = app.view_as;
-        //} else {
-            //runs.uid = window.uid;
-        //}
+        // Default is to view workflow runs as currently logged in user
 
-        var statusView = new RunStatusView({ uid: app.session.get('uid') });
+        if (!uid) {
+            uid = app.session.get('uid');
+        }
+
+        var statusView = new RunStatusView({ uid: uid, onClose: viewAsSelf });
         this.navigateToView(statusView);
     });
 
@@ -179,11 +193,21 @@ require([
         model.fetch({
             success: function (data) {
                 var users = data.toJSON().map(function (user) {
-                    return user.username;
+                    return {
+                        'id': user.id,
+                        'label': user.username,
+                        'value': user.username
+                    };
                 });
 
                 $("#user-select").autocomplete({
-                    source: users
+                    source: users,
+                    select: function( event, ui ) {
+                        $(this).val(ui.item.label);
+
+                        $("#user-select-id").val(ui.item.id);
+                        return false;
+                    }
                 });
             }
         });
@@ -196,8 +220,12 @@ require([
     });
 
     $('#user-select-btn').click(function (event) {
-        console.log($('#user-select').val());
+        var username = $('#user-select').val();
+        var uid = $('#user-select-id').val();
 
+        app.router.navigate("/status/" + uid, {trigger: true});
+
+        viewAsUser(uid, username);
         /*var userlist = new Users();
         userlist.fetch({
             success: function (data) {
@@ -230,22 +258,9 @@ require([
         $('#user-select-modal').modal('toggle');
     });
 
+
     $('#view-as-self').click(function (event) {
-        $('#view-as-text').html('');
-        $('#page-alert').html('<div class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>View state reset to logged in user.</strong> Viewing workflows page as current user.</div>');
-        $(this).toggle();
-        $('#view-as-user').toggle();
-
-        delete app.view_as;
-
-        // TODO: reset view differently, this is a hack for now
-        if (app.router.currentView instanceof WorkflowRunsView) {
-            var runs =  new WorkflowRuns();
-            //runs.uid = window.uid;
-
-            var statusView = new WorkflowRunsView({collection: runs });
-            app.router.navigateToView(statusView);
-        }
+        app.router.navigate('/status', {trigger: true});
     });
 
 });

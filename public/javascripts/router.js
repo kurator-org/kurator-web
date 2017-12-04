@@ -7,7 +7,7 @@ define([
         routes: {
             "run": 'workflow',
             "workflow/:name": "run",
-            "status": 'status',
+            "status(/:uid)": 'status',
             "users": 'users',
             "runs/:uid": "runs",
             "deploy": 'deploy',

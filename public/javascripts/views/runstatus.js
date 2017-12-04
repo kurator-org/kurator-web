@@ -31,11 +31,11 @@ define([
             this.$el.html(this.template({}));
 
             this.runs = new Runs({ 'uid': this.options.uid });
-            this.runsView = new RunsView({ collection: this.runs, el: this.$('#user-runs') });
+            this.runsView = new RunsView({ collection: this.runs, el: this.$('#user-runs'), uid: this.options.uid });
             this.listenTo(this.runsView, 'selectionChange', this.renderControls);
             this.listenTo(this.runsView, 'addedUserRun', this.addedUserRun);
 
-            this.sharedView = new SharedRunsView({ collection: this.runs, el: this.$('#shared-runs') });
+            this.sharedView = new SharedRunsView({ collection: this.runs, el: this.$('#shared-runs'), uid: this.options.uid });
             this.listenTo(this.sharedView, 'addedSharedRun', this.addedSharedRun);
 
             return this;
@@ -71,6 +71,16 @@ define([
 
         addedSharedRun: function (e) {
             this.$('.shared-runs-count').html(e.count);
+        },
+
+        onBeforeClose: function () {
+            this.runsView.onBeforeClose();
+            this.sharedView.onBeforeClose();
+
+            // Callback for main
+            if (this.options.onClose) {
+                this.options.onClose();
+            }
         }
     });
 
