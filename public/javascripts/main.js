@@ -173,8 +173,32 @@ require([
     //var workflows = new Workflows();
     //app.router.navigateToView(new WorkflowsView({ collection: new Workflows() }));
 
+    $('#view-as-user').click(function (event) {
+        var model = new Users();
+
+        model.fetch({
+            success: function (data) {
+                var users = data.toJSON().map(function (user) {
+                    return user.username;
+                });
+
+                $("#user-select").autocomplete({
+                    source: users
+                });
+            }
+        });
+
+
+    });
+
+    $('#user-select-modal').on('shown.bs.modal', function (event) {
+        console.log("Modal shown");
+    });
+
     $('#user-select-btn').click(function (event) {
-        var userlist = new Users();
+        console.log($('#user-select').val());
+
+        /*var userlist = new Users();
         userlist.fetch({
             success: function (data) {
                 var user = data.toJSON().filter(function (value) {
@@ -201,7 +225,7 @@ require([
                     app.router.navigateToView(statusView);
                 }
             }
-        });
+        });*/
 
         $('#user-select-modal').modal('toggle');
     });
