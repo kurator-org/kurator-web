@@ -335,6 +335,8 @@ public class Users extends Controller {
         User user = Json.fromJson(json, User.class);
         user.update();
 
+        List<User> adminUsers = userDao.findUsersByRole(SecurityRole.ADMIN);
+
         try {
             // If the user was activated
             if (!isActive && user.isActive()) {
@@ -342,6 +344,12 @@ public class Users extends Controller {
                 email.setSubject("New user activation for kurator-web");
                 email.setFrom("Kurator Admin <datakurator@gmail.com>");
                 email.addTo(user.getEmail());
+
+                for (User admin : adminUsers) {
+                    if (admin.getEmail() != null) {
+                        email.addBcc(admin.getEmail());
+                    }
+                }
 
                 email.setBodyText("Hello " + user.getFirstname() + ",\n\n Your kurator-web user account, " + user.getUsername() + ", " +
                         "has just been activated! Use the following link with your username and password to login: "
