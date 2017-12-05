@@ -162,8 +162,9 @@ public class Users extends Controller {
 
         User superAdmin = userDao.findUserByUsername("admin");
 
-        flash("message", "New user registration successful! You should receive an email from " + KURATOR_EMAIL + " when your " +
-                "account has been activated. If you do not receive the email within 24 hours, contact the admin at " + superAdmin.getEmail());
+        flash("message", "New user registration successful! You should receive an email from <b>" + KURATOR_EMAIL + "</b> when your " +
+                "account has been activated. <br/> <br/> If you do not receive the email within 24 hours, contact the " +
+                "admin at <a href=\"mailto:" + superAdmin.getEmail() + "\"><b>" + superAdmin.getEmail() + "</b></a>");
 
         List<User> adminUsers = userDao.findUsersByRole(SecurityRole.ADMIN);
 
@@ -342,7 +343,7 @@ public class Users extends Controller {
             if (!isActive && user.isActive()) {
                 Email email = new Email();
                 email.setSubject("New user activation for kurator-web");
-                email.setFrom("Kurator Admin <datakurator@gmail.com>");
+                email.setFrom("Kurator Admin <" + KURATOR_EMAIL + ">");
                 email.addTo(user.getEmail());
 
                 for (User admin : adminUsers) {
