@@ -61,6 +61,7 @@ import static play.mvc.Http.Context.Implicit.session;
 public class Users extends Controller {
 
     private static String APPLICATION_URL;
+    private static String KURATOR_EMAIL;
 
     private final UserDao userDao = new UserDao();
     private final UserAccessDao userAccessDao = new UserAccessDao();
@@ -74,6 +75,7 @@ public class Users extends Controller {
         this.mailerClient = mailerClient;
 
         this.APPLICATION_URL = config.getString("application.baseUrl");
+        this.KURATOR_EMAIL = config.getString("kurator.email");
     }
 
     /**
@@ -158,15 +160,17 @@ public class Users extends Controller {
                 registration.getLastName(), registration.getEmail(), registration.getPassword(),
                 registration.getAffiliation());
 
-        flash("message", "New user registration successful! The admin will send an email notification when your " +
-                "account has been activated.");
+        User superAdmin = userDao.findUserByUsername("admin");
+
+        flash("message", "New user registration successful! You should receive an email from " + KURATOR_EMAIL + " when your " +
+                "account has been activated. If you do not receive the email within 24 hours, contact the admin at " + superAdmin.getEmail());
 
         List<User> adminUsers = userDao.findUsersByRole(SecurityRole.ADMIN);
 
         try {
             Email email = new Email();
             email.setSubject("New kurator-web user registration: " + user.getUsername());
-            email.setFrom("Kurator Admin <datakurator@gmail.com>");
+            email.setFrom("Kurator Admin <" + KURATOR_EMAIL + ">");
 
             for (User admin : adminUsers) {
                 if (admin.getEmail() != null) {
