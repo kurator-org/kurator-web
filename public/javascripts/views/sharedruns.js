@@ -4,14 +4,15 @@ define([
     'backbone',
     'views/sharedrun',
     'views/result',
-    'app',
     'text!templates/sharedruns.html'
-], function ($, _, Backbone, SharedRunView, ResultView, app, sharedTpl) {
+], function ($, _, Backbone, SharedRunView, ResultView, sharedTpl) {
 
     var SharedRunsView = Backbone.View.extend({
         template: _.template(sharedTpl),
 
-        initialize: function () {
+        initialize: function (options) {
+            this.options = options;
+
             this.views = [];
             this.count = 0;
 
@@ -32,7 +33,7 @@ define([
             this.$el.html(this.template({ }));
 
             this.collection.each(function (run) {
-                if (!(run.get('owner').id == app.session.get('uid'))) {
+                if (!(run.get('owner').id == this.options.uid)) {
                     this.addRun(run);
                 }
             }, this);

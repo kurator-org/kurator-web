@@ -59,7 +59,7 @@
 
   <!-- Modal -->
 <div id="user-select-modal" class="modal fade">
-  <div class="modal-dialog modal-sm" role="document">
+  <div class="modal-dialog modal-md" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -67,8 +67,11 @@
       </div>
       <div class="modal-body">
         <form>
-          <label for="user-select">Username</label>
-          <input id="user-select" class="form-control" type="text" />
+          <p>Start entering a username below and select to temporarily view runs as that user.</p>
+          <div class="ui-widget">
+            <label for="user-select">Username</label>
+            <input id="user-select" /><input type="hidden" id="user-select-id" />
+          </div>
         </form>
       </div>
       <div class="modal-footer">

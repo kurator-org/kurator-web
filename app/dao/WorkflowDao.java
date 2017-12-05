@@ -71,7 +71,7 @@ public class WorkflowDao {
         return run;
     }
 
-    public List<WorkflowRun> findUserWorkflowRuns(String uid) {
+    public List<WorkflowRun> findUserWorkflowRuns(Long uid) {
         return WorkflowRun.find.where().eq("owner.id", uid).findList();
     }
 

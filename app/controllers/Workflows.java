@@ -486,10 +486,15 @@ public class Workflows extends Controller {
      * @return
      */
     @SubjectPresent
-    public Result status() {
+    public Result status(Long uid) {
+        System.out.println(uid);
+
         List<RunResult> results = new ArrayList<>();
-        List<WorkflowRun> userRuns = workflowDao.findUserWorkflowRuns(session("uid"));
-        List<WorkflowRun> sharedRuns = userAccessDao.findSharedRunsByUser(Long.parseLong(session("uid")));
+        //List<WorkflowRun> userRuns = workflowDao.findUserWorkflowRuns(session("uid"));
+        //List<WorkflowRun> sharedRuns = userAccessDao.findSharedRunsByUser(Long.parseLong(session("uid")));
+
+        List<WorkflowRun> userRuns = workflowDao.findUserWorkflowRuns(uid);
+        List<WorkflowRun> sharedRuns = userAccessDao.findSharedRunsByUser(uid);
 
         List<WorkflowRun> runs = new ArrayList<>();
         runs.addAll(userRuns);
