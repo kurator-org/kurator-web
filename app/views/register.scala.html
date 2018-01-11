@@ -36,7 +36,7 @@
     <br />
 
     @if(flash.containsKey("message")) {
-      <div class="alert alert-info" role="alert">@flash.get("message")</div>
+      <div class="alert alert-info" role="alert">@Html(flash.get("message"))</div>
     }
 
     @if(form.hasGlobalErrors) {

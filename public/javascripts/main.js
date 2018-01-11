@@ -188,26 +188,16 @@ require([
     //app.router.navigateToView(new WorkflowsView({ collection: new Workflows() }));
 
     $('#view-as-user').click(function (event) {
-        var model = new Users();
+        app.users = new Users();
 
-        model.fetch({
+        app.users.fetch({
             success: function (data) {
                 var users = data.toJSON().map(function (user) {
-                    return {
-                        'id': user.id,
-                        'label': user.username,
-                        'value': user.username
-                    };
+                    return user.username;
                 });
 
                 $("#user-select").autocomplete({
-                    source: users,
-                    select: function( event, ui ) {
-                        $(this).val(ui.item.label);
-
-                        $("#user-select-id").val(ui.item.id);
-                        return false;
-                    }
+                    source: users
                 });
             }
         });
@@ -215,13 +205,15 @@ require([
 
     });
 
-    $('#user-select-modal').on('shown.bs.modal', function (event) {
-        console.log("Modal shown");
-    });
-
     $('#user-select-btn').click(function (event) {
         var username = $('#user-select').val();
-        var uid = $('#user-select-id').val();
+        var uid;
+
+        app.users.each(function (user) {
+           if (user.get('username') == username) {
+               uid = user.get('id');
+           }
+        });
 
         app.router.navigate("/status/" + uid, {trigger: true});
 

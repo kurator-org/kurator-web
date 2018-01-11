@@ -61,6 +61,7 @@ import static play.mvc.Http.Context.Implicit.session;
 public class Users extends Controller {
 
     private static String APPLICATION_URL;
+    private static String KURATOR_EMAIL;
 
     private final UserDao userDao = new UserDao();
     private final UserAccessDao userAccessDao = new UserAccessDao();
@@ -74,6 +75,7 @@ public class Users extends Controller {
         this.mailerClient = mailerClient;
 
         this.APPLICATION_URL = config.getString("application.baseUrl");
+        this.KURATOR_EMAIL = config.getString("kurator.email");
     }
 
     /**
@@ -158,15 +160,18 @@ public class Users extends Controller {
                 registration.getLastName(), registration.getEmail(), registration.getPassword(),
                 registration.getAffiliation());
 
-        flash("message", "New user registration successful! The admin will send an email notification when your " +
-                "account has been activated.");
+        User superAdmin = userDao.findUserByUsername("admin");
+
+        flash("message", "New user registration successful! You should receive an email from <b>" + KURATOR_EMAIL + "</b> when your " +
+                "account has been activated. <br/> <br/> If you do not receive the email within 24 hours, contact the " +
+                "admin at <a href=\"mailto:" + superAdmin.getEmail() + "\"><b>" + superAdmin.getEmail() + "</b></a>");
 
         List<User> adminUsers = userDao.findUsersByRole(SecurityRole.ADMIN);
 
         try {
             Email email = new Email();
             email.setSubject("New kurator-web user registration: " + user.getUsername());
-            email.setFrom("Kurator Admin <datakurator@gmail.com>");
+            email.setFrom("Kurator Admin <" + KURATOR_EMAIL + ">");
 
             for (User admin : adminUsers) {
                 if (admin.getEmail() != null) {
@@ -331,13 +336,21 @@ public class Users extends Controller {
         User user = Json.fromJson(json, User.class);
         user.update();
 
+        List<User> adminUsers = userDao.findUsersByRole(SecurityRole.ADMIN);
+
         try {
             // If the user was activated
             if (!isActive && user.isActive()) {
                 Email email = new Email();
                 email.setSubject("New user activation for kurator-web");
-                email.setFrom("Kurator Admin <datakurator@gmail.com>");
+                email.setFrom("Kurator Admin <" + KURATOR_EMAIL + ">");
                 email.addTo(user.getEmail());
+
+                for (User admin : adminUsers) {
+                    if (admin.getEmail() != null) {
+                        email.addBcc(admin.getEmail());
+                    }
+                }
 
                 email.setBodyText("Hello " + user.getFirstname() + ",\n\n Your kurator-web user account, " + user.getUsername() + ", " +
                         "has just been activated! Use the following link with your username and password to login: "
