@@ -68,7 +68,7 @@ POST    /files/delete/:id                       controllers.Workflows.deleteUplo
 # Workflow run routes for managing user runs and artifacts (result, report, logs)
 # ~~~~
 GET     /results/:uid                           controllers.Workflows.status(uid: Long)
-PUT     /results/:uid                           controllers.Workflows.shareRun(uid: Long)
+PUT     /results/:uid/:runid                    controllers.Workflows.shareRun(uid: Long, runid: Long)
 
 GET     /run/result/*id                         controllers.Workflows.resultArtifacts(id : Long)
 GET     /run/archive/*id                        controllers.Workflows.resultArchive(id : Long)

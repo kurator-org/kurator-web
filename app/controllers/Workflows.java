@@ -502,7 +502,7 @@ public class Workflows extends Controller {
     }
 
     @SubjectPresent
-    public Result shareRun(Long id) {
+    public Result shareRun(Long uid, Long runId) {
         WorkflowRun shared = Json.fromJson(request().body().asJson(), WorkflowRun.class);
         shared.setSharedOn(new Date());
         shared.update();
