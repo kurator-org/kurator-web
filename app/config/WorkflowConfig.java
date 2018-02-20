@@ -35,10 +35,6 @@ public class WorkflowConfig {
         this.workflowsDir = workflowsDir;
     }
 
-    public String getYaml() {
-        return workflowsDir.getAbsolutePath() + File.separator + config.getString("yaml");
-    }
-
     public String getName() {
         return name;
     }
@@ -55,45 +51,18 @@ public class WorkflowConfig {
         return config.getString("title");
     }
 
-    public String getInstructions() {
-        return config.getString("instructions");
+    public List<String> getDwcClass() {
+        return config.getStringList("class");
     }
 
-    public String getWorkspace() {
-        return config.getString("workspace");
-    }
+    public List<WorkflowAlternativeConfig> getWorkflowAlternativeConfigs() {
+        List<WorkflowAlternativeConfig> workflowAlternatives = new ArrayList<>();
 
-    public String getWorkflows() {
-        return config.getString("workflows");
-    }
-
-    public Collection<Artifact> getResultArtifacts() {
-        List<Artifact> artifacts = new ArrayList<>();
-
-        for (String name : config.getConfig("artifacts").getObject("results").keySet()) {
-            artifacts.add(new Artifact(name, config.getConfig("artifacts").getConfig("results").getConfig(name)));
+        Config alternatives = config.getConfig("alternatives");
+        for (String name : alternatives.root().keySet()) {
+            workflowAlternatives.add(new WorkflowAlternativeConfig(workflowsDir, name, alternatives.getConfig(name)));
         }
 
-        return Collections.unmodifiableCollection(artifacts);
-    }
-
-    public Collection<Artifact> getOtherArtifacts() {
-        List<Artifact> artifacts = new ArrayList<>();
-
-        for (String name : config.getConfig("artifacts").getObject("other").keySet()) {
-            artifacts.add(new Artifact(name, config.getConfig("artifacts").getConfig("other").getConfig(name)));
-        }
-
-        return Collections.unmodifiableCollection(artifacts);
-    }
-
-    public Collection<ParameterConfig> getParameters() {
-        List<ParameterConfig> parameters = new ArrayList<>();
-
-        for (String name : config.getObject("parameters").keySet()) {
-            parameters.add(new ParameterConfig(name, config.getConfig("parameters").getConfig(name)));
-        }
-
-        return Collections.unmodifiableCollection(parameters);
+        return workflowAlternatives;
     }
 }
