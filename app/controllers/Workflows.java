@@ -539,7 +539,9 @@ public class Workflows extends Controller {
     public static List<WorkflowDefinition> loadWorkflowFormDefinitions() {
         List<WorkflowDefinition> workflowDefs = new ArrayList<>();
 
-        ConfigManager configManager = ConfigManager.getInstance();
+        // TODO: Update the model objects for filtering the workflows list once the UI components have been defined
+
+        /**ConfigManager configManager = ConfigManager.getInstance();
         Collection<config.WorkflowConfig> workflows = configManager.getWorkflowConfigs();
 
         List<Variable> variables = configManager.getVariables();
@@ -583,7 +585,7 @@ public class Workflows extends Controller {
             }
 
             workflowDefs.add(workflowDef);
-        }
+        }**/
         return workflowDefs;
     }
 

@@ -45,12 +45,12 @@ public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
     public WorkflowDefinition(WorkflowConfig workflow) {
         this.name = workflow.getName();
         this.title = workflow.getTitle();
-        this.yamlFile = workflow.getYaml();
+        //this.yamlFile = workflow.getYaml();
         this.documentation = workflow.getDocumentation();
-        this.instructions = workflow.getInstructions();
+        //this.instructions = workflow.getInstructions();
         this.summary = workflow.getSummary();
 
-        for (Artifact artifact : workflow.getResultArtifacts()) {
+        /*for (Artifact artifact : workflow.getResultArtifacts()) {
             ArtifactDef artifactDef = new ArtifactDef(artifact.getName(), artifact.getDescription(), artifact.getLabel(), artifact.getType(), artifact.getInfo());
             this.results.put(artifact.getName(), artifactDef);
         }
@@ -58,7 +58,7 @@ public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
         for (Artifact artifact : workflow.getOtherArtifacts()) {
             ArtifactDef artifactDef = new ArtifactDef(artifact.getName(), artifact.getDescription(), artifact.getLabel(), artifact.getType(), artifact.getInfo());
             this.other.put(artifact.getName(), artifactDef);
-        }
+        }*/
     }
 
     public void addField(BasicField field) {

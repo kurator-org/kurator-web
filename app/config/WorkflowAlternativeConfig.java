@@ -43,25 +43,16 @@ public class WorkflowAlternativeConfig {
         return name;
     }
 
-    public String getSummary() {
-        return config.getString("summary");
-    }
-
-    public String getDocumentation() {
-        return config.getString("documentation");
-    }
-
-    public String getTitle() {
-        return config.getString("title");
-    }
-
     public String getInstructions() {
         return config.getString("instructions");
     }
 
-    public InputConfig getInputConfig() {
-        Config input = config.getConfig("input");
-        return new InputConfig(input.getString("type"), input.getString("format"));
+    public String getInputFormat() {
+        return config.getConfig("input").getString("format");
+    }
+
+    public String getInputType() {
+        return config.getConfig("input").getString("type");
     }
 
     public Collection<Artifact> getResultArtifacts() {

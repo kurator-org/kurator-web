@@ -2,6 +2,7 @@ package util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import models.db.workflow.Status;
+import models.db.workflow.WorkflowRun;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -37,8 +38,9 @@ public class IntegrationTests {
     @Test
     public void runWorkflow() throws IOException, InterruptedException {
         WorkflowRunner runner = new WorkflowRunner();
+        WorkflowRun workflowRun = new WorkflowRun();
 
-        RunResult result = runner.run(options);
+        RunResult result = runner.run(options, workflowRun);
         assertEquals(Status.SUCCESS, result.getStatus());
     }
 
