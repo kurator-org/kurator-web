@@ -62,6 +62,10 @@ public class ParameterConfig {
     }
 
     public Map<String, Object> getOptions() {
-        return Collections.unmodifiableMap(config.getObject("options").unwrapped());
+        if (config.hasPath("options")) {
+            return Collections.unmodifiableMap(config.getObject("options").unwrapped());
+        }
+
+        return null;
     }
 }

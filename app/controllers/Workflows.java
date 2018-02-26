@@ -23,10 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
-import config.Artifact;
-import config.ConfigManager;
-import config.ParameterConfig;
-import config.Variable;
+import config.*;
 import dao.UserAccessDao;
 import dao.UserDao;
 import dao.WorkflowDao;
@@ -90,13 +87,95 @@ public class Workflows extends Controller {
         }
     }
 
-    public Result list() {
+    /*public Result list() {
         List<WorkflowDefinition> workflowDefs = loadWorkflowFormDefinitions();
         Collections.sort(workflowDefs);
 
         return ok(
                 Json.toJson(workflowDefs)
         );
+    }*/
+
+    /**
+     * List the available workflows from config
+     *
+     * @return
+     */
+    public Result list() {
+        ObjectNode response = Json.newObject();
+
+        ArrayNode workflowsArray = response.putArray("workflows");
+
+        ConfigManager configManager = ConfigManager.getInstance();
+        Collection<config.WorkflowConfig> workflows = configManager.getWorkflowConfigs();
+
+        for (config.WorkflowConfig workflowConfig : workflows) {
+
+            // Create the workflow list entry json
+            ObjectNode workflowJson = Json.newObject();
+
+            workflowJson.put("name", workflowConfig.getName());
+            workflowJson.put("title", workflowConfig.getTitle());
+            workflowJson.put("summary", workflowConfig.getSummary());
+            workflowJson.put("docummentation", workflowConfig.getDocumentation());
+
+            // Add the list of dwc classes to an array
+            ArrayNode classArray = workflowJson.putArray("class");
+
+            for (String dwcClass : workflowConfig.getDwcClass()) {
+                classArray.add(dwcClass);
+            }
+
+            // Add an entry for each workflow alternative
+            ArrayNode alternativesArray = workflowJson.putArray("alternatives");
+
+            for (WorkflowAlternativeConfig alternativeConfig : workflowConfig.getWorkflowAlternativeConfigs()) {
+
+                ObjectNode alternativeJson = Json.newObject();
+
+                alternativeJson.put("name", alternativeConfig.getName());
+                alternativeJson.put("instructions", alternativeConfig.getInstructions());
+
+                alternativeJson.put("type", alternativeConfig.getInputType());
+                alternativeJson.put("format", alternativeConfig.getInputFormat());
+
+                ArrayNode parametersArray = alternativeJson.putArray("parameters");
+
+                for (ParameterConfig parameterConfig : alternativeConfig.getParameters()) {
+                    ObjectNode parametersJson = Json.newObject();
+
+                    parametersJson.put("name", parameterConfig.getName());
+                    parametersJson.put("type", parameterConfig.getType());
+                    parametersJson.put("label", parameterConfig.getLabel());
+                    parametersJson.put("description", parameterConfig.getDescription());
+
+                    // If there are options (e.g. select form component, checkboxes, etc)
+                    if (parameterConfig.getOptions() != null) {
+                        ArrayNode optionsArray = parametersJson.putArray("options");
+
+                        Map<String, Object> options = parameterConfig.getOptions();
+                        for (String name : options.keySet()) {
+                            String label = (String) options.get(name);
+
+                            ObjectNode optionJson = Json.newObject();
+
+                            optionJson.put("name", name);
+                            optionJson.put("label",  label);
+
+                            optionsArray.add(optionJson);
+                        }
+                    }
+
+                    parametersArray.add(parametersJson);
+                }
+
+                alternativesArray.add(alternativeJson);
+            }
+
+            workflowsArray.add(workflowJson);
+        }
+
+        return ok(response);
     }
 
     @Restrict({@Group("ADMIN")})
