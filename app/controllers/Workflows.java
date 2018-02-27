@@ -87,24 +87,17 @@ public class Workflows extends Controller {
         }
     }
 
-    /*public Result list() {
-        List<WorkflowDefinition> workflowDefs = loadWorkflowFormDefinitions();
-        Collections.sort(workflowDefs);
-
-        return ok(
-                Json.toJson(workflowDefs)
-        );
-    }*/
-
     /**
      * List the available workflows from config
      *
      * @return
      */
     public Result list() {
-        ObjectNode response = Json.newObject();
+        //ObjectNode response = Json.newObject();
 
-        ArrayNode workflowsArray = response.putArray("workflows");
+        //ArrayNode workflowsArray = response.putArray("workflows");
+
+        ArrayNode response = Json.newArray();
 
         ConfigManager configManager = ConfigManager.getInstance();
         Collection<config.WorkflowConfig> workflows = configManager.getWorkflowConfigs();
@@ -117,7 +110,7 @@ public class Workflows extends Controller {
             workflowJson.put("name", workflowConfig.getName());
             workflowJson.put("title", workflowConfig.getTitle());
             workflowJson.put("summary", workflowConfig.getSummary());
-            workflowJson.put("docummentation", workflowConfig.getDocumentation());
+            workflowJson.put("documentation", workflowConfig.getDocumentation());
 
             // Add the list of dwc classes to an array
             ArrayNode classArray = workflowJson.putArray("class");
@@ -172,7 +165,7 @@ public class Workflows extends Controller {
                 alternativesArray.add(alternativeJson);
             }
 
-            workflowsArray.add(workflowJson);
+            response.add(workflowJson);
         }
 
         return ok(response);

@@ -14,6 +14,7 @@ define([
         },
 
         render: function () {
+            console.log(this.collection.toJSON());
             this.$el.html(this.template({definitions : this.collection.toJSON(), infoImg : app.assetsUrl + "images/info.png"}));
 
             return this;
