@@ -27,6 +27,7 @@ require([
     'app',
     'router',
     'models/session',
+    'models/formdef',
     'views/workflows',
     'views/runworkflow',
     'collections/workflows',
@@ -54,7 +55,7 @@ require([
     'text!templates/records.html',
     'bootstrap-tokenfield',
     'jquery-ui'
-], function (app, WebRouter, SessionModel, WorkflowsView, RunWorkflowView, Workflows, GroupCollection, Runs, ReportCollection, RecordCollection, RunStatusView, UserManagementView, DeployPackagesView, ReportsView, RecordsView, Users, Uploads, Packages, UploadsView, FileSelectView, artifactsTpl, resultTpl,
+], function (app, WebRouter, SessionModel, FormDefModel, WorkflowsView, RunWorkflowView, Workflows, GroupCollection, Runs, ReportCollection, RecordCollection, RunStatusView, UserManagementView, DeployPackagesView, ReportsView, RecordsView, Users, Uploads, Packages, UploadsView, FileSelectView, artifactsTpl, resultTpl,
              loginTpl, statusTpl, registerTpl, deployTpl, reportTpl, datasetTpl, TokenField, JQueryUI) {
 
     app.router = new WebRouter();
@@ -142,9 +143,22 @@ require([
     });
 
     app.router.on("route:run", function (name) {
-        var runView = new RunWorkflowView({ model : app.workflows.get(name)});
-        console.log(app.workflows.get(name));
-        runView.render();
+        app.workflows.each(function (workflow) {
+            var found = workflow.get('alternatives').find(function(alt) {
+                return alt.name == name;
+            });
+
+            if (found) {
+                var model = new FormDefModel(found);
+                console.log(model);
+
+                var runView = new RunWorkflowView({ model : model});
+                runView.render();
+
+                return;
+            }
+        });
+
         //this.navigateToView(runView);
         //new RunWorkflowView({ model : workflows.get(name)});
     });

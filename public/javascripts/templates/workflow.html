@@ -8,9 +8,13 @@
           <img src="<%= infoImg %>" />
         </a><%= def.title %></h4>
 
-      <div style="float:left; padding-left: 20px;" >
-        <a href="#workflow/<%= def.name %>" class="btn btn-primary btn-sm"><b>Run Workflow</b> <span class="glyphicon glyphicon-play"></span></a>
-      </div>
+        <% _.each(def.alternatives, function(alternative) { %>
+        <div style="float:left; padding-left: 20px;" >
+            <a href="#workflow/<%= alternative.name %>" class="btn btn-primary btn-sm">Run with <b><%= alternative.type %> <%= alternative.format %></b> <span class="glyphicon glyphicon-play"></span></a>
+        </div>
+        <% }); %>
+
+
 
       <div style="clear: both; margin-left: 0.7em; font-size: 1em"><%= def.summary %></div>
     </div>

@@ -126,6 +126,9 @@ public class Workflows extends Controller {
 
                 ObjectNode alternativeJson = Json.newObject();
 
+                // construct a title for this alternative
+                alternativeJson.put("title", workflowConfig.getTitle());
+
                 alternativeJson.put("name", alternativeConfig.getName());
                 alternativeJson.put("instructions", alternativeConfig.getInstructions());
 
@@ -147,12 +150,12 @@ public class Workflows extends Controller {
                         ArrayNode optionsArray = parametersJson.putArray("options");
 
                         Map<String, Object> options = parameterConfig.getOptions();
-                        for (String name : options.keySet()) {
-                            String label = (String) options.get(name);
+                        for (String value : options.keySet()) {
+                            String label = (String) options.get(value);
 
                             ObjectNode optionJson = Json.newObject();
 
-                            optionJson.put("name", name);
+                            optionJson.put("value", value);
                             optionJson.put("label",  label);
 
                             optionsArray.add(optionJson);
