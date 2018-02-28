@@ -1,8 +1,66 @@
+<div class="row">
+
+    <div class="col-lg-4">
+
+        <div class="help-block">Search by workflow name:</div>
+        <div class="input-group">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+      </span>
+            <input type="text" class="form-control" placeholder="Enter test name...">
+        </div>
+
+    </div>
+
+    <div class="col-lg-2">
+        <div class="help-block">Filter by inputs:</div>
+        <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default active">
+                <input type="radio" name="input-type" id="input-any" autocomplete="off" checked>Any
+            </label>
+            <label class="btn btn-default">
+                <input type="radio" name="input-type" id="input-dwca" autocomplete="off">DwCA
+            </label>
+            <label class="btn btn-default">
+                <input type="radio" name="input-type" id="input-csv" autocomplete="off">CSV
+            </label>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="help-block">Filter by Darwin Core class:</div>
+        <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default active">
+                <input type="radio" name="dwc-class" id="dwc-any" autocomplete="off" checked>Any
+            </label>
+            <label class="btn btn-default">
+                <input type="radio" name="dwc-class" id="dwc-occurrence" autocomplete="off">Occurrence
+            </label>
+            <label class="btn btn-default">
+                <input type="radio" name="dwc-class" id="dwc-event" autocomplete="off">Event
+            </label>
+            <label class="btn btn-default">
+                <input type="radio" name="dwc-class" id="dwc-identification" autocomplete="off">Identification
+            </label>
+            <label class="btn btn-default">
+                <input type="radio" name="dwc-class" id="dwc-location" autocomplete="off">Location
+            </label>
+            <label class="btn btn-default">
+                <input type="radio" name="dwc-class" id="dwc-taxon" autocomplete="off">Taxon
+            </label>
+        </div>
+    </div>
+
+</div>
+
+<hr />
+
 <div id="sortable">
  <% _.each(definitions, function(def) { %>
 
-    <div class="bs-callout bs-callout-primary" style="padding-left: 3em">
+    <div class="row bs-callout bs-callout-primary" style="padding-left: 3em">
 
+        <div class="col-lg-8">
       <h4 style="float:left; margin-left: -1em; line-height: 2em;">
         <a href="<%= def.documentation %>" target="_blank">
           <img src="<%= infoImg %>" />
@@ -14,9 +72,25 @@
         </div>
         <% }); %>
 
-
-
       <div style="clear: both; margin-left: 0.7em; font-size: 1em"><%= def.summary %></div>
+        </div>
+
+        <!-- TODO: display dwc class and required info elements -->
+        <div class="col-lg-4">
+            <div class="info-elems">
+                <span class="label label-info">dwc:Event</span> |
+                <span class="label label-default">dwc:eventDate</span>
+                <span class="label label-default">dwc:month</span>
+                <span class="label label-default">dwc:day</span>
+                <span class="label label-default">dwc:year</span>
+            </div>
+
+            <div class="info-elems">
+                <span class="label label-info">dwc:Occurrence</span> |
+                <span class="label label-default">dwc:identifiedBy</span>
+                <span class="label label-default">dwc:collectionCode</span>
+            </div>
+        </div>
     </div>
 
     <% }); %>
