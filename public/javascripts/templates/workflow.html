@@ -58,9 +58,8 @@
 <div id="sortable">
  <% _.each(definitions, function(def) { %>
 
-    <div class="row bs-callout bs-callout-primary" style="padding-left: 3em">
+    <div class="bs-callout bs-callout-primary" style="padding-left: 3em">
 
-        <div class="col-lg-8">
       <h4 style="float:left; margin-left: -1em; line-height: 2em;">
         <a href="<%= def.documentation %>" target="_blank">
           <img src="<%= infoImg %>" />
@@ -72,26 +71,15 @@
         </div>
         <% }); %>
 
+        <div style="float:right;">
+        <% _.each(def.class, function(dwcClass) { %>
+
+            <span class="label label-default">dwc:<%= dwcClass %></span>
+            <% }) %>
+        </div>
+
       <div style="clear: both; margin-left: 0.7em; font-size: 1em"><%= def.summary %></div>
         </div>
-
-        <!-- TODO: display dwc class and required info elements -->
-        <div class="col-lg-4">
-            <div class="info-elems">
-                <span class="label label-info">dwc:Event</span> |
-                <span class="label label-default">dwc:eventDate</span>
-                <span class="label label-default">dwc:month</span>
-                <span class="label label-default">dwc:day</span>
-                <span class="label label-default">dwc:year</span>
-            </div>
-
-            <div class="info-elems">
-                <span class="label label-info">dwc:Occurrence</span> |
-                <span class="label label-default">dwc:identifiedBy</span>
-                <span class="label label-default">dwc:collectionCode</span>
-            </div>
-        </div>
-    </div>
 
     <% }); %>
 </div>
