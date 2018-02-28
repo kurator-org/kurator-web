@@ -17,6 +17,7 @@
 package models.json;
 
 import config.Artifact;
+import config.WorkflowAlternativeConfig;
 import config.WorkflowConfig;
 import ui.input.BasicField;
 import org.jetbrains.annotations.NotNull;
@@ -42,23 +43,24 @@ public class WorkflowDefinition implements Comparable<WorkflowDefinition> {
         // Default constructor
     }
 
-    public WorkflowDefinition(WorkflowConfig workflow) {
-        this.name = workflow.getName();
-        this.title = workflow.getTitle();
-        //this.yamlFile = workflow.getYaml();
-        this.documentation = workflow.getDocumentation();
-        //this.instructions = workflow.getInstructions();
-        this.summary = workflow.getSummary();
+    public WorkflowDefinition(String name, String title, String documentation, String summary, String instructions,
+                              String yamlFile, Collection<Artifact> resultArtifacts, Collection<Artifact> otherArtifacts) {
+        this.name = name;
+        this.title = title;
+        this.yamlFile = yamlFile;
+        this.documentation = documentation;
+        this.instructions = instructions;
+        this.summary = summary;
 
-        /*for (Artifact artifact : workflow.getResultArtifacts()) {
+        for (Artifact artifact : resultArtifacts) {
             ArtifactDef artifactDef = new ArtifactDef(artifact.getName(), artifact.getDescription(), artifact.getLabel(), artifact.getType(), artifact.getInfo());
             this.results.put(artifact.getName(), artifactDef);
         }
 
-        for (Artifact artifact : workflow.getOtherArtifacts()) {
+        for (Artifact artifact : otherArtifacts) {
             ArtifactDef artifactDef = new ArtifactDef(artifact.getName(), artifact.getDescription(), artifact.getLabel(), artifact.getType(), artifact.getInfo());
             this.other.put(artifact.getName(), artifactDef);
-        }*/
+        }
     }
 
     public void addField(BasicField field) {

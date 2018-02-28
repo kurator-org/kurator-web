@@ -614,53 +614,68 @@ public class Workflows extends Controller {
     public static List<WorkflowDefinition> loadWorkflowFormDefinitions() {
         List<WorkflowDefinition> workflowDefs = new ArrayList<>();
 
-        // TODO: Update the model objects for filtering the workflows list once the UI components have been defined
-
-        /**ConfigManager configManager = ConfigManager.getInstance();
+        ConfigManager configManager = ConfigManager.getInstance();
         Collection<config.WorkflowConfig> workflows = configManager.getWorkflowConfigs();
 
         List<Variable> variables = configManager.getVariables();
         // TODO: add ability to set workflow variables as user config
 
         for (config.WorkflowConfig workflow : workflows) {
-            WorkflowDefinition workflowDef = new WorkflowDefinition(workflow);
 
-            for (ParameterConfig parameter : workflow.getParameters()) {
-                if (parameter.isTyped()) {
-                    String type = parameter.getType();
-                    BasicField field = null;
+            for (WorkflowAlternativeConfig alternative : workflow.getWorkflowAlternativeConfigs()) {
+                String name = alternative.getName();
+                String title = workflow.getTitle();
+                String documentation = workflow.getDocumentation();
+                String summary = workflow.getSummary();
+                String instructions = alternative.getInstructions();
+                String yamlFile = alternative.getYaml();
 
-                    switch (type) {
-                        case "text":
-                            field = new TextField();
-                            break;
-                        case "select":
-                            SelectField selectField = new SelectField();
-                            selectField.options = parameter.getOptions();
-                            field = selectField;
-                            break;
-                        case "tokenfield":
-                            field = new TokenField();
-                            break;
-                        case "upload":
-                            field = new FileInput();
-                            break;
-                        default:
-                            throw new RuntimeException("Unsupported parameter type in workflow config: "
-                                    + workflow.getName());
+                Collection<Artifact> resultArtifacts = alternative.getResultArtifacts();
+                Collection<Artifact> otherArtifacts = alternative.getOtherArtifacts();
+
+                WorkflowDefinition workflowDef = new WorkflowDefinition(name, title, documentation, summary,
+                        instructions, yamlFile, resultArtifacts, otherArtifacts);
+
+                for (ParameterConfig parameter : alternative.getParameters()) {
+                    if (parameter.isTyped()) {
+                        String type = parameter.getType();
+                        BasicField field = null;
+
+                        switch (type) {
+                            case "text":
+                                field = new TextField();
+                                break;
+                            case "select":
+                                SelectField selectField = new SelectField();
+                                selectField.options = parameter.getOptions();
+                                field = selectField;
+                                break;
+                            case "tokenfield":
+                                field = new TokenField();
+                                break;
+                            case "upload":
+                                field = new FileInput();
+                                break;
+                            default:
+                                throw new RuntimeException("Unsupported parameter type in workflow config: "
+                                        + workflow.getName());
+                        }
+
+                        // Set properties common to all fields
+                        field.name = parameter.getName();
+                        field.label = parameter.getLabel();
+                        field.tooltip = parameter.getDescription();
+
+                        workflowDef.addField(field);
                     }
 
-                    // Set properties common to all fields
-                    field.name = parameter.getName();
-                    field.label = parameter.getLabel();
-                    field.tooltip = parameter.getDescription();
-
-                    workflowDef.addField(field);
                 }
+
+                workflowDefs.add(workflowDef);
             }
 
-            workflowDefs.add(workflowDef);
-        }**/
+        }
+
         return workflowDefs;
     }
 
