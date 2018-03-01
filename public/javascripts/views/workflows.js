@@ -13,21 +13,21 @@ define([
             'keyup .search-text': 'searchKeyUp',
             'click .search-btn': 'runSearch',
             'change .filter-input-btn': 'filterByInput',
-            'change .filter-class-btn': 'filterByClass'
+            'change .filter-class-btn': 'filterByClass',
+            'click .reset-btn': 'clearFilters'
         },
 
         initialize: function () {
-            this.filter = {
-                'search': '',
-                'input': 'any',
-                'dwcclass': 'any'
-            },
-
-            this.fetchWorkflows();
+            this.clearFilters();
         },
 
         render: function () {
             this.$el.html(this.template({definitions : this.collection.toJSON(), infoImg : app.assetsUrl + "images/info.png"}));
+
+            // get dom element for search text box and substitute the search terms set in the filter
+            if (this.filter['search'] != '') {
+                $('.search-text').val(this.filter['search']);
+            }
 
             // get the dom element that matches the values of input and dwcclass currently set as the filter
             var $inputToggle = $('.filter-input-btn[value=' + this.filter['input'] + ']');
@@ -61,6 +61,16 @@ define([
 
         runSearch: function (event) {
             this.filter['search'] = $('.search-text').val();
+            this.fetchWorkflows();
+        },
+
+        clearFilters: function (event) {
+            this.filter = {
+                'search': '',
+                'input': 'any',
+                'dwcclass': 'any'
+            };
+
             this.fetchWorkflows();
         },
 
