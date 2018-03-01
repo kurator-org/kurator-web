@@ -92,20 +92,39 @@ public class Workflows extends Controller {
      *
      * @return
      */
-    public Result list(String search, String inputs, String dwcCls) {
-        // TODO: use the filter criteria to determine which workflows are returned
-        System.out.println(search + " " +  inputs + " " + dwcCls);
-
-        //ObjectNode response = Json.newObject();
-
-        //ArrayNode workflowsArray = response.putArray("workflows");
-
+    public Result list(String search, String input, String dwcCls) {
         ArrayNode response = Json.newArray();
 
         ConfigManager configManager = ConfigManager.getInstance();
         Collection<config.WorkflowConfig> workflows = configManager.getWorkflowConfigs();
 
         for (config.WorkflowConfig workflowConfig : workflows) {
+            // whether or not to include this workflow based on filter criteria
+            boolean match = false;
+            boolean hasDwcClass = false;
+            boolean hasInputType = false;
+
+            if (search == null || search.isEmpty()) {
+                System.out.println("search is null");
+                match = true;
+            } else {
+                // if a search term is provided as a parameter, check if the name of this workflow
+                // contains the string
+                match = workflowConfig.getTitle().toLowerCase().contains(search.toLowerCase());
+            }
+
+            if (dwcCls.equalsIgnoreCase("any")) {
+                System.out.println("has dwc class: " + dwcCls);
+                hasDwcClass = true;
+            } else {
+                // if a dwc class besides any is provided as a parameter, check if the workflow configuration
+                // includes it
+                for (String value : workflowConfig.getDwcClass()) {
+                    if (value.equalsIgnoreCase(dwcCls)) {
+                        hasDwcClass = true;
+                    }
+                }
+            }
 
             // Create the workflow list entry json
             ObjectNode workflowJson = Json.newObject();
@@ -126,6 +145,17 @@ public class Workflows extends Controller {
             ArrayNode alternativesArray = workflowJson.putArray("alternatives");
 
             for (WorkflowAlternativeConfig alternativeConfig : workflowConfig.getWorkflowAlternativeConfigs()) {
+                String inputType = alternativeConfig.getInputType();
+                String inputFormat = alternativeConfig.getInputFormat();
+
+                if (input.equalsIgnoreCase("any")) {
+                    System.out.println("has input type: " + input);
+                    hasInputType = true;
+                } else {
+                    // if an input type and/or darwin core class besides any is specified, check each
+                    // alternative to see if it matches the filter criteria
+                    hasInputType = hasInputType || inputType.equalsIgnoreCase(input);
+                }
 
                 ObjectNode alternativeJson = Json.newObject();
 
@@ -171,7 +201,10 @@ public class Workflows extends Controller {
                 alternativesArray.add(alternativeJson);
             }
 
-            response.add(workflowJson);
+            // Only include the workflows that satisfy filter criteria in the response
+            if (match && hasDwcClass && hasInputType) {
+                response.add(workflowJson);
+            }
         }
 
         return ok(response);
