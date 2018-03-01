@@ -92,7 +92,10 @@ public class Workflows extends Controller {
      *
      * @return
      */
-    public Result list() {
+    public Result list(String search, String inputs, String dwcCls) {
+        // TODO: use the filter criteria to determine which workflows are returned
+        System.out.println(search + " " +  inputs + " " + dwcCls);
+
         //ObjectNode response = Json.newObject();
 
         //ArrayNode workflowsArray = response.putArray("workflows");

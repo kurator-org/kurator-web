@@ -58,7 +58,7 @@ POST    /workflow/*name                         controllers.AsyncController.sche
 GET     /workflows/deploy                       controllers.Workflows.deploy()
 POST    /workflows/deploy                       controllers.Workflows.deployWorkflows()
 
-GET     /workflows/list                         controllers.Workflows.list()
+GET     /workflows/list                         controllers.Workflows.list(search: String, input: String, dwcclass: String)
 POST    /workflows/delete                       controllers.Workflows.deletePackage(name : String)
 
 GET     /workflows/yaml                         controllers.Workflows.workflowYaml(name : String)
