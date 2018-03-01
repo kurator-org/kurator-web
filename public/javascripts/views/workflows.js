@@ -16,7 +16,7 @@ define([
 
         initialize: function () {
             this.filter = {
-                'search': null,
+                'search': '',
                 'input': 'any',
                 'dwcclass': 'any'
             },
@@ -25,7 +25,6 @@ define([
         },
 
         render: function () {
-            console.log(this.collection.toJSON());
             this.$el.html(this.template({definitions : this.collection.toJSON(), infoImg : app.assetsUrl + "images/info.png"}));
 
             // get the dom element that matches the values of input and dwcclass currently set as the filter
@@ -52,11 +51,9 @@ define([
         },
 
         fetchWorkflows: function () {
-            console.log(this.filter);
-
             this.collection = new WorkflowsCollection(this.filter['search'], this.filter['input'], this.filter['dwcclass']);
-            this.listenTo(this.collection, 'update', this.render);
 
+            this.listenTo(this.collection, 'sync', this.render);
             this.collection.fetch();
         }
     });
