@@ -12,17 +12,21 @@
 
     </div>
 
+    <!-- NOTE: for the radio buttons used below for filtering, Firefox persists form control states
+    (disabledness and checkedness) across page loads. A workaround for this is to use autocomplete="off".
+    See Mozilla bug #654072 https://bugzilla.mozilla.org/show_bug.cgi?id=654072. -->
+
     <div class="col-lg-2">
         <div class="help-block">Filter by inputs:</div>
         <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default active">
-                <input type="radio" name="input-type" id="input-any" autocomplete="off" checked>Any
+            <label class="btn btn-default">
+                <input class="filter-input-btn" type="radio" value="any" autocomplete="off">Any
             </label>
             <label class="btn btn-default">
-                <input type="radio" name="input-type" id="input-dwca" autocomplete="off">DwCA
+                <input class="filter-input-btn" type="radio" value="dwca" autocomplete="off">DwCA
             </label>
             <label class="btn btn-default">
-                <input type="radio" name="input-type" id="input-csv" autocomplete="off">CSV
+                <input class="filter-input-btn" type="radio" value="csv" autocomplete="off">CSV
             </label>
         </div>
     </div>
@@ -30,23 +34,23 @@
     <div class="col-lg-6">
         <div class="help-block">Filter by Darwin Core class:</div>
         <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default active">
-                <input type="radio" name="dwc-class" id="dwc-any" autocomplete="off" checked>Any
+            <label class="btn btn-default">
+                <input class="filter-class-btn" type="radio" value="any" autocomplete="off">Any
             </label>
             <label class="btn btn-default">
-                <input type="radio" name="dwc-class" id="dwc-occurrence" autocomplete="off">Occurrence
+                <input class="filter-class-btn" type="radio" value="occurrence" autocomplete="off">Occurrence
             </label>
             <label class="btn btn-default">
-                <input type="radio" name="dwc-class" id="dwc-event" autocomplete="off">Event
+                <input class="filter-class-btn" type="radio" value="event" autocomplete="off">Event
             </label>
             <label class="btn btn-default">
-                <input type="radio" name="dwc-class" id="dwc-identification" autocomplete="off">Identification
+                <input class="filter-class-btn" type="radio" value="identification" autocomplete="off">Identification
             </label>
             <label class="btn btn-default">
-                <input type="radio" name="dwc-class" id="dwc-location" autocomplete="off">Location
+                <input class="filter-class-btn" type="radio" value="location" autocomplete="off">Location
             </label>
             <label class="btn btn-default">
-                <input type="radio" name="dwc-class" id="dwc-taxon" autocomplete="off">Taxon
+                <input class="filter-class-btn" type="radio" value="taxon" autocomplete="off">Taxon
             </label>
         </div>
     </div>

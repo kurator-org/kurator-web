@@ -138,7 +138,7 @@ require([
         $('.breadcrumb .active').remove();
         $('.breadcrumb').append('<li class="active"><a href="#run">Run</a></li>');
 
-        var workflowsView = new WorkflowsView({ collection: app.workflows });
+        var workflowsView = new WorkflowsView();
         this.navigateToView(workflowsView);
     });
 
