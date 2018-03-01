@@ -10,6 +10,8 @@ define([
         template: _.template(workflowTpl),
 
         events: {
+            'keyup .search-text': 'searchKeyUp',
+            'click .search-btn': 'runSearch',
             'change .filter-input-btn': 'filterByInput',
             'change .filter-class-btn': 'filterByClass'
         },
@@ -47,6 +49,18 @@ define([
 
         filterByClass: function (event) {
             this.filter['dwcclass'] = $(event.target).val();
+            this.fetchWorkflows();
+        },
+
+        searchKeyUp: function (event) {
+            if (event.which == 13) {
+                // enter key triggers a button click event
+                $('.search-btn').click();
+            }
+        },
+
+        runSearch: function (event) {
+            this.filter['search'] = $('.search-text').val();
             this.fetchWorkflows();
         },
 
