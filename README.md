@@ -30,7 +30,7 @@ Re-run `bin/kurator-web` to start the play server and auto unpack/deploy the wor
 Building and Testing Kurator-Web
 --------------------------------
 
-Follow these instructions to set up a build environment and run the application using the embedded Play server for development and testing purposes.
+Follow these instructions to set up a build environment and run the application using the embedded Play server for development and testing purposes. This is the default method of deployment for the firuta.huh.harvard.edu test instance as well as the kurator.acis.ufl.edu production environments.
 
 #### Prerequisites
 
@@ -43,38 +43,35 @@ Kurator-Web requires Java version 1.8 or higher. To determine the version of jav
 
 See the following for instructions regarding the installation of Oracle Java 8 in Debian: http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html
 
-Other prerequisites include maven, subversion and git. If you do not currently have them installed you can use the following command.
+Or download and manually install via the Oracle website: http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
-    $ sudo apt-get install maven subversion git
+Other development prerequisites include maven and git. If you do not currently have them installed you can use the following command.
 
-If using the Play production server, install the GNU screen utillity in order to run the Play server in the background:
-
-    $ sudo apt-get install screen
+    sudo apt-get install git maven
 
 For production environments the default database used is MySQL. If MySQL is not already installed, install it now via apt-get:
 
-sudo apt-get install mysql-client mysql-server
+    sudo apt-get install mysql-client mysql-server
 
 Create the kurator user and database with privileges in MySQL:
 
-    $ CREATE DATABASE kurator;
-    $ GRANT ALL PRIVILEGES ON kurator.* TO 'kurator'@'localhost' IDENTIFIED BY 'password';
+    CREATE DATABASE kurator;
+    GRANT ALL PRIVILEGES ON kurator.* TO 'kurator'@'localhost' IDENTIFIED BY 'password';
 
 Kurator web requires a kurator home directory that will contain the workspace and Python packages. Create a kurator user via the useradd command and use this user's home directory:
 
-    $ sudo useradd -m -U kurator
-    $ sudo passwd kurator
+    sudo useradd -m -U kurator
+    sudo passwd kurator
+    
+The Python workflows that use the native actor require Python 2.7 and the pip installer. Additionally, the kurator native libraries provided by kurator-akka require the python-dev and r-base packages:
 
-Login as the kurator user and create the packages and workspace directories required by the workflow engine:
+    sudo apt-get install python python-pip python-dev r-base 
 
-    $ mkdir packages
-    $ mkdir workspace
+Python workflows that use the Jython actor require installation of Jython. Download the [Jython 2.7.1.b3 installer jar](http://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7.1b3/jython-installer-2.7.1b3.jar) and run the installer from the command line in the kurator home directory.
 
-Kurator-Akka requires jython to be installed. Download the [Jython 2.7.1.b3 installer jar](http://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7.1b3/jython-installer-2.7.1b3.jar). Run the installer from the command line in the kurator home directory.
+    java -jar jython-installer-2.7.1b3.jar
 
-    $ java -jar jython-installer-2.7.1b3.jar
-
-Select the standard installation when prompted (option 2) and when asked to provide the target directory enter "jython2.7.1b3". This will install jython to "/home/kurator/jython2.7.1b3".
+Select the standard installation when prompted (option 2) and when asked to provide the target directory enter "jython". This will install jython to "/home/kurator/jython".
 
 #### Python actor dependencies
 
