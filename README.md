@@ -45,9 +45,9 @@ See the following for instructions regarding the installation of Oracle Java 8 i
 
 Or download and manually install via the Oracle website: http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
-Other development prerequisites include maven and git. If you do not currently have them installed you can use the following command.
+Other development prerequisites include maven, subversion and git. If you do not currently have them installed you can use the following command.
 
-    sudo apt-get install git maven
+    sudo apt-get install git subversion maven
 
 For production environments the default database used is MySQL. If MySQL is not already installed, install it now via apt-get:
 
@@ -73,64 +73,110 @@ Python workflows that use the Jython actor require installation of Jython. Downl
 
 Select the standard installation when prompted (option 2) and when asked to provide the target directory enter "jython". This will install jython to "/home/kurator/jython".
 
-#### Python actor dependencies
+Log in as the kurator user created previously and create a directory for the projects and another directory for deployments in the user's home directoy:
 
-The python actor workflows included with the webapp require the installation of a few dependencies via jython pip. Install the following with the pip tool found in $JYTHON_HOME/bin/pip error messages suggesting a missing python module (Error importing python module ... No module named ...) probably indicate that additional pip installations need to be performed, try running pip install with the module name found after "No module named".  Currently packaged workflows depend on the following modules being installed:
+    cd /home/kurator
+    mkdir projects
+    mkdir deployments
+    
+#### Clone projects from GitHub
 
-    $JYTHONHOME/bin/pip install requests
-    $JYTHONHOME/bin/pip install python-dwca-reader
-    $JYTHONHOME/bin/pip install py
-    $JYTHONHOME/bin/pip install unicodecsv
-    $JYTHONHOME/bin/pip install unidecode
+Login as the kurator user for the following steps:
 
-#### Maven dependencies
+Clone the kurator-akka project:
 
-Kurator-Web depends on multiple projects which must be built using maven first. Start by cloning the kurator-akka, kurator-validation and kurator-fp-validation repositories on your local machine.
+    git clone https://github.com/kurator-org/kurator-akka.git
 
-    $ git clone https://github.com/kurator-org/kurator-akka.git
-    $ git clone https://github.com/kurator-org/kurator-validation.git
-    $ git clone https://github.com/kurator-org/kurator-fp-validation.git
+Clone prerequisites for ffdq and dq reports:
 
-The kurator-fp-validation project depends on the FP-CurationServices project hosted in the filteredpush svn repository on sourceforge. Check this project using subversion:
+    git clone https://github.com/kurator-org/ffdq-api.git
+    git clone https://github.com/kurator-org/kurator-ffdq.git
+
+and the event_date_qc and geo_ref_qc projects:
+
+    git clone https://github.com/FilteredPush/event_date_qc.git
+    git clone https://github.com/FilteredPush/geo_ref_qc.git
+
+Clone the kurator-validation and kurator-fp-validation projects containing the workflows:
+
+    git clone https://github.com/kurator-org/kurator-validation.git
+    
+The kurator-fp-validation project also depends on the FP-CurationServices project hosted in the filteredpush svn repository on sourceforge. Check this project using subversion:
 
     $ svn checkout svn://svn.code.sf.net/p/filteredpush/svn/trunk/FP-Tools/FP-CurationServices
 
-First start by building kurator-akka. In production environments you can skip tests to save time during the build.
+Finally clone the web app project found in this repository:
 
-    $ cd kurator-akka
-    $ mvn install -Dmaven.test.skip=true
+    git clone https://github.com/kurator-org/kurator-web.git
+    
+#### FFDQ and QC actor libraries
 
-Build the FP-CurationServices project next:
+The projects that make up kurator and the set of workflows standard to the production deployments are shown below with links between them to indicate the dependency graph. Projects are listed from left to right in the build order.
 
-    $ cd ../FP-CurationServices
-    $ mvn install -Dmaven.test.skip=true
+The first projects to build are the ffdq library and api projects as well as the event_date_qc and geo_ref_qc projects that depend on ffdq:
+ 
+    ffdq-api --> kurator-ffdq --> event_date_qc
+                                  geo_ref_qc
 
-Then build and install kurator-validation followed by kurator-fp-validation:
+Starting from the kurator user's home directory (/home/kurator/), build these projects using maven install:
 
-    $ cd ../kurator-validation
-    $ mvn install -Dmaven.test.skip=true
-    $ cd ../kurator-fp-validation
-    $ mvn install -Dmaven.test.skip=true
+    cd ffdq-api
+    mvn install
+    
+    cd kurator-ffdq
+    mvn install
+    
+    cd event_date_qc
+    mvn install
+    
+    cd geo_ref_qc
+    mvn install
 
-The kurator-validation and kurator-fp-validation project builds each produce a zip file artifact containing any python packages that must be deployed. These archives can be found in the kurator-validation/target and kurator-fp-validation/target directories after successful build.
+NOTE: the latest stable version of all of the projects above are also available via maven central and local clones of the projects are not required if working only on the other projects in a development environment (e.g. kurator-akka, kurator-validation, kurator-fp-validation and kurator-web below). These dependencies and the qc libraries are downloaded automatically when running maven install on kurator-validation.
 
-Unzip and deploy the contents of the archives to the packages directory created earlier in kurator home:
+1) https://mvnrepository.com/artifact/org.datakurator
+2) https://mvnrepository.com/artifact/org.filteredpush
 
-    $ cd /home/kurator
-    $ unzip kurator-validation/target/kurator-validation-0.5-SNAPSHOT-packages.zip -d packages
-    $ unzip kurator-fp-validation/target/kurator-fp-validation-0.5-SNAPSHOT-packages.zip -d packages
+#### Kurator-akka and workflows
+
+Second is the kurator-akka top level project and the kurator-validation/kurator-fp-validation projects that contain the Python and Java actors
+
+    kurator-akka --> kurator-validation --> kurator-fp-validation
+
+Starting from the kurator user's home directory (/home/kurator/), build these projects using maven install:
+
+    cd kurator-akka
+    mvn install
+    
+    cd kurator-validation
+    mvn install
+    
+    cd kurator-fp-validation
+    mvn install
+    
+The packages directory of the kurator-validation project contains all the Python actors and configuration that are currently deployed in production. In order to install the Python dependencies via pip, use the requirements.txt file provided in <code>packages/kurator_dwca</code> as an argument to pip:
+
+    pip install -r kurator-validation/packages/kurator-dwca/requirements.txt
+    
+In order to build the kurator-fp-validation workflows via maven install, first build the FP-CurationServices dependency followed by kurator-fp-validation:
+
+    cd FP-CurationServices
+    mvn install
+
+    cd kurator-fp-validation
+    mvn install
 
 #### Configuration
 
 Once you have successfully built the dependencies clone the kurator-web repository.
 
-    $ git clone https://github.com/kurator-org/kurator-web.git
+    git clone https://github.com/kurator-org/kurator-web.git
 
-A template web application configuration file can be found at conf/application.conf.template. Make a copy of this file named application.conf in the same directory and edit to set the database and smpt server connection information:
+A template web application configuration file can be found at conf/application.conf.template. Make a copy of this file named application.conf in the same directory and edit to set the database and smtp server connection information:
 
-    $ cd kurator-web/conf
-    $ cp application.conf.template application.conf
-    $ vi application.conf
+    cd kurator-web/conf
+    cp application.conf.template application.conf
+    vi application.conf
 
 By default the play application is configured to use the embedded in memory H2 database. If you plan on using MySQL as the production database comment out the two lines in conf/application.conf that configure the h2 database and uncomment the lines for mysql configuration instead.
 
