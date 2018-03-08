@@ -45,9 +45,9 @@ See the following for instructions regarding the installation of Oracle Java 8 i
 
 Or download and manually install via the Oracle website: http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
-Other development prerequisites include maven, subversion and git. If you do not currently have them installed you can use the following command.
+Other development prerequisites include maven and git. If you do not currently have them installed you can use the following command.
 
-    sudo apt-get install git subversion maven
+    sudo apt-get install git maven
 
 For production environments the default database used is MySQL. If MySQL is not already installed, install it now via apt-get:
 
@@ -120,9 +120,9 @@ Clone the kurator-validation and kurator-fp-validation projects containing the w
     git clone https://github.com/kurator-org/kurator-validation.git
     git clone https://github.com/kurator-org/kurator-fp-validation.git
     
-The kurator-fp-validation project also depends on the FP-CurationServices project hosted in the filteredpush svn repository on sourceforge. Check this project using subversion:
+The kurator-fp-validation project also depends on the FP-CurationServices project:
 
-    $ svn checkout svn://svn.code.sf.net/p/filteredpush/svn/trunk/FP-Tools/FP-CurationServices
+     git clone https://github.com/FilteredPush/FP-KurationServices.git
 
 Finally clone the web app project found in this repository:
 
@@ -170,9 +170,6 @@ Starting from the kurator user's home directory (/home/kurator/), build these pr
     cd kurator-validation
     mvn clean install
     
-    cd kurator-fp-validation
-    mvn clean install
-    
 The packages directory of the kurator-validation project contains all the Python actors and configuration that are currently deployed in production. In order to install the Python dependencies via pip, use the requirements.txt file provided in <code>packages/kurator_dwca</code> as an argument to pip:
 
     pip install -r kurator-validation/packages/kurator-dwca/requirements.txt
@@ -209,7 +206,26 @@ The [python.path](https://github.com/kurator-org/kurator-web/blob/master/conf/ap
 
 Lastly, if you would like the play server to accept connections from all hosts instead of just localhost, set the value of the [http.address](https://github.com/kurator-org/kurator-web/blob/master/conf/application.conf.example#L20) property to 0.0.0.0.
 
-#### Systemd startup script
+###  Build and Run
+
+Once the web application is configured, build a distribution zip file via the included activator utility:
+
+    bin/activator dist
+
+Unzip the distribution archive to the deployments directory in /home/kurator:
+
+    cd /home/kurator
+    unzip kurator-web/target/universal/kurator-web-1.0.2-SNAPSHOT.zip -d deployments
+
+Run the play production server from the distribution directory unziped within deployments. Use
+
+    cd deployments/kurator-web-1.0.2-SNAPSHOT -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-SNAPSHOT-jar-with-dependencies.jar
+    bin/kurator_web
+
+By default the Play server will listen on port 9000 however the -Dhttp.port used in the command above to set the port to 80 can be used to change the default. Open http://localhost/kurator-web/ in your browser after starting the server to test the web application. 
+The -Dkurator.jar option is required and should point to a copy of the kurator-validation jar and is used by the command-line workflow runner in the web app to run workflows.  
+
+### Systemd startup script
 
 Create a unit file for the kurator web systemd service at /etc/systemd/system/kurator.service with the following contents:
 
@@ -234,8 +250,6 @@ Create a unit file for the kurator web systemd service at /etc/systemd/system/ku
 
 If using the same directories according to the config edits shouldn't be required. Otherwise replace the paths in the above with the ones you are using for your deployment. By default the systemd script is configured to start the web app listening on port 80, the -Dhttp.port option in the command set as the value of ExecStart can be used to change the port.
 
-The -Dkurator.jar option in the value of ExecStart points to a copy of the kurator-validation jar file and is used by the command-line workflow runner in the web app to run workflows.  
-
 Once you are done with this file, enable the service via:
 
     systemctl enable kurator.service
@@ -243,27 +257,7 @@ Once you are done with this file, enable the service via:
 Reboot the machine or start the service manually by using:
 
     sudo systemctl start kurator
-
-###  Build and Run
-
-Once the web application is configured, build a distribution zip file via the included activator utility:
-
-    bin/activator dist
-
-Unzip the distribution archive to the deployments directory in /home/kurator:
-
-    cd /home/kurator
-    unzip kurator-web/target/universal/kurator-web-1.0.2-SNAPSHOT.zip -d deployments
-
-Run the play production server from the distribution directory unziped within deployments. Use
-
-    cd deployments/kurator-web-1.0.2-SNAPSHOT
-    bin/kurator_web
-
-<!--- TODO: systemd startup script --->
-
-By default the Play server will listen on port 9000 however the -Dhttp.port used in the command above to set the port to 80 can be used to change the default. Open http://localhost/kurator-web/ in your browser after starting the server to test the web application.
-
+    
 <!---
 
 Feature is not currently in use
