@@ -184,14 +184,12 @@ In order to build the kurator-fp-validation workflows via maven install, first b
 
 #### Configuration
 
-Once you have successfully built the dependencies clone the kurator-web repository.
-
-    git clone https://github.com/kurator-org/kurator-web.git
+Once you have successfully built the dependencies the next step is to configure the web app.
 
 A template web application configuration file can be found at conf/application.conf.template. Make a copy of this file named application.conf in the same directory and edit to set the database and smtp server connection information:
 
     cd kurator-web/conf
-    cp application.conf.template application.conf
+    cp application.conf.example application.conf
     vi application.conf
 
 By default the play application is configured to use the embedded in memory H2 database. If you plan on using MySQL as the production database comment out the two lines in conf/application.conf that configure the h2 database and uncomment the lines for [mysql configuration](https://github.com/kurator-org/kurator-web/blob/master/conf/application.conf.example#L53-L57) instead.
@@ -210,17 +208,19 @@ Lastly, if you would like the play server to accept connections from all hosts i
 
 Once the web application is configured, build a distribution zip file via the included activator utility:
 
+    cd kurator-web/
     bin/activator dist
 
-Unzip the distribution archive to the deployments directory in /home/kurator:
+Unzip the distribution archive to the deployments directory in /home/kurator and create a symbolic link "kurator-web" for the current deployment:
 
     cd /home/kurator
     unzip kurator-web/target/universal/kurator-web-1.0.2-SNAPSHOT.zip -d deployments
+    ln -s deployments/kurator-web-1.0.2-SNAPSHOT kurator-web
 
-Run the play production server from the distribution directory unziped within deployments. Use
+Run the play production server from the distribution directory unzipped within deployments. Use
 
-    cd deployments/kurator-web-1.0.2-SNAPSHOT -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-SNAPSHOT-jar-with-dependencies.jar
-    bin/kurator_web
+    cd deployments/kurator-web
+    bin/kurator_web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-SNAPSHOT-jar-with-dependencies.jar
 
 By default the Play server will listen on port 9000 however the -Dhttp.port used in the command above to set the port to 80 can be used to change the default. Open http://localhost/kurator-web/ in your browser after starting the server to test the web application. 
 The -Dkurator.jar option is required and should point to a copy of the kurator-validation jar and is used by the command-line workflow runner in the web app to run workflows.  
@@ -248,7 +248,7 @@ Create a unit file for the kurator web systemd service at /etc/systemd/system/ku
     [Install]
     WantedBy=multi-user.target
 
-If using the same directories according to the config edits shouldn't be required. Otherwise replace the paths in the above with the ones you are using for your deployment. By default the systemd script is configured to start the web app listening on port 80, the -Dhttp.port option in the command set as the value of ExecStart can be used to change the port.
+If using the same directories according to the config the defaults in the example above can be used. Otherwise replace the paths with the ones you are using for your deployment. By default the systemd script is configured to start the web app listening on port 80, the -Dhttp.port option in the command set as the value of ExecStart can be used to change the port.
 
 Once you are done with this file, enable the service via:
 
