@@ -209,7 +209,42 @@ The [python.path](https://github.com/kurator-org/kurator-web/blob/master/conf/ap
 
 Lastly, if you would like the play server to accept connections from all hosts instead of just localhost, set the value of the [http.address](https://github.com/kurator-org/kurator-web/blob/master/conf/application.conf.example#L20) property to 0.0.0.0.
 
-#### Build and Run
+#### Systemd startup script
+
+Create a unit file for the kurator web systemd service at /etc/systemd/system/kurator.service with the following contents:
+
+    [Unit]
+    After=network.target
+    
+    [Service]
+    EnvironmentFile=/home/kurator/kurator-web/conf/env
+    MemoryLimit=8G
+    PIDFile=/home/kurator/kurator-web/RUNNING_PID
+    WorkingDirectory=/home/kurator/kurator-web
+    ExecStart=/home/kurator/kurator-web/bin/kurator-web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-SNAPSHOT-jar-with-dependencies.jar
+    Restart=on-failure
+    User=root
+    Group=kurator
+
+    # See http://serverfault.com/a/695863
+    SuccessExitStatus=143
+    
+    [Install]
+    WantedBy=multi-user.target
+
+If using the same directories according to the config edits shouldn't be required. Otherwise replace the paths in the above with the ones you are using for your deployment. By default the systemd script is configured to start the web app listening on port 80, the -Dhttp.port option in the command set as the value of ExecStart can be used to change the port.
+
+The -Dkurator.jar option in the value of ExecStart points to a copy of the kurator-validation jar file and is used by the command-line workflow runner in the web app to run workflows.  
+
+Once you are done with this file, enable the service via:
+
+    systemctl enable kurator.service
+
+Reboot the machine or start the service manually by using:
+
+    sudo systemctl start kurator
+
+###  Build and Run
 
 Once the web application is configured, build a distribution zip file via the included activator utility:
 
@@ -227,7 +262,7 @@ Run the play production server from the distribution directory unziped within de
 
 <!--- TODO: systemd startup script --->
 
-By default the Play server will listen on port 9000. Open http://localhost:9000/ in your browser after starting the server to test the web application.
+By default the Play server will listen on port 9000 however the -Dhttp.port used in the command above to set the port to 80 can be used to change the default. Open http://localhost/kurator-web/ in your browser after starting the server to test the web application.
 
 <!---
 
