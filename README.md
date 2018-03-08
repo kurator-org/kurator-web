@@ -85,11 +85,11 @@ The Python workflows that use the native actor require Python 2.7 and the pip in
 
     sudo apt-get install python python-pip python-dev r-base 
 
-Python workflows that use the Jython actor require installation of Jython. Download the [Jython 2.7.1.b3 installer jar](http://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7.1b3/jython-installer-2.7.1b3.jar) and run the installer from the command line in the kurator home directory.
+Python workflows that use the Jython actor require installation of Jython. Download the [Jython 3.7.1.b3 installer jar](http://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7.1b3/jython-installer-2.7.1b3.jar) and run the installer from the command line as root.
 
-    java -jar jython-installer-2.7.1b3.jar
+    sudo java -jar jython-installer-2.7.1b3.jar
 
-Select the standard installation when prompted (option 2) and when asked to provide the target directory enter "jython". This will install jython to "/home/kurator/jython".
+Select the standard installation when prompted (option 2) and when asked to provide the target directory enter "/opt/jython". This will install jython to "/opt/jython".
 
 Log in as the kurator user created previously and create a directory for the projects and another directory for deployments in the user's home directoy:
 
@@ -118,6 +118,7 @@ and the event_date_qc and geo_ref_qc projects:
 Clone the kurator-validation and kurator-fp-validation projects containing the workflows:
 
     git clone https://github.com/kurator-org/kurator-validation.git
+    git clone https://github.com/kurator-org/kurator-fp-validation.git
     
 The kurator-fp-validation project also depends on the FP-CurationServices project hosted in the filteredpush svn repository on sourceforge. Check this project using subversion:
 
@@ -139,16 +140,16 @@ The first projects to build are the ffdq library and api projects as well as the
 Starting from the kurator user's home directory (/home/kurator/), build these projects using maven install:
 
     cd ffdq-api
-    mvn install
+    mvn clean install
     
     cd kurator-ffdq
-    mvn install
+    mvn clean install
     
     cd event_date_qc
-    mvn install
+    mvn clean install
     
     cd geo_ref_qc
-    mvn install
+    mvn clean install
 
 NOTE: the latest stable version of all of the projects above are also available via maven central and local clones of the projects are not required if working only on the other projects in a development environment (e.g. kurator-akka, kurator-validation, kurator-fp-validation and kurator-web below). These dependencies and the qc libraries are downloaded automatically when running maven install on kurator-validation.
 
@@ -164,13 +165,13 @@ Second is the kurator-akka top level project and the kurator-validation/kurator-
 Starting from the kurator user's home directory (/home/kurator/), build these projects using maven install:
 
     cd kurator-akka
-    mvn install
+    mvn clean install
     
     cd kurator-validation
-    mvn install
+    mvn clean install
     
     cd kurator-fp-validation
-    mvn install
+    mvn clean install
     
 The packages directory of the kurator-validation project contains all the Python actors and configuration that are currently deployed in production. In order to install the Python dependencies via pip, use the requirements.txt file provided in <code>packages/kurator_dwca</code> as an argument to pip:
 
@@ -196,42 +197,41 @@ A template web application configuration file can be found at conf/application.c
     cp application.conf.template application.conf
     vi application.conf
 
-By default the play application is configured to use the embedded in memory H2 database. If you plan on using MySQL as the production database comment out the two lines in conf/application.conf that configure the h2 database and uncomment the lines for mysql configuration instead.
+By default the play application is configured to use the embedded in memory H2 database. If you plan on using MySQL as the production database comment out the two lines in conf/application.conf that configure the h2 database and uncomment the lines for [mysql configuration](https://github.com/kurator-org/kurator-web/blob/master/conf/application.conf.example#L53-L57) instead.
 
-The jython.home, jython.path and jython.workspace properties by default should point to the directories we created earlier in kurator home.
+Set the values of db.default.user and db.default.password to the username and password used when creating the kurator database in MySQL. 
 
-Lastly, if you would like the play server to accept connections from all hosts instead of just localhost, set the value of the http.address property to 0.0.0.0.
+Next configure the host and user for smtp (localhost, and the kurator user if exim4 was configured according to the prerequisites) in the [mailer section of the config](https://github.com/kurator-org/kurator-web/blob/master/conf/application.conf.example#L61-L64). These are the settings the web app will use when sending the notification emails.
+
+Also set the [kurator.email](https://github.com/kurator-org/kurator-web/blob/master/conf/application.conf.example#L73) property to the user@hostname according to settings that your mail server is using (e.g. kurator@kurator1.acis.ufl.edu). This property is used as the sender email for notifications that the web app sends out.
+ 
+The [python.path](https://github.com/kurator-org/kurator-web/blob/master/conf/application.conf.example#L76) property by default should point to the  packages directory of kurator-validation or kurator-fp-validation created earlier via git clone (e.g. home/kurator/projects/kurator-validation/packages).  
+
+Lastly, if you would like the play server to accept connections from all hosts instead of just localhost, set the value of the [http.address](https://github.com/kurator-org/kurator-web/blob/master/conf/application.conf.example#L20) property to 0.0.0.0.
 
 #### Build and Run
 
 Once the web application is configured, build a distribution zip file via the included activator utility:
 
-    $ bin/activator dist
+    bin/activator dist
 
-Create a deployments directory in /home/kurator and unzip the distribution archive:
+Unzip the distribution archive to the deployments directory in /home/kurator:
 
-    $ cd /home/kurator
-    $ mkdir deployments
-    $ unzip kurator-web/target/universal/kurator-web-0.5-SNAPSHOT.zip -d deployments
+    cd /home/kurator
+    unzip kurator-web/target/universal/kurator-web-1.0.2-SNAPSHOT.zip -d deployments
 
 Run the play production server from the distribution directory unziped within deployments. Use
 
-    $ cd deployments/kurator-web-0.5-SNAPSHOT
-    $ bin/kurator_web
+    cd deployments/kurator-web-1.0.2-SNAPSHOT
+    bin/kurator_web
 
-If screen was installed earlier as part of the prerequisites you may run the server in the background via the following:
-
-    $ screen -dmS kurator-web bin/kurator-web
-
-To view stdout for this process, restore the screen via:
-
-    $ screen -R kurator-web
-
-Lastly, to detach from the screen and send it to the background, press Ctrl-A + Ctrl-D
-
-See https://www.gnu.org/software/screen/ for more info
+<!--- TODO: systemd startup script --->
 
 By default the Play server will listen on port 9000. Open http://localhost:9000/ in your browser after starting the server to test the web application.
+
+<!---
+
+Feature is not currently in use
 
 #### Deploying workflows
 
@@ -282,3 +282,4 @@ On the remote server that the web application is deployed create a new keystore 
     $ keytool -keystore keystore.ks -importcert -alias <certificate-alias> -file cert.crt
 
 Once both remote and local keystores have been configured, deploy the signed packages zip file via the Admin > Deploy Workflows page.
+--->
