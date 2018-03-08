@@ -58,6 +58,24 @@ Create the kurator user and database with privileges in MySQL:
     CREATE DATABASE kurator;
     GRANT ALL PRIVILEGES ON kurator.* TO 'kurator'@'localhost' IDENTIFIED BY 'password';
 
+Kurator-web support sending of email notifications upon new user registration and activation. In order to use this feature, the server hosting the web app will need an outgoing smtp server. 
+
+Debian has the exim4 mail server installed by default. To configure the mail server for kurator-web run:
+
+    dpkg-reconfigure exim4-config
+
+When you reach the "Mail Server configuration" dialog, select "internet site" as the option. Next, when prompted to enter the FQDN or system mail name enter your domain (e.g. firuta.huh.harvard.edu, kurator.acis.ufl.edu, etc)
+
+Since the web app will access smtp via local host only, the default list of ip addresses to listen on are sufficient if kurator-web is the only application requiring use of the mail server (127.0.0.1 : ::1)
+
+For the rest of the configuration process deault values will work unless you wish to change them.
+
+Test the mail server via:
+
+    mail -s "Test Subject" user@example.com < /dev/null
+
+See https://www.digitalocean.com/community/tutorials/how-to-install-the-send-only-mail-server-exim-on-ubuntu-12-04 for more info
+
 Kurator web requires a kurator home directory that will contain the workspace and Python packages. Create a kurator user via the useradd command and use this user's home directory:
 
     sudo useradd -m -U kurator
