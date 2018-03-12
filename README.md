@@ -217,6 +217,15 @@ Unzip the distribution archive to the deployments directory in /home/kurator and
     unzip kurator-web/target/universal/kurator-web-1.0.2-SNAPSHOT.zip -d deployments
     ln -s deployments/kurator-web-1.0.2-SNAPSHOT kurator-web
 
+By default, kurator-web expects to find the "packages" directory relative to the deployment root directory (e.g. /deployments/kurator-web/packages). Create a symbolic link in the deployment that points to the packages directory in the kurator-validation project to deploy workflows:
+
+    cd /home/kurator/deployments/kurator-web
+    ln -s /home/kurator/projects/kurator-validation/packages
+
+This ensures that when the kurator-validation project is updated via git pull, any updates to the python workflows are automatically redeployed.
+
+NOTE: in order to update the Java workflows, which are containing in the kurator-validation jar file, rebuild and redeploy the web app via bin/activator dist by repeating the steps described above. 
+
 Run the play production server from the distribution directory unzipped within deployments. Use
 
     cd deployments/kurator-web
