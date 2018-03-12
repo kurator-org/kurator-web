@@ -21,6 +21,7 @@ http.address=127.0.0.1
 
 # Application context
 play.http.context="/kurator-web/"
+play.http.requestHandler = "SimpleHttpRequestHandler"
 
 # Secret key
 # ~~~~~
@@ -46,15 +47,15 @@ play.http.parser.maxMemoryBuffer=500000K
 #
 
 # H2 embedded database for testing and development
-db.default.driver=org.h2.Driver
-db.default.url="jdbc:h2:mem:play;MODE=MySQL"
-db.default.logStatements=true
+#db.default.driver=org.h2.Driver
+#db.default.url="jdbc:h2:mem:play;MODE=MySQL"
+#db.default.logStatements=true
 
 # Uncomment for MySQL config and replace defaults with information for your database
-#db.default.driver=com.mysql.jdbc.Driver
-#db.default.url="jdbc:mysql://localhost:3306/kurator"
-#db.default.user="kurator"
-#db.default.password="password"
+db.default.driver=com.mysql.jdbc.Driver
+db.default.url="jdbc:mysql://localhost:3306/kurator"
+db.default.username="kurator"
+db.default.password="password"
 
 # Mailer config
 
