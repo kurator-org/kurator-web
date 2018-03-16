@@ -72,7 +72,8 @@ require([
     app.assetsUrl = jsRoutes.controllers.Assets.at('').url;
 
     // Set app globals
-    app.workflows = new Workflows();
+    app.workflows = new Workflows('', 'any', 'any');
+    app.workflows.fetch();
 
     app.currentGroups = new GroupCollection();
     app.currentUsers = new Users();
@@ -143,6 +144,9 @@ require([
     });
 
     app.router.on("route:run", function (name) {
+        console.log(name);
+
+        console.log(app.workflows);
         app.workflows.each(function (workflow) {
             var found = workflow.get('alternatives').find(function(alt) {
                 return alt.name == name;
