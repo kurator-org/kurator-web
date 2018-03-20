@@ -45,17 +45,8 @@ public class AsyncController extends Controller {
     // Get the workspace basedir relative to the current directory
     private static final String WORKSPACE_DIR = new File("workspace").getAbsolutePath();
 
-    private final ActorSystem system;
-    private final ExecutionContextExecutor exec;
-
     private final WorkflowDao workflowDao = new WorkflowDao();
     private final UserDao userDao = new UserDao();
-
-    @Inject
-    public AsyncController(ActorSystem system, ExecutionContextExecutor exec) {
-        this.system = system;
-        this.exec = exec;
-    }
 
     public Result scheduleRun(String name) throws IOException {
         WorkflowDefinition workflowDef = Workflows.formDefinitionForWorkflow(name);
@@ -143,8 +134,6 @@ public class AsyncController extends Controller {
 
         String yamlFile = workflow.getYamlFile();
 
-
-
         // Create a workspace
         //Path path = Paths.get(WORKSPACE_DIR, "workspace_" + UUID.randomUUID());
         //path.toFile().mkdir();
@@ -157,33 +146,28 @@ public class AsyncController extends Controller {
         //parameters.put("fieldlist", "country|stateProvince");
 
         String logLevel = "DEBUG";
+        WorkflowRun workflowRun = run;
 
-        Runnable workflowTask = () -> {
-            final WorkflowRun workflowRun = run;
+        System.out.println("Started workflow run...");
+        WorkflowRunner runner = new WorkflowRunner();
 
-            System.out.println("Started workflow run...");
-            WorkflowRunner runner = new WorkflowRunner();
+        try {
+            RunOptions options = new RunOptions(yamlFile, parameters, config, logLevel);
+            RunResult result = runner.run(options, workflowRun);
 
-            try {
-                RunOptions options = new RunOptions(yamlFile, parameters, config, logLevel);
-                RunResult result = runner.run(options, workflowRun);
+            System.out.println(result.getOptions().toJsonString());
+            System.out.println(result.getWorkspaceDirectory().getAbsolutePath());
 
-                System.out.println(result.getOptions().toJsonString());
-                System.out.println(result.getWorkspaceDirectory().getAbsolutePath());
-
-                for (WorkflowArtifact artifact : result.getArtifacts()) {
-                    System.out.println(artifact.getName() + " - " + artifact.getPath());
-                }
-
-                processResults(workflowDef, result, runId);
-            } catch (Exception e) {
-                e.printStackTrace();
+            for (WorkflowArtifact artifact : result.getArtifacts()) {
+                System.out.println(artifact.getName() + " - " + artifact.getPath());
             }
 
-            System.out.println("Ended workflow run...");
-        };
+            processResults(workflowDef, result, runId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        system.dispatcher().execute(workflowTask);
+        System.out.println("Ended workflow run...");
 
         return runId;
     }

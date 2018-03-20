@@ -59,7 +59,7 @@ public class WorkflowRunner {
         //System.out.println("export JYTHON_HOME=" + options.getConfig().get("jython_home"));
         //System.out.println("export JYTHON_PATH=" + options.getConfig().get("jython_path"));
 
-        System.out.println("export PYTHON_PATH=" + options.getConfig().get("python_path"));
+        System.out.println("export PYTHONPATH=" + options.getConfig().get("python_path"));
         System.out.println("export LD_LIBRARY_PATH=" + options.getConfig().get("ld_library_path"));
 
         System.out.println("java -jar " + KURATOR_JAR + " " + options.toCmdString());
