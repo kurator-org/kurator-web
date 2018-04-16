@@ -105,7 +105,6 @@ public class Workflows extends Controller {
             boolean hasInputType = false;
 
             if (search == null || search.isEmpty()) {
-                System.out.println("search is null");
                 match = true;
             } else {
                 // if a search term is provided as a parameter, check if the name of this workflow
@@ -114,7 +113,6 @@ public class Workflows extends Controller {
             }
 
             if (dwcCls.equalsIgnoreCase("any")) {
-                System.out.println("has dwc class: " + dwcCls);
                 hasDwcClass = true;
             } else {
                 // if a dwc class besides any is provided as a parameter, check if the workflow configuration
@@ -149,7 +147,6 @@ public class Workflows extends Controller {
                 String inputFormat = alternativeConfig.getInputFormat();
 
                 if (input.equalsIgnoreCase("any")) {
-                    System.out.println("has input type: " + input);
                     hasInputType = true;
                 } else {
                     // if an input type and/or darwin core class besides any is specified, check each
