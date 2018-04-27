@@ -224,7 +224,7 @@ By default, kurator-web expects to find the "packages" directory relative to the
 
 This ensures that when the kurator-validation project is updated via git pull, any updates to the python workflows are automatically redeployed.
 
-NOTE: in order to update the Java workflows, which are containing in the kurator-validation jar file, rebuild and redeploy the web app via bin/activator dist by repeating the steps described above. 
+NOTE: in order to update the Java workflows, which are contained in the kurator-validation jar file, rebuild and redeploy the web app via bin/activator dist by repeating the steps described above. 
 
 Run the play production server from the distribution directory unzipped within deployments. Use
 
@@ -236,7 +236,7 @@ The -Dkurator.jar option is required and should point to a copy of the kurator-v
 
 ### Systemd startup script
 
-Create a unit file for the kurator web systemd service at /etc/systemd/system/kurator.service with the following contents:
+Create a unit file for the kurator web systemd service at `/etc/systemd/system/kurator.service` with the following contents:
 
     [Unit]
     After=network.target
