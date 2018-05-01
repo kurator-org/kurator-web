@@ -141,6 +141,7 @@ public class Workflows extends Controller {
 
             // Add an entry for each workflow alternative
             ArrayNode alternativesArray = workflowJson.putArray("alternatives");
+            Map<String, ObjectNode> alternativeTypes = new TreeMap<>(); // sorted alphabetically by type (key)
 
             for (WorkflowAlternativeConfig alternativeConfig : workflowConfig.getWorkflowAlternativeConfigs()) {
                 String inputType = alternativeConfig.getInputType();
@@ -195,7 +196,12 @@ public class Workflows extends Controller {
                     parametersArray.add(parametersJson);
                 }
 
-                alternativesArray.add(alternativeJson);
+                alternativeTypes.put(alternativeConfig.getInputType(), alternativeJson);
+            }
+
+            // Add the json objects to the alternatives array, sort alphabetically by type
+            for (String alternativeType : alternativeTypes.keySet()) {
+                alternativesArray.add(alternativeTypes.get(alternativeType));
             }
 
             // Only include the workflows that satisfy filter criteria in the response
