@@ -39,6 +39,9 @@ define([
             $classToggle.parent().addClass('active');
             $classToggle.prop('checked', true);
 
+            // Enable all tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+
             return this;
         },
 
