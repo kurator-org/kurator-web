@@ -214,8 +214,8 @@ Once the web application is configured, build a distribution zip file via the in
 Unzip the distribution archive to the deployments directory in /home/kurator and create a symbolic link "kurator-web" for the current deployment:
 
     cd /home/kurator
-    unzip kurator-web/target/universal/kurator-web-1.0.2-SNAPSHOT.zip -d deployments
-    ln -s deployments/kurator-web-1.0.2-SNAPSHOT kurator-web
+    unzip kurator-web/target/universal/kurator-web-1.0.2.zip -d deployments
+    ln -s deployments/kurator-web-1.0.2 kurator-web
 
 By default, kurator-web expects to find the "packages" directory relative to the deployment root directory (e.g. /deployments/kurator-web/packages). Create a symbolic link in the deployment that points to the packages directory in the kurator-validation project to deploy workflows:
 
@@ -229,7 +229,7 @@ NOTE: in order to update the Java workflows, which are contained in the kurator-
 Run the play production server from the distribution directory unzipped within deployments. Use
 
     cd deployments/kurator-web
-    bin/kurator_web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-SNAPSHOT-jar-with-dependencies.jar
+    bin/kurator_web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-jar-with-dependencies.jar
 
 By default the Play server will listen on port 9000 however the -Dhttp.port used in the command above to set the port to 80 can be used to change the default. Open http://localhost/kurator-web/ in your browser after starting the server to test the web application. 
 The -Dkurator.jar option is required and should point to a copy of the kurator-validation jar and is used by the command-line workflow runner in the web app to run workflows.  
@@ -246,7 +246,7 @@ Create a unit file for the kurator web systemd service at `/etc/systemd/system/k
     MemoryLimit=8G
     PIDFile=/home/kurator/kurator-web/RUNNING_PID
     WorkingDirectory=/home/kurator/kurator-web
-    ExecStart=/home/kurator/kurator-web/bin/kurator-web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-SNAPSHOT-jar-with-dependencies.jar
+    ExecStart=/home/kurator/kurator-web/bin/kurator-web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-jar-with-dependencies.jar
     Restart=on-failure
     User=root
     Group=kurator

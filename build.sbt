@@ -2,7 +2,7 @@ import sbt.ExclusionRule
 
 name := "kurator-web"
 
-version := "1.0.2-SNAPSHOT"
+version := "1.0.2"
 
 fullResolvers :=  Seq(
   "Open Source Geospatial Foundation Repository" at "http://download.osgeo.org/webdav/geotools/",
@@ -29,7 +29,7 @@ libraryDependencies ++= Seq(
   "commons-io" % "commons-io" % "2.4",
   "org.pac4j" % "play-pac4j" % "2.4.0",
   "org.mindrot" % "jbcrypt" % "0.3m",
-  "org.kurator" % "kurator-validation" % "1.0.2-SNAPSHOT" exclude("com.typesafe.akka", "akka-actor_2.10") exclude("com.typesafe.akka", "akka-slf4j_2.10"),
+  "org.kurator" % "kurator-validation" % "1.0.2" exclude("com.typesafe.akka", "akka-actor_2.10") exclude("com.typesafe.akka", "akka-slf4j_2.10"),
   "mysql" % "mysql-connector-java" % "5.1.18",
   "org.webjars" % "requirejs" % "2.1.11-1",
   "com.typesafe.play" %% "play-mailer" % "5.0.0",
