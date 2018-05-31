@@ -49,6 +49,16 @@ Other development prerequisites include maven and git. If you do not currently h
 
     sudo apt-get install git maven
 
+Check that your maven is at least version 3.0.  
+
+    $ mvn --version
+    Apache Maven 3.0.4
+    Maven home: /usr/share/maven
+    Java version: 1.8.0_73, vendor: Oracle Corporation
+    Java home: /usr/local/java/jdk1.8.0_73/jre
+    Default locale: en_US, platform encoding: UTF-8
+    OS name: "linux", version: "3.2.0-6-686-pae", arch: "i386", family: "unix"
+
 For production environments the default database used is MySQL. If MySQL is not already installed, install it now via apt-get:
 
     sudo apt-get install mysql-client mysql-server
@@ -109,12 +119,12 @@ Clone the kurator-akka project:
 
     git clone https://github.com/kurator-org/kurator-akka.git
 
-Clone prerequisites for ffdq and dq reports:
+Clone prerequisites for ffdq and dq reports (optional, only if you want to do development with them):
 
     git clone https://github.com/kurator-org/ffdq-api.git
     git clone https://github.com/kurator-org/kurator-ffdq.git
 
-and the event_date_qc and geo_ref_qc projects:
+and the event_date_qc and geo_ref_qc projects (optional, only if you want to do development with them):
 
     git clone https://github.com/FilteredPush/event_date_qc.git
     git clone https://github.com/FilteredPush/geo_ref_qc.git
@@ -133,6 +143,8 @@ Finally clone the web app project found in this repository:
     git clone https://github.com/kurator-org/kurator-web.git
     
 #### FFDQ and QC actor libraries
+
+See NOTE below, these are available from Maven Central, and only need local builds if you are going to do development on them.
 
 The projects that make up kurator and the set of workflows standard to the production deployments are shown below with links between them to indicate the dependency graph. Projects are listed from left to right in the build order.
 
@@ -155,7 +167,7 @@ Starting from the kurator user's home directory (/home/kurator/), build these pr
     cd geo_ref_qc
     mvn clean install
 
-NOTE: the latest stable version of all of the projects above are also available via maven central and local clones of the projects are not required if working only on the other projects in a development environment (e.g. kurator-akka, kurator-validation, kurator-fp-validation and kurator-web below). These dependencies and the qc libraries are downloaded automatically when running maven install on kurator-validation.
+NOTE: the latest stable version of all of the projects above are also available via maven central and local clones of the projects are not required if working only on the other projects in a development environment (ie. kurator-akka, kurator-validation, kurator-fp-validation and kurator-web below). These dependencies and the qc libraries are downloaded automatically when running maven install on kurator-validation.
 
 1) https://mvnrepository.com/artifact/org.datakurator
 2) https://mvnrepository.com/artifact/org.filteredpush
