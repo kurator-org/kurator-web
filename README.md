@@ -101,6 +101,10 @@ Log in as the kurator user created previously and create a directory for the pro
 
 Login as the kurator user for the following steps:
 
+Place the git clones of each project within the /home/kurator/projects directory (these can be elsewhere, instructions which follow about symbolic links assume the projects are inside the projects directory).
+
+    cd /home/kurator/projects 
+
 Clone the kurator-akka project:
 
     git clone https://github.com/kurator-org/kurator-akka.git
