@@ -153,7 +153,7 @@ The first projects to build are the ffdq library and api projects as well as the
     ffdq-api --> kurator-ffdq --> event_date_qc
                                   geo_ref_qc
 
-Starting from the kurator user's home directory (/home/kurator/), build these projects using maven install:
+Starting from the projects directory in the kurator user's home directory (/home/kurator/projects/), build these projects using maven install:
 
     cd ffdq-api
     mvn clean install
@@ -178,7 +178,7 @@ Second is the kurator-akka top level project and the kurator-validation/kurator-
 
     kurator-akka --> kurator-validation --> kurator-fp-validation
 
-Starting from the kurator user's home directory (/home/kurator/), build these projects using maven install:
+Starting from the projects directory (/home/kurator/projects/), build these projects using maven install:
 
     cd kurator-akka
     mvn clean install
@@ -188,7 +188,7 @@ Starting from the kurator user's home directory (/home/kurator/), build these pr
     
 The packages directory of the kurator-validation project contains all the Python actors and configuration that are currently deployed in production. In order to install the Python dependencies via pip, use the requirements.txt file provided in <code>packages/kurator_dwca</code> as an argument to pip:
 
-    pip install -r kurator-validation/packages/kurator-dwca/requirements.txt
+    pip install -r kurator-validation/packages/kurator_dwca/requirements.txt
     
 In order to build the kurator-fp-validation workflows via maven install, first build the FP-CurationServices dependency followed by kurator-fp-validation:
 
