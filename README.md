@@ -190,13 +190,13 @@ The packages directory of the kurator-validation project contains all the Python
 
     pip install -r kurator-validation/packages/kurator_dwca/requirements.txt
     
-In order to build the kurator-fp-validation workflows via maven install, first build the FP-CurationServices dependency followed by kurator-fp-validation:
+In order to build the kurator-fp-validation workflows via maven install, first build the FP-CurationServices dependency followed by kurator-fp-validation (you may need to build FP-CurationServices skipping the tests, as some tests invoke network services and may fail):
 
     cd FP-CurationServices
-    mvn install
+    mvn clean install -DskipTests
 
     cd kurator-fp-validation
-    mvn install
+    mvn clean install
 
 #### Configuration
 
@@ -227,25 +227,26 @@ Once the web application is configured, build a distribution zip file via the in
     cd kurator-web/
     bin/activator dist
 
-Unzip the distribution archive to the deployments directory in /home/kurator and create a symbolic link "kurator-web" for the current deployment:
+Unzip the distribution archive to the deployments directory in /home/kurator and create a symbolic link in the deployment that points to the packages directory in the kurator-validation project to deploy workflows.  By default, kurator-web expects to find the "packages" directory relative to the deployment root directory (e.g. /deployments/kurator-web/packages).   This link ensures that when the kurator-validation project is updated via git pull, any updates to the python workflows are automatically redeployed.  You will need to recreate this symbolic link any time you unzip a new kurator-web...zip file.
 
     cd /home/kurator
-    unzip kurator-web/target/universal/kurator-web-1.0.2.zip -d deployments
-    ln -s deployments/kurator-web-1.0.2 kurator-web
-
-By default, kurator-web expects to find the "packages" directory relative to the deployment root directory (e.g. /deployments/kurator-web/packages). Create a symbolic link in the deployment that points to the packages directory in the kurator-validation project to deploy workflows:
-
-    cd /home/kurator/deployments/kurator-web
-    ln -s /home/kurator/projects/kurator-validation/packages
-
-This ensures that when the kurator-validation project is updated via git pull, any updates to the python workflows are automatically redeployed.
+    unzip projects/kurator-web/target/universal/kurator-web-1.0.2.zip -d deployments
+    cd /home/kurator/deployments/kurator-web-1.0.2/
+    ln -s /home/kurator/projects/kurator-validation/packages 
 
 NOTE: in order to update the Java workflows, which are contained in the kurator-validation jar file, rebuild and redeploy the web app via bin/activator dist by repeating the steps described above. 
+
+Create a symbolic link "kurator-web" for the current deployment:
+
+    cd /home/kurator/
+    ln -s /home/kurator/deployments/kurator-web-1.0.2 deployments/kurator-web
+
+NOTE: The instructions which follow assume that your latest kurator-web-x.x.x deployment is found at the symbolic link /home/kurator/deployments/kurator-web.  If you build a new kurator-web version higher than 1.0.2, you will need to update the kurator-web symbolic link as well as creating the packages symbolic link.
 
 Run the play production server from the distribution directory unzipped within deployments. Use
 
     cd deployments/kurator-web
-    bin/kurator_web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-jar-with-dependencies.jar
+    bin/kurator-web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-jar-with-dependencies.jar
 
 By default the Play server will listen on port 9000 however the -Dhttp.port used in the command above to set the port to 80 can be used to change the default. Open http://localhost/kurator-web/ in your browser after starting the server to test the web application. 
 The -Dkurator.jar option is required and should point to a copy of the kurator-validation jar and is used by the command-line workflow runner in the web app to run workflows.  
@@ -258,11 +259,11 @@ Create a unit file for the kurator web systemd service at `/etc/systemd/system/k
     After=network.target
     
     [Service]
-    EnvironmentFile=/home/kurator/kurator-web/conf/env
+    EnvironmentFile=/home/kurator/deployments/kurator-web/conf/env
     MemoryLimit=8G
-    PIDFile=/home/kurator/kurator-web/RUNNING_PID
-    WorkingDirectory=/home/kurator/kurator-web
-    ExecStart=/home/kurator/kurator-web/bin/kurator-web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-jar-with-dependencies.jar
+    PIDFile=/home/kurator/deployments/kurator-web/RUNNING_PID
+    WorkingDirectory=/home/kurator/deployments/kurator-web
+    ExecStart=/home/kurator/deployments/kurator-web/bin/kurator-web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-jar-with-dependencies.jar
     Restart=on-failure
     User=root
     Group=kurator
