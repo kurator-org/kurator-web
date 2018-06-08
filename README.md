@@ -234,7 +234,7 @@ Unzip the distribution archive to the deployments directory in /home/kurator and
     cd /home/kurator/deployments/kurator-web-1.0.2/
     ln -s /home/kurator/projects/kurator-validation/packages 
 
-NOTE: in order to update the Java workflows, which are contained in the kurator-validation jar file, rebuild and redeploy the web app via bin/activator dist by repeating the steps described above. 
+NOTE: in order to update the Java workflows, which are contained in the kurator-validation jar file, rebuild and redeploy the web app via bin/activator dist by repeating the steps described above.  Or, to redeploy, use the -u option on unzip (which will retain the symbolic link).  ( unzip -u projects/kurator-web/target/universal/kurator-web-1.0.2.zip -d deployments ).
 
 Create a symbolic link "kurator-web" for the current deployment:
 
@@ -243,10 +243,10 @@ Create a symbolic link "kurator-web" for the current deployment:
 
 NOTE: The instructions which follow assume that your latest kurator-web-x.x.x deployment is found at the symbolic link /home/kurator/deployments/kurator-web.  If you build a new kurator-web version higher than 1.0.2, you will need to update the kurator-web symbolic link as well as creating the packages symbolic link.
 
-Run the play production server from the distribution directory unzipped within deployments. Use
+Run the play production server from the distribution directory unzipped within deployments (reference the kurator-validation jar you wish to use (if this jar doesn't exist, workflows will fail with a single line error message about not being able to find a class). Use:
 
     cd deployments/kurator-web
-    bin/kurator-web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.2-jar-with-dependencies.jar
+    bin/kurator-web -Dhttp.port=80 -Dkurator.jar=/home/kurator/projects/kurator-validation/target/kurator-validation-1.0.3-SNAPSHOT-jar-with-dependencies.jar
 
 By default the Play server will listen on port 9000 however the -Dhttp.port used in the command above to set the port to 80 can be used to change the default. Open http://localhost/kurator-web/ in your browser after starting the server to test the web application. 
 The -Dkurator.jar option is required and should point to a copy of the kurator-validation jar and is used by the command-line workflow runner in the web app to run workflows.  
